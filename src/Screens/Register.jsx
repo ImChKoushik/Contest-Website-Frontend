@@ -20,7 +20,7 @@ const Register = () => {
     e.preventDefault();
 
     try {
-      const res = await axios.post("", form);
+      const res = await axios.post("https://contest-backend-td3m.onrender.com/api/v1/user/register-user", form);
 
       console.log(res.data);
       alert("User Registered Successfully");
