@@ -16,16 +16,18 @@ export const AuthProvider = ({ children }) => {
   // Load user from local storage on mount (if available)
   useEffect(() => {
     const savedUser = localStorage.getItem('authUser');
-    if (savedUser) {
+    if (savedUser && savedUser !== "undefined") {
       try {
         setUser(JSON.parse(savedUser));
       } catch (error) {
         console.error("Failed to parse user from local storage", error);
+        localStorage.removeItem('authUser'); // Clear corrupted state
       }
     }
   }, []);
 
   const login = (userData) => {
+    if (!userData) return;
     setUser(userData);
     localStorage.setItem('authUser', JSON.stringify(userData));
   };

@@ -13,13 +13,14 @@ export default function ProtectedRoute({ allowedRoles }) {
     // Replaced relative /me with your absolute backend URL
     axios.get("https://contest-backend-td3m.onrender.com/api/v1/user/me", { withCredentials: true })
       .then(res => {
-        const user = res.data.user;
+        // Attempt to extract the user object safely regardless of API response structure
+        const user = res.data?.user || res.data?.data?.user || res.data;
         
         // Update context just in case it's useful elsewhere
-        if (login) login(user);
+        if (login && user) login(user);
 
         // Check if the user is allowed to access this route
-        if (allowedRoles && !allowedRoles.includes(user.role)) {
+        if (allowedRoles && user?.role && !allowedRoles.includes(user.role)) {
           // If not allowed, redirect them to their respective dashboard
           if (user.role === "Admin") {
             navigate("/admin-dashboard");
@@ -35,10 +36,10 @@ export default function ProtectedRoute({ allowedRoles }) {
         
         // Fallback: If network/CORS fails, check if we have a valid offline session saved
         const savedUserData = localStorage.getItem('authUser');
-        if (savedUserData) {
+        if (savedUserData && savedUserData !== "undefined") {
            try {
              const user = JSON.parse(savedUserData);
-             if (allowedRoles && !allowedRoles.includes(user.role)) {
+             if (allowedRoles && user?.role && !allowedRoles.includes(user.role)) {
                if (user.role === "Admin") navigate("/admin-dashboard", { replace: true });
                else navigate("/dashboard", { replace: true });
              } else {
