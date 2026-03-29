@@ -4,6 +4,9 @@ import SignInForm from './Screens/SignInForm'
 import Footer from './components/Footer'
 import Navbar from './components/Navbar'
 import Button from './components/Button'
+import ProtectedRoute from './components/ProtectedRoute'
+import AdminDashboard from './Screens/AdminDashboard'
+import UserDashboard from './Screens/UserDashboard'
 
 function Home() {
   const navigate = useNavigate();
@@ -30,6 +33,16 @@ function App() {
           <Route path="/" element={<Home />} />
           <Route path="/signup" element={<SignUpForm />} />
           <Route path="/signin" element={<SignInForm />} />
+          
+          {/* Admin Routes */}
+          <Route element={<ProtectedRoute allowedRoles={['Admin']} />}>
+            <Route path="/admin-dashboard" element={<AdminDashboard />} />
+          </Route>
+
+          {/* Regular User Routes (assuming 'User' role, adjust if they have different roles) */}
+          <Route element={<ProtectedRoute allowedRoles={['User']} />}>
+            <Route path="/dashboard" element={<UserDashboard />} />
+          </Route>
         </Routes>
       </main>
       

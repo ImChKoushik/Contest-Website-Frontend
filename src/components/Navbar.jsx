@@ -1,14 +1,15 @@
 import { useNavigate, Link } from 'react-router-dom';
 import Button from './Button';
 import { useAuthContext } from '../context/AuthContext';
+import { useLogout } from '../hooks/useLogout';
 
 export default function Navbar() {
   const navigate = useNavigate();
-  const { user, logout } = useAuthContext();
+  const { user } = useAuthContext();
+  const { logout, loading } = useLogout();
 
   const handleLogout = () => {
     logout();
-    navigate('/');
   };
 
   const displayName = user?.userName || user?.name || user?.email?.split('@')[0] || 'User';
@@ -50,9 +51,10 @@ export default function Navbar() {
                 </div>
                 <button 
                   onClick={handleLogout}
-                  className="text-[13px] font-bold text-gray-400 hover:text-red-500 transition-colors uppercase tracking-wider"
+                  disabled={loading}
+                  className="text-[13px] font-bold text-gray-400 hover:text-red-500 transition-colors uppercase tracking-wider disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  Logout
+                  {loading ? 'Logging out...' : 'Logout'}
                 </button>
               </div>
             ) : (
