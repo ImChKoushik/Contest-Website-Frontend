@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import ContestCard from '../components/ContestCard';
 
 export default function UserDashboard() {
@@ -35,6 +35,44 @@ export default function UserDashboard() {
     return () => clearInterval(timer);
   }, []);
 
+  const [touchStart, setTouchStart] = useState(null);
+  const [touchEnd, setTouchEnd] = useState(null);
+  const minSwipeDistance = 50;
+
+  const onTouchStart = (e) => {
+    setTouchEnd(null);
+    setTouchStart(e.targetTouches[0].clientX);
+  };
+
+  const onTouchMove = (e) => setTouchEnd(e.targetTouches[0].clientX);
+
+  const onTouchEnd = () => {
+    if (!touchStart || !touchEnd) return;
+    const distance = touchStart - touchEnd;
+    if (distance > minSwipeDistance) {
+      setCurrentSlide((prev) => (prev + 1) % slides.length);
+    } else if (distance < -minSwipeDistance) {
+      setCurrentSlide((prev) => (prev === 0 ? slides.length - 1 : prev - 1));
+    }
+  };
+
+  const wheelTimeout = useRef(null);
+  
+  const handleWheel = (e) => {
+    if (Math.abs(e.deltaX) > 20 && Math.abs(e.deltaX) > Math.abs(e.deltaY)) {
+      if (!wheelTimeout.current) {
+        if (e.deltaX > 0) {
+          setCurrentSlide((prev) => (prev + 1) % slides.length);
+        } else {
+          setCurrentSlide((prev) => (prev === 0 ? slides.length - 1 : prev - 1));
+        }
+        wheelTimeout.current = setTimeout(() => {
+          wheelTimeout.current = null;
+        }, 800);
+      }
+    }
+  };
+
   // Placeholder images mapped from unsplash matching the theme as closely as possible for high fidelity representation
   const contests = [
     {
@@ -54,11 +92,11 @@ export default function UserDashboard() {
       image: "https://images.unsplash.com/photo-1618761714954-0b8cd0026356?q=80&w=2670&auto=format&fit=crop"
     },
     {
-      title: "Digital Marketing",
-      category: "Marketing",
-      description: "Create a viral launch campaign for an eco-friendly tech startup. Strategize for multi-platform engagement and conversion.",
-      daysLeft: "5 Days Left",
-      entries: "312 Entries",
+      title: "Website Designing",
+      category: "Web Design",
+      description: "Create stunning, responsive, and performant web interfaces. Build a portfolio-worthy landing page from scratch.",
+      daysLeft: "8 Days Left",
+      entries: "210 Entries",
       image: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?q=80&w=2426&auto=format&fit=crop"
     }
   ];
@@ -67,7 +105,13 @@ export default function UserDashboard() {
     <div className="bg-[#fbfcfb] min-h-screen font-sans w-full pb-20">
       
       {/* 1. Hero Section */}
-      <section className="relative w-full h-[600px] md:h-[650px] overflow-hidden">
+      <section 
+        className="relative w-full h-[600px] md:h-[650px] overflow-hidden"
+        onTouchStart={onTouchStart}
+        onTouchMove={onTouchMove}
+        onTouchEnd={onTouchEnd}
+        onWheel={handleWheel}
+      >
         {/* Deep Green Gradient background & Image Overlay */}
         <div className="absolute inset-0 bg-[#063327]">
           {/* Faint technical image overlay logic */}
