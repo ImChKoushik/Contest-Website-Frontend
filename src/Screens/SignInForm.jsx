@@ -4,6 +4,7 @@ import Button from '../components/Button';
 import Form from '../components/Form';
 import useAuth from '../hooks/useAuth';
 import { useAuthContext } from '../context/AuthContext';
+import { useNavigate } from 'react-router-dom';
 
 export default function SignInForm() {
   const [formData, setFormData] = useState({
@@ -14,6 +15,7 @@ export default function SignInForm() {
   const [rememberMe, setRememberMe] = useState(false);
   const { sendRequest, loading, error } = useAuth();
   const { login } = useAuthContext();
+  const navigate = useNavigate();
 
   const handleChange = (e) => {
     setFormData({
@@ -41,7 +43,13 @@ export default function SignInForm() {
       // Store user info in global context
       const userData = result.data?.user || result.user || result;
       login(userData);
-      alert("Welcome back!");
+      
+      // Navigate to respective dashboard
+      if (userData.role === "Admin") {
+        navigate("/admin-dashboard");
+      } else {
+        navigate("/dashboard");
+      }
     }
   };
 

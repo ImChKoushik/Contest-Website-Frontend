@@ -39,13 +39,12 @@ function App() {
             <Route path="/admin-dashboard" element={<AdminDashboard />} />
           </Route>
 
-          {/* Regular User Routes (assuming 'User' role, adjust if they have different roles) */}
+          {/* Regular User Routes */}
           <Route element={<ProtectedRoute allowedRoles={['User']} />}>
             <Route path="/dashboard" element={<UserDashboard />} />
           </Route>
         </Routes>
       </main>
-      
       <Footer />
     </>
   )
