@@ -2,6 +2,7 @@ import { useNavigate, Link } from 'react-router-dom';
 import Button from './Button';
 import { useAuthContext } from '../context/AuthContext';
 import { useLogout } from '../hooks/useLogout';
+import logo from '../assets/images/logo.png';
 
 export default function Navbar() {
   const navigate = useNavigate();
@@ -20,15 +21,7 @@ export default function Navbar() {
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
           <Link to="/" className="flex items-center gap-2 cursor-pointer">
-            <svg viewBox="0 0 100 100" className="w-10 h-10" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M50 15C30.67 15 15 30.67 15 50C15 69.33 30.67 85 50 85C69.33 85 85 69.33 85 50C85 30.67 69.33 15 50 15Z" fill="#ffefb3"/>
-              <path d="M50 30C38.95 30 30 38.95 30 50C30 61.05 38.95 70 50 70C61.05 70 70 61.05 70 50C70 38.95 61.05 30 50 30Z" fill="#8cc63f"/>
-              <path d="M50 40A10 10 0 1 0 50 60A10 10 0 1 0 50 40Z" fill="#FFA500"/>
-            </svg>
-            <div className="font-bold text-xl tracking-tight flex flex-col uppercase leading-tight">
-              <span className="text-gray-900">Desun Academy</span>
-              <span className="text-gray-900 text-[0.55rem] tracking-wider bg-[#fcb900] w-max px-1.5 py-0.5 rounded font-bold">Get Placed by Skills</span>
-            </div>
+            <img src={logo} alt="Desun Academy" className="h-11 w-auto object-contain" />
           </Link>
           
           {/* Navigation Links */}

@@ -1,8 +1,40 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import ContestCard from '../components/ContestCard';
 
 export default function UserDashboard() {
-  
+  const [currentSlide, setCurrentSlide] = useState(0);
+
+  const slides = [
+    {
+      badge: "MERN CONTEST",
+      titleLine1: "Master Your Craft.",
+      titleLine2: "Lead the Future.",
+      description: "Build a scalable real-time collaboration tool using MongoDB, Express, React, and Node.js. Focus on performance and architecture.",
+      image: "https://images.unsplash.com/photo-1519389950473-47ba0277781c?q=80&w=2500&auto=format&fit=crop"
+    },
+    {
+      badge: "UI/UX CONTEST",
+      titleLine1: "Design with Empathy.",
+      titleLine2: "Shape Experiences.",
+      description: "Redesign the educational experience for neurodivergent learners. Focus on accessibility, empathy, and intuitive interaction.",
+      image: "https://images.unsplash.com/photo-1618761714954-0b8cd0026356?q=80&w=2670&auto=format&fit=crop"
+    },
+    {
+      badge: "WEBSITE DESIGNING CONTEST",
+      titleLine1: "Build Stunning Web.",
+      titleLine2: "Push the Boundaries.",
+      description: "Create stunning, responsive, and performant web interfaces. Prove your frontend mastery with modern design architectures.",
+      image: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?q=80&w=2426&auto=format&fit=crop"
+    }
+  ];
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCurrentSlide((prev) => (prev + 1) % slides.length);
+    }, 5000);
+    return () => clearInterval(timer);
+  }, []);
+
   // Placeholder images mapped from unsplash matching the theme as closely as possible for high fidelity representation
   const contests = [
     {
@@ -38,29 +70,34 @@ export default function UserDashboard() {
       <section className="relative w-full h-[600px] md:h-[650px] overflow-hidden">
         {/* Deep Green Gradient background & Image Overlay */}
         <div className="absolute inset-0 bg-[#063327]">
-          {/* Faint technical image overlay logic (approximating user's dual screens background) */}
-          <img 
-            src="https://images.unsplash.com/photo-1519389950473-47ba0277781c?q=80&w=2500&auto=format&fit=crop" 
-            alt="Hero background" 
-            className="w-full h-full object-cover opacity-20 object-right"
-          />
-          <div className="absolute inset-0 bg-gradient-to-r from-[#173a20]/95 via-[#0c402b]/80 to-[#107044]/60 mix-blend-multiply"></div>
-          <div className="absolute inset-0 bg-gradient-to-t from-[#fbfcfb]/10 via-transparent to-transparent"></div> {/* Bottom soft fade */}
+          {/* Faint technical image overlay logic */}
+          {slides.map((slide, idx) => (
+            <img 
+              key={idx}
+              src={slide.image} 
+              alt={`Slide ${idx + 1}`} 
+              className={`absolute inset-0 w-full h-full object-cover object-right transition-opacity duration-1000 ease-in-out ${
+                currentSlide === idx ? "opacity-20 z-10" : "opacity-0 z-0"
+              }`}
+            />
+          ))}
+          <div className="absolute inset-0 bg-gradient-to-r from-[#173a20]/95 via-[#0c402b]/80 to-[#107044]/60 mix-blend-multiply z-10"></div>
+          <div className="absolute inset-0 bg-gradient-to-t from-[#fbfcfb]/10 via-transparent to-transparent z-10"></div> {/* Bottom soft fade */}
         </div>
 
-        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-full flex flex-col justify-center pb-12">
+        <div className="relative z-20 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-full flex flex-col justify-center pb-12">
           {/* Glowing Badge */}
-          <div className="bg-[#fcb900] text-gray-900 w-max px-4 py-1.5 rounded-full text-[11px] font-black uppercase tracking-widest shadow-md mb-8 ring-4 ring-[#fcb900]/20">
-            NEW CONTESTS LIVE
+          <div className="bg-[#fcb900] text-gray-900 w-max px-4 py-1.5 rounded-full text-[11px] font-black uppercase tracking-widest shadow-md mb-8 ring-4 ring-[#fcb900]/20 transition-all duration-300">
+            {slides[currentSlide].badge}
           </div>
           
-          <h1 className="text-white text-5xl md:text-[64px] font-extrabold leading-[1.05] tracking-tight mb-6 max-w-3xl">
-            Master Your Craft.<br />
-            <span className="text-white/95">Lead the Future.</span>
+          <h1 className="text-white text-5xl md:text-[64px] font-extrabold leading-[1.05] tracking-tight mb-6 max-w-3xl transition-all duration-300">
+            {slides[currentSlide].titleLine1}<br />
+            <span className="text-white/95">{slides[currentSlide].titleLine2}</span>
           </h1>
 
-          <p className="text-[#a4dfbe] font-medium text-lg md:text-xl max-w-2xl leading-relaxed mb-10 drop-shadow-sm">
-            Join elite global challenges in technology, design, and marketing. Showcase your skills, win industry recognition, and accelerate your career at Desun Academy.
+          <p className="text-[#a4dfbe] font-medium text-lg md:text-xl max-w-2xl leading-relaxed mb-10 drop-shadow-sm transition-all duration-300 h-20 sm:h-auto">
+            {slides[currentSlide].description}
           </p>
 
           <div className="flex flex-col sm:flex-row gap-4 mb-20">
@@ -75,11 +112,19 @@ export default function UserDashboard() {
             </button>
           </div>
 
-          {/* Simple Slider Indicators */}
-          <div className="absolute bottom-12 left-0 right-0 flex justify-center gap-2 px-6">
-            <span className="h-1.5 rounded-full w-8 bg-[#fcb900] shadow-[0_0_8px_rgba(252,185,0,0.6)]"></span>
-            <span className="h-1.5 rounded-full w-8 bg-white/30 hover:bg-white/50 cursor-pointer transition-colors"></span>
-            <span className="h-1.5 rounded-full w-8 bg-white/30 hover:bg-white/50 cursor-pointer transition-colors"></span>
+          {/* Slider Indicators */}
+          <div className="absolute bottom-12 left-0 right-0 flex justify-center gap-2 px-6 z-30">
+            {slides.map((_, idx) => (
+              <span 
+                key={idx}
+                onClick={() => setCurrentSlide(idx)}
+                className={`h-1.5 rounded-full cursor-pointer transition-all duration-300 ${
+                  currentSlide === idx 
+                    ? "w-8 bg-[#fcb900] shadow-[0_0_8px_rgba(252,185,0,0.6)]" 
+                    : "w-4 bg-white/30 hover:bg-white/50"
+                }`}
+              ></span>
+            ))}
           </div>
         </div>
       </section>
