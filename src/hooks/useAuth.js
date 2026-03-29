@@ -10,7 +10,9 @@ const useAuth = () => {
     setError(null);
 
     try {
-      const res = await axios.post(url, formData);
+      const res = await axios.post(url, formData, {
+        withCredentials: true
+      });
 
       console.log("Success:", res.data);
 

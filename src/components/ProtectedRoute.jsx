@@ -10,7 +10,8 @@ export default function ProtectedRoute({ allowedRoles }) {
   const { login } = useAuthContext();
 
   useEffect(() => {
-    axios.get("/me", { withCredentials: true })
+    // Replaced relative /me with your absolute backend URL
+    axios.get("https://contest-backend-td3m.onrender.com/api/v1/user/me", { withCredentials: true })
       .then(res => {
         const user = res.data.user;
         
@@ -31,7 +32,26 @@ export default function ProtectedRoute({ allowedRoles }) {
       })
       .catch((err) => {
         console.error("Auth check failed:", err);
-        navigate("/signin");
+        
+        // Fallback: If network/CORS fails, check if we have a valid offline session saved
+        const savedUserData = localStorage.getItem('authUser');
+        if (savedUserData) {
+           try {
+             const user = JSON.parse(savedUserData);
+             if (allowedRoles && !allowedRoles.includes(user.role)) {
+               if (user.role === "Admin") navigate("/admin-dashboard", { replace: true });
+               else navigate("/dashboard", { replace: true });
+             } else {
+               setIsAuthenticated(true);
+               setLoading(false);
+             }
+             return;
+           } catch(e) {
+             console.error("Failed parsing offline session", e);
+           }
+        }
+        
+        navigate("/signin", { replace: true });
       })
       .finally(() => {
         setLoading(false);
