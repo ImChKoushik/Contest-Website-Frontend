@@ -1,131 +1,158 @@
-import { useAuthContext } from '../context/AuthContext';
-import Button from '../components/Button';
+import React from 'react';
+import ContestCard from '../components/ContestCard';
 
 export default function UserDashboard() {
-  const { user } = useAuthContext();
-  const displayName = user?.userName || user?.name || 'User';
+  
+  // Placeholder images mapped from unsplash matching the theme as closely as possible for high fidelity representation
+  const contests = [
+    {
+      title: "MERN Stack Development",
+      category: "Development",
+      description: "Build a scalable real-time collaboration tool using MongoDB, Express, React, and Node.js. Focus on performance and...",
+      daysLeft: "12 Days Left",
+      entries: "245 Entries",
+      image: "https://images.unsplash.com/photo-1555066931-4365d14bab8c?q=80&w=2670&auto=format&fit=crop"
+    },
+    {
+      title: "UI/UX Design",
+      category: "Design",
+      description: "Redesign the educational experience for neurodivergent learners. Focus on accessibility, empathy, and intuitive...",
+      daysLeft: "6 Days Left",
+      entries: "189 Entries",
+      image: "https://images.unsplash.com/photo-1618761714954-0b8cd0026356?q=80&w=2670&auto=format&fit=crop"
+    },
+    {
+      title: "Digital Marketing",
+      category: "Marketing",
+      description: "Create a viral launch campaign for an eco-friendly tech startup. Strategize for multi-platform engagement and conversion.",
+      daysLeft: "5 Days Left",
+      entries: "312 Entries",
+      image: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?q=80&w=2426&auto=format&fit=crop"
+    }
+  ];
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full">
-      {/* Welcome Banner */}
-      <div className="bg-gradient-to-r from-[#8cc63f] to-[#609918] rounded-3xl p-8 text-white shadow-xl mb-10 relative overflow-hidden">
-        {/* Decorative elements */}
-        <div className="absolute -top-24 -right-24 w-64 h-64 bg-white/10 rounded-full blur-2xl"></div>
-        <div className="absolute -bottom-24 right-24 w-48 h-48 bg-black/10 rounded-full blur-xl"></div>
+    <div className="bg-[#fbfcfb] min-h-screen font-sans w-full pb-20">
+      
+      {/* 1. Hero Section */}
+      <section className="relative w-full h-[600px] md:h-[650px] overflow-hidden">
+        {/* Deep Green Gradient background & Image Overlay */}
+        <div className="absolute inset-0 bg-[#063327]">
+          {/* Faint technical image overlay logic (approximating user's dual screens background) */}
+          <img 
+            src="https://images.unsplash.com/photo-1519389950473-47ba0277781c?q=80&w=2500&auto=format&fit=crop" 
+            alt="Hero background" 
+            className="w-full h-full object-cover opacity-20 object-right"
+          />
+          <div className="absolute inset-0 bg-gradient-to-r from-[#173a20]/95 via-[#0c402b]/80 to-[#107044]/60 mix-blend-multiply"></div>
+          <div className="absolute inset-0 bg-gradient-to-t from-[#fbfcfb]/10 via-transparent to-transparent"></div> {/* Bottom soft fade */}
+        </div>
+
+        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-full flex flex-col justify-center pb-12">
+          {/* Glowing Badge */}
+          <div className="bg-[#fcb900] text-gray-900 w-max px-4 py-1.5 rounded-full text-[11px] font-black uppercase tracking-widest shadow-md mb-8 ring-4 ring-[#fcb900]/20">
+            NEW CONTESTS LIVE
+          </div>
+          
+          <h1 className="text-white text-5xl md:text-[64px] font-extrabold leading-[1.05] tracking-tight mb-6 max-w-3xl">
+            Master Your Craft.<br />
+            <span className="text-white/95">Lead the Future.</span>
+          </h1>
+
+          <p className="text-[#a4dfbe] font-medium text-lg md:text-xl max-w-2xl leading-relaxed mb-10 drop-shadow-sm">
+            Join elite global challenges in technology, design, and marketing. Showcase your skills, win industry recognition, and accelerate your career at Desun Academy.
+          </p>
+
+          <div className="flex flex-col sm:flex-row gap-4 mb-20">
+            <button className="bg-[#8cc63f] hover:bg-[#7eb830] transition-colors text-white font-bold py-3.5 px-8 rounded-full shadow-[0_4px_14px_rgba(140,198,63,0.39)] flex items-center justify-center gap-2 group tracking-wide">
+              Explore Contests
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-4 h-4 group-hover:translate-x-1 transition-transform">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />
+              </svg>
+            </button>
+            <button className="bg-white/10 hover:bg-white/20 border border-white/20 backdrop-blur-md transition-all text-white font-bold py-3.5 px-8 rounded-full tracking-wide">
+              Our Success Stories
+            </button>
+          </div>
+
+          {/* Simple Slider Indicators */}
+          <div className="absolute bottom-12 left-0 right-0 flex justify-center gap-2 px-6">
+            <span className="h-1.5 rounded-full w-8 bg-[#fcb900] shadow-[0_0_8px_rgba(252,185,0,0.6)]"></span>
+            <span className="h-1.5 rounded-full w-8 bg-white/30 hover:bg-white/50 cursor-pointer transition-colors"></span>
+            <span className="h-1.5 rounded-full w-8 bg-white/30 hover:bg-white/50 cursor-pointer transition-colors"></span>
+          </div>
+        </div>
+      </section>
+
+
+      {/* 2. Active Contests Section */}
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-24 sm:-mt-10 relative z-20 pt-20">
         
-        <div className="relative z-10 md:flex md:items-center md:justify-between">
-          <div>
-            <span className="bg-white/20 text-white text-xs font-bold px-3 py-1 rounded-full uppercase tracking-widest backdrop-blur-sm mb-4 inline-block">
-              Student Portal
-            </span>
-            <h1 className="text-3xl sm:text-4xl font-black mb-2">Welcome back, {displayName}! 👋</h1>
-            <p className="text-white/80 max-w-xl text-sm sm:text-base">
-              Ready for your next challenge? You have 2 upcoming contests. Compete, learn, and grow your ranking!
+        {/* Header Row */}
+        <div className="flex flex-col md:flex-row md:items-end justify-between mb-10">
+          <div className="max-w-xl">
+            <h2 className="text-[32px] md:text-[38px] font-extrabold text-[#111827] mb-3 tracking-tight">Active Contests</h2>
+            <p className="text-[#6b7280] text-[15px] font-medium leading-relaxed">
+              Choose your specialization and compete with the brightest minds in the industry.
             </p>
           </div>
-          <div className="mt-6 md:mt-0 flex flex-col items-start md:items-end">
-             <div className="bg-white/10 rounded-2xl p-4 backdrop-blur-md border border-white/20 text-center min-w-[140px]">
-                <p className="text-xs uppercase tracking-wider text-white/70 font-bold mb-1">Global Rank</p>
-                <h3 className="text-3xl font-black text-[#fcb900] drop-shadow-sm">#42</h3>
-             </div>
-          </div>
-        </div>
-      </div>
-
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        {/* Main Column */}
-        <div className="lg:col-span-2 space-y-8">
           
-          {/* Quick Stats */}
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-            {[
-              { label: 'Contests Joined', value: '12', icon: '🎯' },
-              { label: 'Total Score', value: '8,450', icon: '⭐' },
-              { label: 'Win Rate', value: '18%', icon: '🏆' },
-              { label: 'Certificates', value: '3', icon: '🎓' },
-            ].map((stat, i) => (
-              <div key={i} className="bg-white p-5 rounded-2xl shadow-sm border border-gray-100 flex flex-col items-center justify-center text-center group hover:border-[#8cc63f]/50 transition-colors">
-                <span className="text-2xl mb-2 group-hover:scale-110 transition-transform">{stat.icon}</span>
-                <h4 className="font-black text-2xl text-gray-800">{stat.value}</h4>
-                <p className="text-xs text-gray-500 font-semibold">{stat.label}</p>
-              </div>
-            ))}
-          </div>
-
-          {/* Enrolled Contests */}
-          <div>
-            <div className="flex items-center justify-between mb-4">
-              <h2 className="text-xl font-bold text-gray-900 tracking-tight">Active & Upcoming</h2>
-              <button className="text-sm font-bold text-[#8cc63f] hover:text-[#609918]">Browse All</button>
-            </div>
-            
-            <div className="space-y-4">
-              {[
-                { name: 'React Advance Hackathon', date: 'Starts in 2 days', tags: ['Frontend', 'React'], status: 'Registered' },
-                { name: 'Data Structure Sprint', date: 'Starts in 5 days', tags: ['Backend', 'Algorithms'], status: 'Registered' },
-              ].map((contest, i) => (
-                <div key={i} className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 flex flex-col sm:flex-row sm:items-center justify-between gap-4 hover:shadow-md transition-shadow">
-                  <div>
-                    <h3 className="font-bold text-lg text-gray-800 mb-1">{contest.name}</h3>
-                    <div className="flex items-center gap-3">
-                      <span className="text-sm text-gray-500 font-medium flex items-center gap-1.5">
-                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
-                        {contest.date}
-                      </span>
-                      <div className="flex gap-1">
-                        {contest.tags.map(tag => (
-                          <span key={tag} className="text-[10px] font-bold bg-gray-100 text-gray-600 px-2 py-0.5 rounded-md uppercase">
-                            {tag}
-                          </span>
-                        ))}
-                      </div>
-                    </div>
-                  </div>
-                  <Button variant="secondary" className="whitespace-nowrap shadow-sm font-semibold border-gray-200 py-2">
-                    View Details
-                  </Button>
-                </div>
-              ))}
-            </div>
+          {/* Pagination Controls */}
+          <div className="flex gap-2.5 mt-6 md:mt-0">
+            <button className="w-[36px] h-[36px] rounded-full border-2 border-gray-200 flex flex-col items-center justify-center text-gray-400 hover:text-gray-600 hover:border-gray-300 transition-colors">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-4 h-4 ml-[-1px]">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
+              </svg>
+            </button>
+            <button className="w-[36px] h-[36px] rounded-full border-2 border-gray-200 flex flex-col items-center justify-center text-gray-400 hover:text-gray-600 hover:border-gray-300 transition-colors">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-4 h-4 mr-[-1px]">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
+              </svg>
+            </button>
           </div>
         </div>
 
-        {/* Sidebar */}
-        <div className="space-y-8">
-           {/* Progress Tracker */}
-           <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
-              <h3 className="font-bold text-gray-900 mb-4 border-b border-gray-100 pb-3">Skill Progress</h3>
-              <div className="space-y-5">
-                {[
-                  { skill: 'React.js', progress: 85, color: 'bg-blue-500' },
-                  { skill: 'JavaScript', progress: 92, color: 'bg-yellow-400' },
-                  { skill: 'CSS / UI', progress: 78, color: 'bg-pink-500' },
-                  { skill: 'Node.js', progress: 45, color: 'bg-green-500' },
-                ].map(item => (
-                  <div key={item.skill}>
-                    <div className="flex justify-between text-xs font-bold text-gray-600 mb-1.5">
-                      <span>{item.skill}</span>
-                      <span>{item.progress}%</span>
-                    </div>
-                    <div className="w-full bg-gray-100 rounded-full h-2">
-                      <div className={`${item.color} h-2 rounded-full`} style={{ width: `${item.progress}%` }}></div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-           </div>
+        {/* Dynamic Card Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          {contests.map((contest, index) => (
+            <ContestCard key={index} {...contest} />
+          ))}
+        </div>
+      </section>
 
-           {/* Recommended Banner */}
-           <div className="bg-[#fff9e6] rounded-2xl shadow-sm border border-[#fcb900]/30 p-6 relative overflow-hidden group">
-              <div className="absolute -right-6 -bottom-6 opacity-10 group-hover:scale-110 transition-transform duration-500 text-9xl">🏆</div>
-              <h3 className="font-bold text-gray-900 mb-2">New Certification Path</h3>
-              <p className="text-sm text-gray-600 mb-5 text-balance relative z-10">Complete the "Full Stack Master" series to earn a verified Desun badge.</p>
-              <Button variant="primary" className="w-full font-bold shadow-sm relative z-10 py-2.5 bg-[#fcb900] hover:bg-[#e6a800] text-gray-900">
-                Start Path
-              </Button>
+      
+      {/* 3. Bottom CTA Section */}
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-24">
+        {/* Soft floating gradient card block wrapper */}
+        <div className="rounded-[40px] bg-white relative overflow-hidden shadow-[0_10px_40px_rgba(140,198,63,0.06)] border border-gray-50/50 py-20 px-6 sm:px-12 text-center before:absolute before:inset-0 before:bg-gradient-to-br before:from-[#fcfdfa] before:via-white before:to-[#f3fbdf] before:z-0">
+           
+           {/* Abstract green color blobs for depth matching mock */}
+           <div className="absolute top-0 right-0 w-96 h-96 bg-[#8cc63f]/10 blur-[80px] rounded-full translate-x-1/3 -translate-y-1/3 pointer-events-none z-0"></div>
+           <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-[#fcb900]/5 blur-[80px] rounded-full -translate-x-1/2 translate-y-1/2 pointer-events-none z-0"></div>
+
+           <div className="relative z-10 max-w-3xl mx-auto flex flex-col items-center">
+             <h2 className="text-4xl md:text-[44px] font-extrabold text-[#1f2937] leading-[1.1] tracking-tight mb-5">
+               Ready to showcase your<br />brilliance?
+             </h2>
+             <p className="text-[#6b7280] text-lg mb-10 pb-2">
+               Join 50,000+ specialists who have accelerated their careers<br className="hidden sm:block" />
+               through our competitive learning framework.
+             </p>
+
+             <div className="w-full max-w-xl mx-auto flex flex-col sm:flex-row gap-3">
+               <input 
+                 type="email" 
+                 placeholder="Enter your email" 
+                 className="flex-grow bg-white border border-gray-200 rounded-full px-7 py-4 outline-none text-[15px] font-medium text-gray-700 shadow-sm focus:border-[#8cc63f] focus:ring-2 focus:ring-[#8cc63f]/20 transition-all placeholder:font-normal placeholder:text-gray-400 text-center sm:text-left"
+               />
+               <button className="bg-[#8cc63f] hover:bg-[#7db435] text-white rounded-full px-8 py-4 font-bold text-[15px] shadow-sm tracking-wide whitespace-nowrap transition-colors">
+                 Start Your Journey
+               </button>
+             </div>
            </div>
         </div>
-      </div>
+      </section>
+
     </div>
   );
 }
