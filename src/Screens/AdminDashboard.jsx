@@ -1,12 +1,18 @@
 import { useAuthContext } from '../context/AuthContext';
 import Button from '../components/Button';
+import { useNavigate } from 'react-router-dom';
+import useFetchUsers from '../hooks/useFetchUsers';
 
 export default function AdminDashboard() {
   const { user } = useAuthContext();
   const displayName = user?.userName || user?.name || 'Admin';
+  const navigate = useNavigate();
+  const { data: usersData, loading: usersLoading } = useFetchUsers();
+  
+  const totalUsersValue = usersLoading ? '...' : (usersData?.total || 0);
 
   const stats = [
-    { label: 'Total Users', value: '1,245', change: '+12%', color: 'from-[#8cc63f] to-[#7ab033]' },
+    { label: 'Total Users', value: totalUsersValue, change: '+12%', color: 'from-[#8cc63f] to-[#7ab033]', link: '/admin-dashboard/total-users' },
     { label: 'Active Contests', value: '8', change: '+2', color: 'from-[#fcb900] to-[#e6a800]' },
     { label: 'Pending Approvals', value: '34', change: '-5', color: 'from-red-500 to-red-600' },
     { label: 'Site Visits', value: '45.2K', change: '+18%', color: 'from-blue-500 to-blue-600' }
@@ -29,7 +35,11 @@ export default function AdminDashboard() {
       {/* Stats Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
         {stats.map((stat, i) => (
-          <div key={i} className={`bg-gradient-to-br ${stat.color} rounded-2xl p-6 text-white shadow-lg transform transition hover:-translate-y-1 hover:shadow-xl`}>
+          <div 
+            key={i} 
+            onClick={() => stat.link && navigate(stat.link)}
+            className={`bg-gradient-to-br ${stat.color} rounded-2xl p-6 text-white shadow-lg transform transition hover:-translate-y-1 hover:shadow-xl ${stat.link ? 'cursor-pointer' : ''}`}
+          >
             <p className="font-medium text-white/80 mb-2 truncate">{stat.label}</p>
             <div className="flex items-end justify-between">
               <h2 className="text-4xl font-black">{stat.value}</h2>

@@ -7,6 +7,7 @@ import Button from './components/Button'
 import ProtectedRoute from './components/ProtectedRoute'
 import AdminDashboard from './Screens/AdminDashboard'
 import UserDashboard from './Screens/UserDashboard'
+import Totaluser from './Screens/Totaluser'
 
 function Home() {
   const navigate = useNavigate();
@@ -37,6 +38,7 @@ function App() {
           {/* Admin Routes */}
           <Route element={<ProtectedRoute allowedRoles={['Admin']} />}>
             <Route path="/admin-dashboard" element={<AdminDashboard />} />
+            <Route path="/admin-dashboard/total-users" element={<Totaluser />} />
           </Route>
 
           {/* Regular User Routes */}
