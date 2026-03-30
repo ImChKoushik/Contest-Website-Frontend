@@ -2,10 +2,42 @@ import React from 'react';
 import useFetchUsers from '../hooks/useFetchUsers';
 import { useNavigate } from 'react-router-dom';
 import Button from '../components/Button';
+import useUserActions from '../hooks/useUserActions';
 
 export default function Totaluser() {
-  const { data, loading, error } = useFetchUsers();
+  const { data, loading, error, refetch } = useFetchUsers();
+  const { deleteUser, getUserById, loading: actionLoading } = useUserActions();
   const navigate = useNavigate();
+  const [searchTerm, setSearchTerm] = React.useState("");
+  const [searchResults, setSearchResults] = React.useState(null);
+
+  const handleSearch = async (e) => {
+    e.preventDefault();
+    if (!searchTerm.trim()) {
+      setSearchResults(null);
+      return;
+    }
+
+    const result = await getUserById(searchTerm.trim());
+    if (result.success) {
+      setSearchResults({ users: [result.data], total: 1 });
+    } else {
+      alert(result.message || "User not found with this ID");
+      setSearchResults(null);
+    }
+  };
+
+  const handleDelete = async (id, name) => {
+    if (window.confirm(`Are you sure you want to delete user: ${name}?`)) {
+      const result = await deleteUser(id);
+      if (result.success) {
+        alert(result.message || "User deleted successfully");
+        refetch();
+      } else {
+        alert(result.message || "Failed to delete user");
+      }
+    }
+  };
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full">
@@ -26,7 +58,20 @@ export default function Totaluser() {
             <p className="text-gray-500 mt-1">View and manage all registered platform users.</p>
           </div>
         </div>
-        <div className="mt-4 md:mt-0 flex gap-3">
+        <div className="mt-4 md:mt-0 flex flex-col sm:flex-row gap-3">
+          <form onSubmit={handleSearch} className="flex gap-2">
+            <input 
+              type="text" 
+              placeholder="Search by User ID..." 
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="px-4 py-2 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#8cc63f] transition-all min-w-[200px]"
+            />
+            <Button type="submit" variant="secondary" className="px-4 py-2 text-sm font-semibold">Search</Button>
+            {searchResults && (
+              <Button onClick={() => { setSearchResults(null); setSearchTerm(""); }} variant="outline" className="px-4 py-2 text-sm font-semibold border-gray-300">Clear</Button>
+            )}
+          </form>
           <Button variant="secondary" className="px-4 py-2 text-sm font-semibold">Export CSV</Button>
         </div>
       </div>
@@ -42,12 +87,15 @@ export default function Totaluser() {
       ) : (
         <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
           <div className="p-6 border-b border-gray-50 flex justify-between items-center">
-            <h3 className="font-bold text-lg text-gray-800">Users Database ({data?.total || 0})</h3>
+            <h3 className="font-bold text-lg text-gray-800">
+              {searchResults ? "Search Results" : `Users Database (${data?.total || 0})`}
+            </h3>
           </div>
           <div className="overflow-x-auto">
             <table className="w-full text-left border-collapse">
               <thead>
                 <tr className="bg-gray-50 text-gray-500 text-xs uppercase tracking-wider">
+                  <th className="p-4 font-semibold">User ID</th>
                   <th className="p-4 font-semibold">Name</th>
                   <th className="p-4 font-semibold">Email</th>
                   <th className="p-4 font-semibold">Role</th>
@@ -55,11 +103,13 @@ export default function Totaluser() {
                   <th className="p-4 font-semibold">Gender</th>
                   <th className="p-4 font-semibold">Verified</th>
                   <th className="p-4 font-semibold">Joined At</th>
+                  <th className="p-4 font-semibold text-right">Actions</th>
                 </tr>
               </thead>
               <tbody className="text-sm divide-y divide-gray-50">
-                {data?.users?.map((user) => (
+                {(searchResults || data)?.users?.map((user) => (
                   <tr key={user._id} className="hover:bg-gray-50/50 transition-colors">
+                    <td className="p-4 font-mono text-xs text-gray-400">{user._id}</td>
                     <td className="p-4 font-medium text-gray-800">{user.userName}</td>
                     <td className="p-4 text-gray-500">{user.email}</td>
                     <td className="p-4">
@@ -78,14 +128,23 @@ export default function Totaluser() {
                          <span className="text-gray-400">No</span>
                       )}
                     </td>
-                    <td className="p-4 text-gray-500">
+                    <td className="p-4 text-gray-500 whitespace-nowrap">
                       {new Date(user.createdAt).toLocaleDateString()}
+                    </td>
+                    <td className="p-4 text-right">
+                      <button 
+                        onClick={() => handleDelete(user._id, user.userName)}
+                        disabled={actionLoading}
+                        className="text-red-500 hover:text-red-700 font-semibold text-xs transition disabled:opacity-50"
+                      >
+                        Delete
+                      </button>
                     </td>
                   </tr>
                 ))}
                 {(!data?.users || data.users.length === 0) && (
                   <tr>
-                    <td colSpan="7" className="p-8 text-center text-gray-500">
+                    <td colSpan="9" className="p-8 text-center text-gray-500">
                       No users found.
                     </td>
                   </tr>
