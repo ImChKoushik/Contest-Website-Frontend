@@ -11,7 +11,7 @@ const useFetchUsers = () => {
     setError(null);
 
     try {
-      const res = await axios.get("https://contest-backend-td3m.onrender.com /api/v1/user/get-all-users", {
+      const res = await axios.get("https://contest-backend-td3m.onrender.com/api/v1/user/get-all-users", {
         withCredentials: true
       });
 
