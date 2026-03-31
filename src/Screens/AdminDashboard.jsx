@@ -2,20 +2,24 @@ import { useAuthContext } from '../context/AuthContext';
 import Button from '../components/Button';
 import { useNavigate } from 'react-router-dom';
 import useFetchUsers from '../hooks/useFetchUsers';
+import useContests from '../hooks/useContests';
 
 export default function AdminDashboard() {
   const { user } = useAuthContext();
   const displayName = user?.userName || user?.name || 'Admin';
   const navigate = useNavigate();
   const { data: usersData, loading: usersLoading } = useFetchUsers();
+  const { data: contestsData, loading: contestsLoading } = useContests();
   
   const totalUsersValue = usersLoading ? '...' : (usersData?.total || 0);
+  const totalContestsValue = contestsLoading ? '...' : (contestsData?.total || 0);
+  const activeContestsCount = contestsLoading ? '...' : (contestsData?.contests?.filter(c => c.status === 'Active').length || 0);
 
   const stats = [
     { label: 'Total Users', value: totalUsersValue, change: '+12%', color: 'from-[#8cc63f] to-[#7ab033]', link: '/admin-dashboard/total-users' },
-    { label: 'Active Contests', value: '8', change: '+2', color: 'from-[#fcb900] to-[#e6a800]' },
-    { label: 'Pending Approvals', value: '34', change: '-5', color: 'from-red-500 to-red-600' },
-    { label: 'Site Visits', value: '45.2K', change: '+18%', color: 'from-blue-500 to-blue-600' }
+    { label: 'Active Contests', value: activeContestsCount, change: '+2', color: 'from-[#fcb900] to-[#e6a800]' },
+    { label: 'Total Contests', value: totalContestsValue, change: 'All time', color: 'from-blue-500 to-blue-600', link: '/admin-dashboard/total-contests' },
+    { label: 'Pending Approvals', value: '34', change: '-5', color: 'from-red-500 to-red-600' }
   ];
 
   return (
@@ -28,7 +32,7 @@ export default function AdminDashboard() {
         </div>
         <div className="mt-4 md:mt-0 flex gap-3">
           <Button variant="secondary" className="px-4 py-2 text-sm font-semibold">Generate Reports</Button>
-          <Button variant="primary" className="px-4 py-2 text-sm font-semibold shadow-md">+ New Contest</Button>
+          <Button variant="primary" onClick={() => navigate("/admin-dashboard/add-contest")} className="px-4 py-2 text-sm font-semibold shadow-md active:scale-95 transition-transform">+ New Contest</Button>
         </div>
       </div>
 
@@ -70,27 +74,32 @@ export default function AdminDashboard() {
                 </tr>
               </thead>
               <tbody className="text-sm divide-y divide-gray-50">
-                {[
-                  { name: 'Frontend Master Challenge', status: 'Active', participants: 342, date: 'Oct 24, 2026' },
-                  { name: 'Backend Scalability Test', status: 'Upcoming', participants: 128, date: 'Nov 02, 2026' },
-                  { name: 'UI/UX Design Sprint', status: 'Completed', participants: 450, date: 'Oct 15, 2026' },
-                  { name: 'Fullstack Hackathon', status: 'Active', participants: 890, date: 'Oct 28, 2026' },
-                ].map((item, idx) => (
-                  <tr key={idx} className="hover:bg-gray-50/50 transition-colors">
-                    <td className="p-4 font-medium text-gray-800">{item.name}</td>
-                    <td className="p-4">
-                      <span className={`px-2.5 py-1 rounded-full text-xs font-bold ${
-                        item.status === 'Active' ? 'bg-[#8cc63f]/10 text-[#7ab033]' : 
-                        item.status === 'Upcoming' ? 'bg-[#fcb900]/10 text-[#e6a800]' : 
-                        'bg-gray-100 text-gray-500'
-                      }`}>
-                        {item.status}
-                      </span>
-                    </td>
-                    <td className="p-4 text-gray-600">{item.participants}</td>
-                    <td className="p-4 text-gray-500">{item.date}</td>
+                {contestsLoading ? (
+                  <tr>
+                    <td colSpan="4" className="p-8 text-center text-gray-400 font-medium italic">Loading contest data...</td>
                   </tr>
-                ))}
+                ) : contestsData?.contests?.length > 0 ? (
+                  contestsData.contests.map((item, idx) => (
+                    <tr key={idx} className="hover:bg-gray-50/50 transition-colors">
+                      <td className="p-4 font-medium text-gray-800">{item.contestTitle}</td>
+                      <td className="p-4">
+                        <span className={`px-2.5 py-1 rounded-full text-xs font-bold ${
+                          item.status === 'Active' ? 'bg-[#8cc63f]/10 text-[#7ab033]' : 
+                          item.status === 'Upcoming' ? 'bg-[#fcb900]/10 text-[#e6a800]' : 
+                          'bg-gray-100 text-gray-500'
+                        }`}>
+                          {item.status}
+                        </span>
+                      </td>
+                      <td className="p-4 text-gray-600">{item.limit} Units</td>
+                      <td className="p-4 text-gray-500">{new Date(item.contestDeadLine).toLocaleDateString()}</td>
+                    </tr>
+                  ))
+                ) : (
+                   <tr>
+                    <td colSpan="4" className="p-8 text-center text-gray-400 font-medium italic">No contests launched yet. Launch your first one today!</td>
+                  </tr>
+                )}
               </tbody>
             </table>
           </div>

@@ -1,4 +1,4 @@
-import { createContext, useState, useEffect, useContext } from 'react';
+import { createContext, useState, useEffect, useContext, useCallback } from 'react';
 
 const AuthContext = createContext();
 
@@ -13,29 +13,39 @@ export const useAuthContext = () => {
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
 
-  // Load user from local storage on mount (if available)
+  // Load user from local storage on mount
   useEffect(() => {
     const savedUser = localStorage.getItem('authUser');
-    if (savedUser && savedUser !== "undefined") {
+    if (savedUser && savedUser !== "undefined" && savedUser !== "null") {
       try {
-        setUser(JSON.parse(savedUser));
+        const parsedUser = JSON.parse(savedUser);
+        // Only set the user if it looks like a valid user object
+        if (parsedUser && (parsedUser.role || parsedUser.email || parsedUser._id)) {
+          setUser(parsedUser);
+        } else {
+          localStorage.removeItem('authUser');
+        }
       } catch (error) {
         console.error("Failed to parse user from local storage", error);
-        localStorage.removeItem('authUser'); // Clear corrupted state
+        localStorage.removeItem('authUser');
       }
     }
   }, []);
 
-  const login = (userData) => {
-    if (!userData) return;
-    setUser(userData);
-    localStorage.setItem('authUser', JSON.stringify(userData));
-  };
+  const login = useCallback((userData) => {
+    if (!userData || typeof userData !== 'object') return;
+    
+    // Ensure we are saving a valid user object, not an error response
+    if (userData.role || userData.email || userData._id) {
+      setUser(userData);
+      localStorage.setItem('authUser', JSON.stringify(userData));
+    }
+  }, []);
 
-  const logout = () => {
+  const logout = useCallback(() => {
     setUser(null);
     localStorage.removeItem('authUser');
-  };
+  }, []);
 
   return (
     <AuthContext.Provider value={{ user, login, logout }}>

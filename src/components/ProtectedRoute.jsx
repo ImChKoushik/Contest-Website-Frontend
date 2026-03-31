@@ -7,57 +7,75 @@ export default function ProtectedRoute({ allowedRoles }) {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
-  const { login } = useAuthContext();
+  const { login, logout } = useAuthContext();
 
   useEffect(() => {
-    // Replaced relative /me with your absolute backend URL
-    axios.get("https://contest-backend-td3m.onrender.com/api/v1/user/me", { withCredentials: true })
-      .then(res => {
-        // Attempt to extract the user object safely regardless of API response structure
-        const user = res.data?.user || res.data?.data?.user || res.data;
+    let isMounted = true;
+    
+    const checkAuth = async () => {
+      try {
+        // Step 1: Try to get current user data
+        const res = await axios.get("https://contest-backend-td3m.onrender.com/api/v1/user/me", { withCredentials: true });
         
-        // Update context just in case it's useful elsewhere
-        if (login && user) login(user);
+        if (!isMounted) return;
 
-        // Check if the user is allowed to access this route
-        if (allowedRoles && user?.role && !allowedRoles.includes(user.role)) {
-          // If not allowed, redirect them to their respective dashboard
-          if (user.role === "Admin") {
-            navigate("/admin-dashboard");
-          } else {
-            navigate("/dashboard");
-          }
+        const userData = res.data?.user || res.data?.data?.user;
+        const isSuccess = res.data?.success || (userData && userData.role);
+
+        if (isSuccess && userData) {
+          if (login) login(userData);
+          handleRoleAccess(userData);
         } else {
-          setIsAuthenticated(true);
+          throw new Error("Invalid session");
         }
-      })
-      .catch((err) => {
-        console.error("Auth check failed:", err);
-        
-        // Fallback: If network/CORS fails, check if we have a valid offline session saved
-        const savedUserData = localStorage.getItem('authUser');
-        if (savedUserData && savedUserData !== "undefined") {
-           try {
-             const user = JSON.parse(savedUserData);
-             if (allowedRoles && user?.role && !allowedRoles.includes(user.role)) {
-               if (user.role === "Admin") navigate("/admin-dashboard", { replace: true });
-               else navigate("/dashboard", { replace: true });
-             } else {
-               setIsAuthenticated(true);
-               setLoading(false);
-             }
-             return;
-           } catch(e) {
-             console.error("Failed parsing offline session", e);
-           }
+      } catch (err) {
+        if (!isMounted) return;
+        console.warn("Initial session check failed, attempting token refresh...");
+
+        try {
+          // Step 2: Session expired but browser still open? Try to generate new access token
+          // Using POST for generate-access as is standard for token refresh flows
+          await axios.post("https://contest-backend-td3m.onrender.com/api/v1/user/generate-access", {}, { withCredentials: true });
+          
+          // Step 3: Refresh succeeded! Retry getting user data
+          const retryRes = await axios.get("https://contest-backend-td3m.onrender.com/api/v1/user/me", { withCredentials: true });
+          
+          const userData = retryRes.data?.user || retryRes.data?.data?.user;
+          if (userData) {
+            if (login) login(userData);
+            handleRoleAccess(userData);
+          } else {
+            throw new Error("Refresh succeeded but user not found");
+          }
+        } catch (refreshErr) {
+          if (!isMounted) return;
+          console.error("Silent authentication failed:", refreshErr);
+          
+          // Step 4: Everything failed, clear state and redirect
+          if (logout) logout();
+          navigate("/signin", { replace: true });
         }
-        
-        navigate("/signin", { replace: true });
-      })
-      .finally(() => {
-        setLoading(false);
-      });
-  }, [navigate, allowedRoles, login]);
+      } finally {
+        if (isMounted) setLoading(false);
+      }
+    };
+
+    const handleRoleAccess = (userData) => {
+      if (allowedRoles && userData.role && !allowedRoles.includes(userData.role)) {
+        if (userData.role === "Admin") {
+          navigate("/admin-dashboard", { replace: true });
+        } else {
+          navigate("/dashboard", { replace: true });
+        }
+      } else {
+        setIsAuthenticated(true);
+      }
+    };
+
+    checkAuth();
+
+    return () => { isMounted = false; };
+  }, [navigate, allowedRoles, login, logout]);
 
   if (loading) {
     return (
