@@ -1,13 +1,33 @@
 import React from 'react';
+import useParticipation from '../hooks/useParticipation';
 
 export default function ContestCard({ 
+  id,
   image, 
   category, 
   title, 
   description, 
   daysLeft, 
-  entries 
+  entries,
+  onSuccess
 }) {
+  const { joinContest, loading } = useParticipation();
+
+  const handleApply = async () => {
+    if (!id) {
+      alert("Contest ID missing. Cannot apply.");
+      return;
+    }
+
+    const { success, message } = await joinContest(id);
+    if (success) {
+      alert(message);
+      if (onSuccess) onSuccess();
+    } else {
+      alert(message);
+    }
+  };
+
   return (
     <div className="bg-white rounded-[24px] overflow-hidden shadow-[0_4px_20px_rgb(0,0,0,0.03)] border border-gray-100 hover:shadow-lg transition-shadow duration-300 flex flex-col h-full">
       {/* Top Image / Graphic Area */}
@@ -48,8 +68,12 @@ export default function ContestCard({
 
         {/* Action Buttons Row */}
         <div className="flex gap-3 mt-auto">
-          <button className="flex-1 bg-[#8cc63f] hover:bg-[#7db435] text-white py-2.5 rounded-full font-bold text-[13px] tracking-wide transition-colors shadow-sm">
-            Apply
+          <button 
+            onClick={handleApply}
+            disabled={loading}
+            className="flex-1 bg-[#8cc63f] hover:bg-[#7db435] text-white py-2.5 rounded-full font-bold text-[13px] tracking-wide transition-colors shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            {loading ? "Joining..." : "Apply"}
           </button>
           <button className="flex-1 bg-[#fcb900] hover:bg-[#e6a800] text-white py-2.5 rounded-full font-bold text-[13px] tracking-wide transition-colors shadow-sm">
             View Details

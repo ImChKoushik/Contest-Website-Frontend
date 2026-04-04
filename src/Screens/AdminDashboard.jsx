@@ -1,8 +1,10 @@
+import React from 'react';
 import { useAuthContext } from '../context/AuthContext';
 import Button from '../components/Button';
 import { useNavigate } from 'react-router-dom';
 import useFetchUsers from '../hooks/useFetchUsers';
 import useContests from '../hooks/useContests';
+import useParticipation from '../hooks/useParticipation';
 
 export default function AdminDashboard() {
   const { user } = useAuthContext();
@@ -10,16 +12,22 @@ export default function AdminDashboard() {
   const navigate = useNavigate();
   const { data: usersData, loading: usersLoading } = useFetchUsers();
   const { data: contestsData, loading: contestsLoading } = useContests();
+  const { fetchAllParticipants, participantsData, loading: participantsLoading } = useParticipation();
+
+  React.useEffect(() => {
+    fetchAllParticipants();
+  }, []);
   
   const totalUsersValue = usersLoading ? '...' : (usersData?.total || 0);
   const totalContestsValue = contestsLoading ? '...' : (contestsData?.total || 0);
   const activeContestsCount = contestsLoading ? '...' : (contestsData?.contests?.filter(c => c.status === 'Active').length || 0);
+  const totalParticipantsValue = participantsLoading ? '...' : (participantsData?.total || 0);
 
   const stats = [
     { label: 'Total Users', value: totalUsersValue, change: '+12%', color: 'from-[#8cc63f] to-[#7ab033]', link: '/admin-dashboard/total-users' },
     { label: 'Active Contests', value: activeContestsCount, change: '+2', color: 'from-[#fcb900] to-[#e6a800]' },
+    { label: 'Total Participants', value: totalParticipantsValue, change: 'Joined', color: 'from-purple-500 to-indigo-600', link: '/admin-dashboard/total-participants' },
     { label: 'Total Contests', value: totalContestsValue, change: 'All time', color: 'from-blue-500 to-blue-600', link: '/admin-dashboard/total-contests' },
-    { label: 'Pending Approvals', value: '34', change: '-5', color: 'from-red-500 to-red-600' }
   ];
 
   return (

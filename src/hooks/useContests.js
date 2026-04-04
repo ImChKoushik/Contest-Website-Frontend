@@ -11,7 +11,7 @@ const useContests = () => {
     setError(null);
 
     try {
-      const res = await axios.get("https://contest-backend-td3m.onrender.com/api/v1/contest/all-contests", {
+      const res = await axios.get("https://contest-backend-td3m.onrender.com/api/v1/contest/stu-contest", {
         withCredentials: true
       });
 

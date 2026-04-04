@@ -1,8 +1,32 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
+import { useNavigate } from 'react-router-dom';
 import ContestCard from '../components/ContestCard';
+import useContests from '../hooks/useContests';
+import useParticipation from '../hooks/useParticipation';
+import { useAuthContext } from '../context/AuthContext';
 
 export default function UserDashboard() {
+  const { user: currentUser } = useAuthContext();
   const [currentSlide, setCurrentSlide] = useState(0);
+  const navigate = useNavigate();
+
+  const { joinContest, fetchMyParticipations, myParticipations, loading: participationLoading } = useParticipation();
+
+  useEffect(() => {
+    fetchMyParticipations();
+  }, []);
+
+  // Filter myParticipations to only show current user's ones
+  const userParticipations = useMemo(() => {
+    const currentId = currentUser?._id || currentUser?.id;
+    if (!currentId || !myParticipations) return [];
+    
+    return myParticipations.filter(p => {
+      // Handle various formats of user ID in participation object
+      const pUserId = p.user?._id || p.user?.id || (typeof p.user === 'string' ? p.user : null);
+      return pUserId && pUserId.toString() === currentId.toString();
+    });
+  }, [myParticipations, currentUser]);
 
   const slides = [
     {
@@ -73,33 +97,50 @@ export default function UserDashboard() {
     }
   };
 
-  // Placeholder images mapped from unsplash matching the theme as closely as possible for high fidelity representation
-  const contests = [
-    {
-      title: "MERN Stack Development",
-      category: "Development",
-      description: "Build a scalable real-time collaboration tool using MongoDB, Express, React, and Node.js. Focus on performance and...",
-      daysLeft: "12 Days Left",
-      entries: "245 Entries",
-      image: "https://images.unsplash.com/photo-1555066931-4365d14bab8c?q=80&w=2670&auto=format&fit=crop"
-    },
-    {
-      title: "UI/UX Design",
-      category: "Design",
-      description: "Redesign the educational experience for neurodivergent learners. Focus on accessibility, empathy, and intuitive...",
-      daysLeft: "6 Days Left",
-      entries: "189 Entries",
-      image: "https://images.unsplash.com/photo-1618761714954-0b8cd0026356?q=80&w=2670&auto=format&fit=crop"
-    },
-    {
-      title: "Website Designing",
-      category: "Web Design",
-      description: "Create stunning, responsive, and performant web interfaces. Build a portfolio-worthy landing page from scratch.",
-      daysLeft: "8 Days Left",
-      entries: "210 Entries",
-      image: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?q=80&w=2426&auto=format&fit=crop"
+  const { data, loading, error } = useContests();
+  const [selectedCategory, setSelectedCategory] = useState('All');
+
+  // Helper to format deadline
+  const getDaysLeft = (deadline) => {
+    const d = new Date(deadline);
+    const now = new Date();
+    const diff = d - now;
+    if (diff <= 0) return "Closed";
+    const days = Math.ceil(diff / (1000 * 60 * 60 * 24));
+    return `${days} Days Left`;
+  };
+
+  // Get unique categories
+  const categories = useMemo(() => {
+    if (!data?.contests) return ['All'];
+    const cats = data.contests
+      .map(c => c.category)
+      .filter((cat, index, self) => cat && self.indexOf(cat) === index);
+    return ['All', ...cats];
+  }, [data?.contests]);
+
+  // Filter contests based on selected category
+  const filteredContests = useMemo(() => {
+    if (!data?.contests) return [];
+    if (selectedCategory === 'All') return data.contests;
+    return data.contests.filter(c => c.category === selectedCategory);
+  }, [data?.contests, selectedCategory]);
+
+  // Handle category click from hero badge
+  const handleHeroBadgeClick = (categoryName) => {
+    // If the badge is like "MERN CONTEST", try to match "MERN"
+    const simplifiedCat = categoryName.split(' ')[0].toUpperCase();
+    const match = categories.find(c => c.toUpperCase() === simplifiedCat);
+    if (match) {
+      setSelectedCategory(match);
+      // Scroll to contest section
+      const contestSection = document.getElementById('active-contests');
+      if (contestSection) {
+        contestSection.scrollIntoView({ behavior: 'smooth' });
+      }
     }
-  ];
+  };
+
 
   return (
     <div className="bg-[#fbfcfb] min-h-screen font-sans w-full pb-20">
@@ -131,7 +172,10 @@ export default function UserDashboard() {
 
         <div className="relative z-20 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-full flex flex-col justify-center pb-12">
           {/* Glowing Badge */}
-          <div className="bg-[#fcb900] text-gray-900 w-max px-4 py-1.5 rounded-full text-[11px] font-black uppercase tracking-widest shadow-md mb-8 ring-4 ring-[#fcb900]/20 transition-all duration-300">
+          <div 
+            onClick={() => handleHeroBadgeClick(slides[currentSlide].badge)}
+            className="bg-[#fcb900] text-gray-900 w-max px-4 py-1.5 rounded-full text-[11px] font-black uppercase tracking-widest shadow-sm mb-8 ring-4 ring-[#fcb900]/20 transition-all duration-300 cursor-pointer hover:scale-105 active:scale-95"
+          >
             {slides[currentSlide].badge}
           </div>
           
@@ -173,9 +217,67 @@ export default function UserDashboard() {
         </div>
       </section>
 
+      {/* 1.5 My Participations Section */}
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-12 relative z-20">
+        <div className="flex items-center justify-between mb-8">
+          <div>
+            <h2 className="text-2xl font-black text-gray-900 tracking-tight">Joined Contests</h2>
+            <p className="text-sm text-gray-400 font-medium italic">Contests you've applied for</p>
+          </div>
+          <div className="h-px flex-grow mx-8 bg-gray-100 hidden md:block"></div>
+        </div>
+        
+        {participationLoading ? (
+           <div className="flex justify-center p-10">
+              <div className="w-8 h-8 border-4 border-purple-200 border-t-purple-600 rounded-full animate-spin"></div>
+           </div>
+        ) : userParticipations.length > 0 ? (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            {userParticipations.map((p) => (
+              <div key={p._id} className="bg-white p-6 rounded-[32px] border border-gray-100 shadow-[0_4px_20px_rgba(0,0,0,0.02)] hover:shadow-xl hover:shadow-purple-500/5 transition-all group relative overflow-hidden">
+                {/* Status Badge */}
+                <div className="flex items-start justify-between mb-6">
+                  <div className="w-12 h-12 rounded-2xl bg-purple-50 flex items-center justify-center text-purple-600 transition-transform group-hover:scale-110">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-6 h-6">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M15.59 14.37a6 6 0 01-5.84 7.38v-4.8m5.84-2.58a14.98 14.98 0 006.16-12.12A14.98 14.98 0 009.63 3.18a14.98 14.98 0 00-4.97 8.91 14.97 14.97 0 003.57 12.2m12-19.91a6.75 6.75 0 00-5.1-5.1m5.1 5.1a14.98 14.98 0 01-12 12m12-12c-2.1 4.7-6.8 6-12 6" />
+                    </svg>
+                  </div>
+                  <span className={`px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider ${
+                    p.submissionStatus === 'Submitted' ? 'bg-green-500 text-white shadow-lg shadow-green-200' : 'bg-orange-500 text-white shadow-lg shadow-orange-200'
+                  }`}>
+                    {p.submissionStatus || 'Draft'}
+                  </span>
+                </div>
+                
+                <h3 className="font-extrabold text-gray-900 line-clamp-1 mb-1 text-lg">{p.contest?.contestTitle || 'Unknown Contest'}</h3>
+                <p className="text-[12px] text-gray-400 font-bold mb-6 flex items-center gap-2">
+                  <span className="w-1.5 h-1.5 rounded-full bg-purple-400"></span>
+                  {p.contest?.category}
+                </p>
+                
+                <button 
+                  onClick={() => navigate(`/dashboard/submit-project/${p.contest?._id}`, { state: { contest: p.contest, participation: p } })}
+                  className="w-full py-3.5 rounded-2xl bg-gray-50 border border-gray-100/50 hover:bg-gray-900 group-hover:bg-gray-900 hover:text-white text-gray-700 font-black text-xs transition-all flex items-center justify-center gap-2 tracking-widest uppercase"
+                >
+                  {p.submissionStatus === 'Submitted' ? 'Update Submission' : 'Submit Project'}
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-3.5 h-3.5 transition-transform group-hover:translate-x-1">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
+                  </svg>
+                </button>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <div className="bg-gray-50/50 border-2 border-dashed border-gray-100 rounded-[32px] p-12 text-center">
+            <p className="text-gray-400 font-medium text-sm">You haven't joined any contests yet. Explore below to get started!</p>
+          </div>
+        )}
+      </section>
+
 
       {/* 2. Active Contests Section */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-24 sm:-mt-10 relative z-20 pt-20">
+      <section id="active-contests" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-24 sm:-mt-10 relative z-20 pt-20">
+
         
         {/* Header Row */}
         <div className="flex flex-col md:flex-row md:items-end justify-between mb-10">
@@ -186,26 +288,86 @@ export default function UserDashboard() {
             </p>
           </div>
           
-          {/* Pagination Controls */}
-          <div className="flex gap-2.5 mt-6 md:mt-0">
-            <button className="w-[36px] h-[36px] rounded-full border-2 border-gray-200 flex flex-col items-center justify-center text-gray-400 hover:text-gray-600 hover:border-gray-300 transition-colors">
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-4 h-4 ml-[-1px]">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
-              </svg>
-            </button>
-            <button className="w-[36px] h-[36px] rounded-full border-2 border-gray-200 flex flex-col items-center justify-center text-gray-400 hover:text-gray-600 hover:border-gray-300 transition-colors">
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-4 h-4 mr-[-1px]">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
-              </svg>
-            </button>
+          {/* Pagination/Filter Row */}
+          <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 mt-6 md:mt-0">
+            {/* Category Filter Bar */}
+            <div className="flex flex-wrap gap-2">
+              {categories.map((cat) => (
+                <button
+                  key={cat}
+                  onClick={() => setSelectedCategory(cat)}
+                  className={`px-5 py-2 rounded-full text-[13px] font-bold transition-all ${
+                    selectedCategory === cat
+                      ? "bg-[#8cc63f] text-white shadow-[0_4px_12px_rgba(140,198,63,0.3)]"
+                      : "bg-white border border-gray-200 text-gray-500 hover:border-[#8cc63f] hover:text-[#8cc63f]"
+                  }`}
+                >
+                  {cat}
+                </button>
+              ))}
+            </div>
+
+            <div className="hidden md:flex gap-2.5 ml-auto">
+              <button className="w-[36px] h-[36px] rounded-full border-2 border-gray-200 flex flex-col items-center justify-center text-gray-400 hover:text-gray-600 hover:border-gray-300 transition-colors">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-4 h-4 ml-[-1px]">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
+                </svg>
+              </button>
+              <button className="w-[36px] h-[36px] rounded-full border-2 border-gray-200 flex flex-col items-center justify-center text-gray-400 hover:text-gray-600 hover:border-gray-300 transition-colors">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-4 h-4 mr-[-1px]">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
+                </svg>
+              </button>
+            </div>
           </div>
         </div>
 
         {/* Dynamic Card Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {contests.map((contest, index) => (
-            <ContestCard key={index} {...contest} />
-          ))}
+        <div className="min-h-[400px] relative">
+          {loading ? (
+            <div className="absolute inset-0 flex items-center justify-center">
+              <div className="w-12 h-12 border-4 border-[#8cc63f]/20 border-t-[#8cc63f] rounded-full animate-spin"></div>
+            </div>
+          ) : error ? (
+            <div className="bg-red-50 text-red-500 p-8 rounded-[32px] text-center border border-red-100 font-medium">
+              <p className="mb-2">Oops! Something went wrong while fetching contests.</p>
+              <p className="text-sm opacity-80">{error}</p>
+            </div>
+          ) : filteredContests.length === 0 ? (
+            <div className="bg-gray-50 text-gray-400 p-20 rounded-[32px] text-center border border-gray-100 font-medium flex flex-col items-center gap-4">
+               <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-16 h-16 opacity-20">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 13.5h3.86a2.25 2.25 0 012.008 1.24l.14.28a2.25 2.25 0 002.008 1.24h2.464a2.25 2.25 0 002.008-1.24l.14-.28a2.25 2.25 0 012.008-1.24h3.86m-18 0V7.5A2.25 2.25 0 014.5 5.25h15a2.25 2.25 0 012.25 2.25v6.75m-18 0A2.25 2.25 0 002.25 15.75a2.25 2.25 0 002.25 2.25h15a2.25 2.25 0 002.25-2.25 2.25 2.25 0 00-2.25-2.25H2.25z" />
+              </svg>
+              <p>No contests found in <span className="text-gray-900 font-bold">"{selectedCategory}"</span> category.</p>
+              <button 
+                onClick={() => setSelectedCategory('All')}
+                className="text-[#8cc63f] font-bold hover:underline"
+              >
+                Back to All Contests
+              </button>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+              {filteredContests.map((contest, index) => (
+                <ContestCard 
+                  key={contest._id || index} 
+                  id={contest._id}
+                  onSuccess={fetchMyParticipations}
+                  title={contest.contestTitle}
+                  category={contest.category}
+                  description={contest.contestDescription}
+                  daysLeft={getDaysLeft(contest.contestDeadLine)}
+                  entries={`${contest.limit || 100} Entries`}
+                  image={contest.category?.toLowerCase().includes('mern') 
+                    ? "https://images.unsplash.com/photo-1555066931-4365d14bab8c?q=80&w=2670&auto=format&fit=crop"
+                    : contest.category?.toLowerCase().includes('design')
+                    ? "https://images.unsplash.com/photo-1618761714954-0b8cd0026356?q=80&w=2670&auto=format&fit=crop"
+                    : "https://images.unsplash.com/photo-1460925895917-afdab827c52f?q=80&w=2426&auto=format&fit=crop"
+                  }
+                />
+              ))}
+            </div>
+          )}
         </div>
       </section>
 

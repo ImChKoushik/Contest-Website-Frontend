@@ -4,17 +4,17 @@ import axios from 'axios';
 import { useAuthContext } from '../context/AuthContext';
 
 export default function ProtectedRoute({ allowedRoles }) {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [loading, setLoading] = useState(true);
+  const { user, login, logout } = useAuthContext();
+  const [isAuthenticated, setIsAuthenticated] = useState(!!user);
+  const [loading, setLoading] = useState(!user);
   const navigate = useNavigate();
-  const { login, logout } = useAuthContext();
 
   useEffect(() => {
     let isMounted = true;
     
     const checkAuth = async () => {
       try {
-        // Step 1: Try to get current user data
+        // Background verification
         const res = await axios.get("https://contest-backend-td3m.onrender.com/api/v1/user/me", { withCredentials: true });
         
         if (!isMounted) return;
@@ -26,34 +26,44 @@ export default function ProtectedRoute({ allowedRoles }) {
           if (login) login(userData);
           handleRoleAccess(userData);
         } else {
-          throw new Error("Invalid session");
+          throw new Error("Invalid session data");
         }
       } catch (err) {
         if (!isMounted) return;
-        console.warn("Initial session check failed, attempting token refresh...");
 
-        try {
-          // Step 2: Session expired but browser still open? Try to generate new access token
-          // Using POST for generate-access as is standard for token refresh flows
-          await axios.post("https://contest-backend-td3m.onrender.com/api/v1/user/generate-access", {}, { withCredentials: true });
-          
-          // Step 3: Refresh succeeded! Retry getting user data
-          const retryRes = await axios.get("https://contest-backend-td3m.onrender.com/api/v1/user/me", { withCredentials: true });
-          
-          const userData = retryRes.data?.user || retryRes.data?.data?.user;
-          if (userData) {
-            if (login) login(userData);
-            handleRoleAccess(userData);
-          } else {
-            throw new Error("Refresh succeeded but user not found");
+        const status = err.response?.status;
+        const isAuthError = [401, 403].includes(status);
+
+        // Only attempt refresh / logout on explicit auth errors
+        if (isAuthError) {
+          console.warn("Session invalid, attempting token refresh...");
+          try {
+            await axios.post("https://contest-backend-td3m.onrender.com/api/v1/user/generate-access", {}, { withCredentials: true });
+            
+            const retryRes = await axios.get("https://contest-backend-td3m.onrender.com/api/v1/user/me", { withCredentials: true });
+            const userData = retryRes.data?.user || retryRes.data?.data?.user;
+            
+            if (userData) {
+              if (login) login(userData);
+              handleRoleAccess(userData);
+            } else {
+              throw new Error("Refresh failed");
+            }
+          } catch (refreshErr) {
+            if (!isMounted) return;
+            console.error("Authentication failed:", refreshErr);
+            if (logout) logout();
+            navigate("/signin", { replace: true });
           }
-        } catch (refreshErr) {
-          if (!isMounted) return;
-          console.error("Silent authentication failed:", refreshErr);
-          
-          // Step 4: Everything failed, clear state and redirect
-          if (logout) logout();
-          navigate("/signin", { replace: true });
+        } else {
+          // Network error or other non-auth error. 
+          // If we already have a user, stay optimistic. Otherwise, redirect to signin.
+          console.warn("Backend unreachable or non-auth error. Current access status:", !!user);
+          if (!user) {
+            navigate("/signin", { replace: true });
+          } else {
+            handleRoleAccess(user);
+          }
         }
       } finally {
         if (isMounted) setLoading(false);

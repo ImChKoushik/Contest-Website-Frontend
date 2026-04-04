@@ -44,7 +44,8 @@ export default function SignInForm() {
 
     const payload = {
       email: formData.email,
-      password: formData.password
+      password: formData.password,
+      remember: rememberMe
     };
 
     const result = await sendRequest("https://contest-backend-td3m.onrender.com/api/v1/user/login-user", payload);

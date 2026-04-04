@@ -11,26 +11,22 @@ export const useAuthContext = () => {
 };
 
 export const AuthProvider = ({ children }) => {
-  const [user, setUser] = useState(null);
-
-  // Load user from local storage on mount
-  useEffect(() => {
+  const [user, setUser] = useState(() => {
     const savedUser = localStorage.getItem('authUser');
     if (savedUser && savedUser !== "undefined" && savedUser !== "null") {
       try {
         const parsedUser = JSON.parse(savedUser);
         // Only set the user if it looks like a valid user object
         if (parsedUser && (parsedUser.role || parsedUser.email || parsedUser._id)) {
-          setUser(parsedUser);
-        } else {
-          localStorage.removeItem('authUser');
+          return parsedUser;
         }
       } catch (error) {
         console.error("Failed to parse user from local storage", error);
         localStorage.removeItem('authUser');
       }
     }
-  }, []);
+    return null;
+  });
 
   const login = useCallback((userData) => {
     if (!userData || typeof userData !== 'object') return;
