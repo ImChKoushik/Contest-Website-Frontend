@@ -4,26 +4,30 @@ import axios from 'axios';
 import { useAuthContext } from '../context/AuthContext';
 
 export default function ProtectedRoute({ allowedRoles }) {
-  const { user, login, logout } = useAuthContext();
+  const { user, updateUser, logout, markTokenExpired } = useAuthContext();
   const [isAuthenticated, setIsAuthenticated] = useState(!!user);
-  const [loading, setLoading] = useState(!user);
+  const [loading, setLoading] = useState(!!user); // verify in background only if user exists
   const navigate = useNavigate();
 
   useEffect(() => {
+    // If no local user at all, redirect immediately
+    if (!user) {
+      navigate("/signin", { replace: true });
+      return;
+    }
+
     let isMounted = true;
-    
+
     const checkAuth = async () => {
       try {
-        // Background verification
         const res = await axios.get("https://contest-backend-td3m.onrender.com/api/v1/user/me", { withCredentials: true });
-        
         if (!isMounted) return;
 
         const userData = res.data?.user || res.data?.data?.user;
         const isSuccess = res.data?.success || (userData && userData.role);
 
         if (isSuccess && userData) {
-          if (login) login(userData);
+          if (updateUser) updateUser(userData);
           handleRoleAccess(userData);
         } else {
           throw new Error("Invalid session data");
@@ -32,38 +36,31 @@ export default function ProtectedRoute({ allowedRoles }) {
         if (!isMounted) return;
 
         const status = err.response?.status;
-        const isAuthError = [401, 403].includes(status);
 
-        // Only attempt refresh / logout on explicit auth errors
-        if (isAuthError) {
-          console.warn("Session invalid, attempting token refresh...");
+        if (status === 401 || status === 403) {
+          // Access token expired — try to refresh silently
           try {
             await axios.post("https://contest-backend-td3m.onrender.com/api/v1/user/generate-access", {}, { withCredentials: true });
-            
             const retryRes = await axios.get("https://contest-backend-td3m.onrender.com/api/v1/user/me", { withCredentials: true });
             const userData = retryRes.data?.user || retryRes.data?.data?.user;
-            
+
             if (userData) {
-              if (login) login(userData);
+              if (updateUser) updateUser(userData);
               handleRoleAccess(userData);
             } else {
-              throw new Error("Refresh failed");
+              throw new Error("Refresh succeeded but user not found");
             }
           } catch (refreshErr) {
             if (!isMounted) return;
-            console.error("Authentication failed:", refreshErr);
+            // Refresh token also expired — mark token as expired so Navbar shows Sign In
+            if (markTokenExpired) markTokenExpired();
             if (logout) logout();
             navigate("/signin", { replace: true });
           }
         } else {
-          // Network error or other non-auth error. 
-          // If we already have a user, stay optimistic. Otherwise, redirect to signin.
-          console.warn("Backend unreachable or non-auth error. Current access status:", !!user);
-          if (!user) {
-            navigate("/signin", { replace: true });
-          } else {
-            handleRoleAccess(user);
-          }
+          // Network/server error — stay optimistic, trust local user
+          console.warn("Backend unreachable, trusting local session.");
+          handleRoleAccess(user);
         }
       } finally {
         if (isMounted) setLoading(false);
@@ -83,9 +80,8 @@ export default function ProtectedRoute({ allowedRoles }) {
     };
 
     checkAuth();
-
     return () => { isMounted = false; };
-  }, [navigate, allowedRoles, login, logout]);
+  }, [navigate, allowedRoles, updateUser, logout, markTokenExpired]);
 
   if (loading) {
     return (

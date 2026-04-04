@@ -1,4 +1,4 @@
-import { Routes, Route } from 'react-router-dom'
+import { Routes, Route, Navigate } from 'react-router-dom'
 import SignUpForm from './Screens/SignUpForm'
 import SignInForm from './Screens/SignInForm'
 import Footer from './components/Footer'
@@ -12,6 +12,15 @@ import TotalContests from './Screens/TotalContests'
 import TotalParticipants from './Screens/TotalParticipants'
 import SubmitProject from './Screens/SubmitProject'
 import Home from './Screens/Home'
+import { useAuthContext } from './context/AuthContext'
+
+// Smart landing: redirect logged-in users to their dashboard
+function LandingRedirect() {
+  const { user } = useAuthContext();
+  if (!user) return <Home />;
+  if (user.role === 'Admin') return <Navigate to="/admin-dashboard" replace />;
+  return <Navigate to="/dashboard" replace />;
+}
 
 function App() {
   return (
@@ -20,7 +29,7 @@ function App() {
 
       <main className="min-h-[calc(100vh-80px)] bg-[#fbfcfb]">
         <Routes>
-          <Route path="/" element={<Home />} />
+          <Route path="/" element={<LandingRedirect />} />
           <Route path="/signup" element={<SignUpForm />} />
           <Route path="/signin" element={<SignInForm />} />
           

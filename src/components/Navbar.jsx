@@ -1,16 +1,42 @@
+import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import Button from './Button';
 import { useAuthContext } from '../context/AuthContext';
 import { useLogout } from '../hooks/useLogout';
+import axios from 'axios';
 import logo from '../assets/images/logo.png';
 
 export default function Navbar() {
   const navigate = useNavigate();
-  const { user } = useAuthContext();
+  const { user, tokenExpired, login } = useAuthContext();
   const { logout, loading } = useLogout();
+  const [refreshing, setRefreshing] = useState(false);
 
   const handleLogout = () => {
     logout();
+  };
+
+  // Silently refresh access token and re-login
+  const handleSilentReAuth = async () => {
+    setRefreshing(true);
+    try {
+      await axios.post("https://contest-backend-td3m.onrender.com/api/v1/user/generate-access", {}, { withCredentials: true });
+      const res = await axios.get("https://contest-backend-td3m.onrender.com/api/v1/user/me", { withCredentials: true });
+      const userData = res.data?.user || res.data?.data?.user;
+      if (userData) {
+        login(userData);
+        if (userData.role === 'Admin') {
+          navigate('/admin-dashboard');
+        } else {
+          navigate('/dashboard');
+        }
+      }
+    } catch (err) {
+      // Refresh token also expired — redirect to sign in
+      navigate('/signin');
+    } finally {
+      setRefreshing(false);
+    }
   };
 
   const displayName = user?.userName || user?.name || user?.email?.split('@')[0] || 'User';
@@ -39,7 +65,7 @@ export default function Navbar() {
             <img src={logo} alt="Desun Academy" className="h-10 md:h-11 w-auto object-contain" />
           </Link>
           
-          {/* Navigation Links - Centered for realistic feel */}
+          {/* Navigation Links */}
           <nav className="hidden md:flex items-center space-x-9">
             {navLinks.map((link) => (
               <Link 
@@ -55,7 +81,21 @@ export default function Navbar() {
           
           {/* Auth/Profile Section */}
           <div className="flex items-center space-x-4">
-            {user ? (
+            {tokenExpired ? (
+              // Access token expired — show re-auth button
+              <div className="flex items-center gap-3">
+                <span className="hidden md:block text-xs text-amber-600 font-semibold bg-amber-50 border border-amber-200 px-3 py-1.5 rounded-full">
+                  Session expired
+                </span>
+                <button
+                  onClick={handleSilentReAuth}
+                  disabled={refreshing}
+                  className="px-6 py-2.5 text-[13px] font-black bg-[#8cc63f] hover:bg-[#7ab033] text-white rounded-full transition-all duration-300 shadow-[0_4px_14px_rgba(140,198,63,0.3)] hover:shadow-lg hover:-translate-y-0.5 uppercase tracking-wider disabled:opacity-70"
+                >
+                  {refreshing ? 'Reconnecting...' : 'Sign In'}
+                </button>
+              </div>
+            ) : user ? (
               <div className="flex items-center gap-3">
                 {/* Profile Chip */}
                 <div className="flex items-center gap-2.5 bg-gray-50/80 hover:bg-white pl-1.5 pr-4 py-1.5 rounded-full border border-gray-100 shadow-sm transition-all cursor-default group">
@@ -70,7 +110,7 @@ export default function Navbar() {
                   </div>
                 </div>
 
-                {/* Logout Button - Premium variant of green and red */}
+                {/* Logout Button */}
                 <button 
                   onClick={handleLogout}
                   disabled={loading}
