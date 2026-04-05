@@ -12,9 +12,13 @@ export default function AddContest() {
     projectBriefing: '',
     contestDeadLine: '',
     status: 'Upcoming',
-    category: '',
-    limit: 100
+    category: 'MERN',
+    entryLimit: 100
   });
+
+  const CATEGORY_OPTIONS = ["MERN", "UI/UX DESIGN", "DIGITAL MARKETING"];
+  const STATUS_OPTIONS = ["Upcoming", "On-Going", "Completed"];
+
   const { addContest, loading, error } = useContests();
   const navigate = useNavigate();
 
@@ -109,15 +113,20 @@ export default function AddContest() {
               required
             />
 
-            <Input 
-              label="Contest Category" 
-              type="text" 
-              name="category"
-              value={formData.category}
-              onChange={handleChange}
-              placeholder="e.g., Coding, UI/UX, AI" 
-              required
-            />
+            <div className="flex flex-col">
+              <label className="block text-sm font-bold text-gray-700 mb-2">Contest Category</label>
+              <select 
+                name="category"
+                value={formData.category}
+                onChange={handleChange}
+                className="w-full px-5 py-4 rounded-2xl bg-gray-50/50 border border-gray-200 focus:border-[#8cc63f] focus:ring-4 focus:ring-[#8cc63f]/10 outline-none transition-all text-gray-800 font-medium text-[15px] cursor-pointer appearance-none"
+                required
+              >
+                {CATEGORY_OPTIONS.map(cat => (
+                  <option key={cat} value={cat}>{cat}</option>
+                ))}
+              </select>
+            </div>
 
             <div className="flex flex-col">
               <label className="block text-sm font-bold text-gray-700 mb-2">Initial Status</label>
@@ -128,17 +137,17 @@ export default function AddContest() {
                 className="w-full px-5 py-4 rounded-2xl bg-gray-50/50 border border-gray-200 focus:border-[#8cc63f] focus:ring-4 focus:ring-[#8cc63f]/10 outline-none transition-all text-gray-800 font-medium text-[15px] cursor-pointer appearance-none"
                 required
               >
-                <option value="Upcoming">Upcoming</option>
-                <option value="Active">Active</option>
-                <option value="Completed">Completed</option>
+                {STATUS_OPTIONS.map(s => (
+                  <option key={s} value={s}>{s}</option>
+                ))}
               </select>
             </div>
 
             <Input 
               label="Participant Limit" 
               type="number" 
-              name="limit"
-              value={formData.limit}
+              name="entryLimit"
+              value={formData.entryLimit}
               onChange={handleChange}
               min="1"
               required

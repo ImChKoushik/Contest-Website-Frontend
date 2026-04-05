@@ -1,13 +1,22 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import useParticipation from '../hooks/useParticipation';
+import useResults from '../hooks/useResults';
 import Button from '../components/Button';
 
 export default function TotalParticipants() {
   const { fetchAllParticipants, participantsData, loading, error } = useParticipation();
+  const { uploadResult, loading: resultLoading } = useResults();
   const navigate = useNavigate();
   const [selectedParticipation, setSelectedParticipation] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+
+  // Result form state
+  const [resultForm, setResultForm] = useState({
+    rank: 'Participant',
+    score: 0,
+    remarks: ''
+  });
 
   useEffect(() => {
     fetchAllParticipants();
@@ -15,12 +24,47 @@ export default function TotalParticipants() {
 
   const openModal = (participation) => {
     setSelectedParticipation(participation);
+    setResultForm({
+      rank: 'Participant',
+      score: participation.score || 0,
+      remarks: ''
+    });
     setIsModalOpen(true);
   };
 
   const closeModal = () => {
     setIsModalOpen(false);
     setSelectedParticipation(null);
+  };
+
+  const handleResultSubmit = async (e) => {
+    e.preventDefault();
+    if (!selectedParticipation) return;
+
+    const contestId = selectedParticipation.contest?._id || selectedParticipation.contest?.id || selectedParticipation.contest;
+    const userId = selectedParticipation.user?._id || selectedParticipation.user?.id || selectedParticipation.user;
+    const participationId = selectedParticipation._id || selectedParticipation.id;
+
+    const resultData = {
+      contestId: contestId,
+      results: [
+        {
+          userId: userId,
+          rank: resultForm.rank,
+          score: resultForm.score,
+          remarks: resultForm.remarks
+        }
+      ]
+    };
+
+    const { success, message } = await uploadResult(resultData);
+    if (success) {
+      alert("Result Recorded Successfully!");
+      closeModal();
+      fetchAllParticipants(); // Refresh to show score if updated
+    } else {
+      alert(message);
+    }
   };
 
   return (
@@ -103,7 +147,7 @@ export default function TotalParticipants() {
                         variant="secondary" 
                         className="px-3 py-1.5 text-xs bg-gray-100 text-gray-600 hover:bg-gray-200 border-none"
                       >
-                        View Details
+                        {p.submissionStatus === 'Submitted' ? 'Grade Work' : 'View Details'}
                       </Button>
                     </td>
                   </tr>
@@ -233,19 +277,68 @@ export default function TotalParticipants() {
                       "{selectedParticipation.description || 'No description provided with this submission.'}"
                     </p>
                   </div>
-
-                  <div className="pt-2 border-t border-gray-200/60 flex items-center justify-between">
-                     <p className="text-sm font-bold text-gray-500">Evaluated Score:</p>
-                     <p className="text-2xl font-black text-purple-600">{selectedParticipation.score || 0}<span className="text-sm text-gray-300 ml-1">/ 100</span></p>
-                  </div>
                 </div>
               </section>
+
+              {/* Result Recording Form (Admin Only) */}
+              {selectedParticipation.submissionStatus === 'Submitted' && (
+                <section className="animate-in slide-in-from-bottom duration-500">
+                  <div className="flex items-center gap-2 mb-4">
+                    <div className="w-8 h-8 rounded-lg bg-purple-500/10 flex items-center justify-center text-purple-600 font-bold text-lg">R</div>
+                    <h3 className="font-bold text-gray-800">Evaluate & Record Result</h3>
+                  </div>
+                  <form onSubmit={handleResultSubmit} className="bg-purple-50/30 p-6 rounded-2xl border border-purple-100 space-y-6">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      <div className="flex flex-col">
+                        <label className="text-[10px] uppercase font-black text-gray-400 tracking-widest mb-2">Award Rank</label>
+                        <select 
+                          value={resultForm.rank}
+                          onChange={(e) => setResultForm({...resultForm, rank: e.target.value})}
+                          className="w-full px-4 py-3 rounded-xl border border-purple-100 bg-white shadow-sm focus:outline-none focus:ring-2 focus:ring-purple-200 text-sm font-bold text-gray-700"
+                        >
+                          <option value="1st">🥇 1st Place</option>
+                          <option value="2nd">🥈 2nd Place</option>
+                          <option value="3rd">🥉 3rd Place</option>
+                          <option value="Participant">🏆 Participant</option>
+                        </select>
+                      </div>
+                      <div className="flex flex-col">
+                        <label className="text-[10px] uppercase font-black text-gray-400 tracking-widest mb-2">Final Score (0-100)</label>
+                        <input 
+                          type="number"
+                          min="0"
+                          max="100"
+                          value={resultForm.score}
+                          onChange={(e) => setResultForm({...resultForm, score: parseInt(e.target.value)})}
+                          className="w-full px-4 py-3 rounded-xl border border-purple-100 bg-white shadow-sm focus:outline-none focus:ring-2 focus:ring-purple-200 text-sm font-bold text-gray-700"
+                          required
+                        />
+                      </div>
+                    </div>
+                    <div className="flex flex-col">
+                      <label className="text-[10px] uppercase font-black text-gray-400 tracking-widest mb-2">Internal Remarks</label>
+                      <textarea 
+                        value={resultForm.remarks}
+                        onChange={(e) => setResultForm({...resultForm, remarks: e.target.value})}
+                        placeholder="Add some feedback or internal notes..."
+                        className="w-full px-4 py-3 rounded-xl border border-purple-100 bg-white shadow-sm focus:outline-none focus:ring-2 focus:ring-purple-200 text-sm font-medium text-gray-700 min-h-[100px] resize-none"
+                      />
+                    </div>
+                    <Button 
+                      type="submit" 
+                      disabled={resultLoading}
+                      className="w-full py-4 bg-purple-600 hover:bg-purple-700 text-white font-black uppercase tracking-widest text-xs shadow-lg shadow-purple-200"
+                    >
+                      {resultLoading ? "Submitting Result..." : "Finalize & Record Result"}
+                    </Button>
+                  </form>
+                </section>
+              )}
             </div>
 
             {/* Modal Footer */}
             <div className="p-8 border-t border-gray-50 flex justify-end gap-3 sticky bottom-0 bg-white/80 backdrop-blur-md">
               <Button onClick={closeModal} variant="outline" className="px-6 border-gray-200">Close Panel</Button>
-              <Button variant="primary" className="px-8 shadow-lg shadow-purple-200">View Live Demo</Button>
             </div>
           </div>
         </div>

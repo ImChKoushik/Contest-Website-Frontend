@@ -1,10 +1,56 @@
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import useContests from '../hooks/useContests';
 import Button from '../components/Button';
 
+// Display labels shown in UI
+const STATUS_OPTIONS = ['Upcoming', 'On-Going', 'Completed'];
+
+// Map UI label → backend API value
+const LABEL_TO_API = {
+  'Upcoming':  'Upcoming',
+  'On-Going':  'On-Going',
+  'Completed': 'Completed',
+};
+
+// Map backend API value → UI label
+const API_TO_LABEL = {
+  'Upcoming':  'Upcoming',
+  'On-Going':  'On-Going',
+  'Completed': 'Completed',
+};
+
+const STATUS_STYLES = {
+  'On-Going':  { dot: 'bg-[#8cc63f]',  text: 'text-[#7ab033]' },
+  'Upcoming':  { dot: 'bg-[#fcb900]',  text: 'text-[#e6a800]' },
+  'Completed': { dot: 'bg-gray-300',   text: 'text-gray-500'  },
+};
+
 export default function TotalContests() {
-  const { data, loading, error, fetchContests } = useContests();
+  const { data, loading, error, fetchContests, updateContestStatus } = useContests();
   const navigate = useNavigate();
+  const [pendingStatus, setPendingStatus] = useState({});
+  const [savingId, setSavingId] = useState(null);
+
+  const handleStatusChange = (id, label) => {
+    setPendingStatus(prev => ({ ...prev, [id]: label }));
+  };
+
+  const handleSaveStatus = async (id, currentApiStatus) => {
+    const selectedLabel = pendingStatus[id];
+    if (!selectedLabel) return;
+    const apiValue = LABEL_TO_API[selectedLabel];
+    if (!apiValue) return;
+    setSavingId(id);
+    const result = await updateContestStatus(id, apiValue);
+    if (result.success) {
+      fetchContests();
+      setPendingStatus(prev => { const n = { ...prev }; delete n[id]; return n; });
+    } else {
+      alert(result.message || 'Failed to update status');
+    }
+    setSavingId(null);
+  };
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
@@ -99,22 +145,43 @@ export default function TotalContests() {
                       </span>
                     </td>
                     <td className="p-6">
-                      <div className="flex items-center gap-2 text-xs font-black uppercase tracking-wider">
-                        <span className={`w-2 h-2 rounded-full ${
-                          contest.status === 'Active' ? 'bg-[#8cc63f]' : 
-                          contest.status === 'Upcoming' ? 'bg-[#fcb900]' : 
-                          'bg-gray-300'
-                        }`}></span>
-                        <span className={
-                          contest.status === 'Active' ? 'text-[#7ab033]' : 
-                          contest.status === 'Upcoming' ? 'text-[#e6a800]' : 
-                          'text-gray-500'
-                        }>{contest.status}</span>
-                      </div>
+                      {(() => {
+                        const currentLabel = API_TO_LABEL[contest.status] || contest.status || 'N/A';
+                        const selected = pendingStatus[contest._id] ?? currentLabel;
+                        return (
+                          <div className="flex items-center gap-2">
+                            {/* Current status badge */}
+                            <div className="flex items-center gap-1.5 text-xs font-black uppercase tracking-wider mr-2">
+                              <span className={`w-2 h-2 rounded-full ${STATUS_STYLES[currentLabel]?.dot || 'bg-gray-300'}`}></span>
+                              <span className={STATUS_STYLES[currentLabel]?.text || 'text-gray-500'}>{currentLabel}</span>
+                            </div>
+                            {/* Dropdown — shows UI labels */}
+                            <select
+                              value={selected}
+                              onChange={(e) => handleStatusChange(contest._id, e.target.value)}
+                              className="text-xs border border-gray-200 rounded-lg px-2 py-1.5 bg-gray-50 text-gray-700 font-semibold focus:outline-none focus:ring-2 focus:ring-[#8cc63f]/30 cursor-pointer"
+                            >
+                              {STATUS_OPTIONS.map(s => (
+                                <option key={s} value={s}>{s}</option>
+                              ))}
+                            </select>
+                            {/* Save button — only when selection differs from current */}
+                            {selected !== currentLabel && (
+                              <button
+                                onClick={() => handleSaveStatus(contest._id)}
+                                disabled={savingId === contest._id}
+                                className="px-3 py-1.5 text-[11px] font-black uppercase tracking-wider bg-[#8cc63f] text-white rounded-lg hover:bg-[#7ab033] transition disabled:opacity-50"
+                              >
+                                {savingId === contest._id ? '...' : 'Save'}
+                              </button>
+                            )}
+                          </div>
+                        );
+                      })()}
                     </td>
                     <td className="p-6">
                       <div className="flex flex-col">
-                        <span className="text-[14px] font-extrabold text-gray-800">{contest.limit}</span>
+                        <span className="text-[14px] font-extrabold text-gray-800">{contest.entryLimit}</span>
                         <span className="text-[10px] text-gray-400 font-bold uppercase tracking-tight">Slot Limit</span>
                       </div>
                     </td>

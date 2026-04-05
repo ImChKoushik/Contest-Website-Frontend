@@ -10,6 +10,7 @@ import Totaluser from './Screens/Totaluser'
 import AddContest from './Screens/AddContest'
 import TotalContests from './Screens/TotalContests'
 import TotalParticipants from './Screens/TotalParticipants'
+import TotalResults from './Screens/TotalResults'
 import SubmitProject from './Screens/SubmitProject'
 import Home from './Screens/Home'
 import { useAuthContext } from './context/AuthContext'
@@ -40,6 +41,7 @@ function App() {
             <Route path="/admin-dashboard/add-contest" element={<AddContest />} />
             <Route path="/admin-dashboard/total-contests" element={<TotalContests />} />
             <Route path="/admin-dashboard/total-participants" element={<TotalParticipants />} />
+            <Route path="/admin-dashboard/total-results" element={<TotalResults />} />
           </Route>
 
           {/* Regular User Routes */}

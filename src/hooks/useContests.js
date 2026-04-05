@@ -54,11 +54,29 @@ const useContests = () => {
     }
   };
 
+  const updateContestStatus = async (contestId, status) => {
+    try {
+      const res = await axios.patch(
+        `https://contest-backend-td3m.onrender.com/api/v1/contest/update-status/${contestId}`,
+        { status },
+        { withCredentials: true }
+      );
+      if (res.data && res.data.success) {
+        return { success: true, message: res.data.message };
+      } else {
+        return { success: false, message: res.data.message || "Failed to update status" };
+      }
+    } catch (err) {
+      const msg = err.response?.data?.message || err.message || "Failed to update status";
+      return { success: false, message: msg };
+    }
+  };
+
   useEffect(() => {
     fetchContests();
   }, [fetchContests]);
 
-  return { data, loading, error, fetchContests, addContest };
+  return { data, loading, error, fetchContests, addContest, updateContestStatus };
 };
 
 export default useContests;

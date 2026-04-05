@@ -4,6 +4,7 @@ import ContestCard from '../components/ContestCard';
 import useContests from '../hooks/useContests';
 import useParticipation from '../hooks/useParticipation';
 import { useAuthContext } from '../context/AuthContext';
+import useResults from '../hooks/useResults';
 
 export default function UserDashboard() {
   const { user: currentUser } = useAuthContext();
@@ -11,9 +12,11 @@ export default function UserDashboard() {
   const navigate = useNavigate();
 
   const { joinContest, fetchMyParticipations, myParticipations, loading: participationLoading } = useParticipation();
+  const { fetchMyResults, myResults, loading: resultsLoading } = useResults();
 
   useEffect(() => {
     fetchMyParticipations();
+    fetchMyResults();
   }, []);
 
   // Filter myParticipations to only show current user's ones
@@ -110,21 +113,25 @@ export default function UserDashboard() {
     return `${days} Days Left`;
   };
 
-  // Get unique categories
+  // Only show Upcoming and On-Going contests to users
+  const visibleContests = useMemo(() => {
+    if (!data?.contests) return [];
+    return data.contests.filter(c => c.status === 'Upcoming' || c.status === 'On-Going');
+  }, [data?.contests]);
+
+  // Get unique categories from visible contests only
   const categories = useMemo(() => {
-    if (!data?.contests) return ['All'];
-    const cats = data.contests
+    const cats = visibleContests
       .map(c => c.category)
       .filter((cat, index, self) => cat && self.indexOf(cat) === index);
     return ['All', ...cats];
-  }, [data?.contests]);
+  }, [visibleContests]);
 
   // Filter contests based on selected category
   const filteredContests = useMemo(() => {
-    if (!data?.contests) return [];
-    if (selectedCategory === 'All') return data.contests;
-    return data.contests.filter(c => c.category === selectedCategory);
-  }, [data?.contests, selectedCategory]);
+    if (selectedCategory === 'All') return visibleContests;
+    return visibleContests.filter(c => c.category === selectedCategory);
+  }, [visibleContests, selectedCategory]);
 
   // Handle category click from hero badge
   const handleHeroBadgeClick = (categoryName) => {
@@ -217,8 +224,71 @@ export default function UserDashboard() {
         </div>
       </section>
 
+      {/* 1.2 Performance & Leaderboard Section */}
+      {myResults.length > 0 && (
+         <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-16 relative z-20">
+            <div className="flex items-center gap-4 mb-8">
+               <div className="w-10 h-10 rounded-2xl bg-yellow-50 flex items-center justify-center text-yellow-600 shadow-sm border border-yellow-100/50">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12c0 1.268-.63 2.39-1.593 3.068a3.745 3.745 0 0 1-1.043 3.296 3.745 3.745 0 0 1-3.296 1.043A3.745 3.745 0 0 1 12 21a3.745 3.745 0 0 1-3.068-.63 3.745 3.745 0 0 1-3.296-1.043 3.745 3.745 0 0 1-1.043-3.296A3.745 3.745 0 0 1 3 12c0-1.268.63-2.39 1.593-3.068a3.745 3.745 0 0 1 1.043-3.296 3.745 3.745 0 0 1 3.296-1.043A3.745 3.745 0 0 1 12 3c1.268 0 2.39.63 3.068 1.593a3.746 3.746 0 0 1 3.296 1.043 3.746 3.746 0 0 1 1.043 3.296A3.745 3.745 0 0 1 21 12Z" />
+                  </svg>
+               </div>
+               <div>
+                  <h2 className="text-2xl font-black text-gray-900 tracking-tight">Performance & Leaderboard</h2>
+                  <p className="text-sm text-gray-400 font-medium italic">Track your contest achievements and expert feedback</p>
+               </div>
+            </div>
+
+            <div className="flex gap-6 overflow-x-auto pb-4 scrollbar-hide snap-x">
+               {myResults.map((result) => (
+                  <div key={result._id} className="min-w-[320px] bg-white rounded-[40px] p-8 shadow-[0_8px_40px_rgba(0,0,0,0.03)] border border-gray-100/50 snap-start flex flex-col gap-6 relative overflow-hidden group">
+                     {/* Rank Bubble */}
+                     <div className="absolute -top-10 -right-10 w-40 h-40 bg-purple-500/5 rounded-full z-0 group-hover:scale-125 transition-transform duration-700"></div>
+                     
+                     <div className="relative z-10 flex items-center justify-between">
+                        <div className="flex flex-col">
+                           <span className="text-[10px] font-black uppercase tracking-widest text-[#8cc63f] mb-1">{result.contest?.category}</span>
+                           <h3 className="font-extrabold text-gray-900 leading-tight">{result.contest?.contestTitle}</h3>
+                        </div>
+                        <div className={`w-14 h-14 rounded-[22px] flex flex-col items-center justify-center border-2 ${
+                           result.rank === '1st' ? 'bg-yellow-50 border-yellow-200 text-yellow-700' :
+                           result.rank === '2nd' ? 'bg-gray-50 border-gray-200 text-gray-600' :
+                           'bg-purple-50 border-purple-100 text-purple-700'
+                        }`}>
+                           <span className="text-xl font-black leading-none">{result.rank.replace('st','').replace('nd','').replace('rd','')}</span>
+                           <span className="text-[10px] font-black uppercase mt-[-2px]">{result.rank.slice(-2)}</span>
+                        </div>
+                     </div>
+
+                     <div className="relative z-10 flex items-end justify-between bg-gray-50/50 p-6 rounded-[32px] border border-gray-100/50">
+                        <div className="flex flex-col">
+                           <span className="text-[10px] font-black uppercase tracking-widest text-gray-400 mb-2">Final Score</span>
+                           <div className="flex items-baseline gap-1">
+                              <span className="text-4xl font-black text-gray-900">{result.score}</span>
+                              <span className="text-xs font-bold text-gray-400">/100</span>
+                           </div>
+                        </div>
+                        <div className="h-10 w-[2px] bg-gray-200/60 hidden sm:block"></div>
+                        <div className="flex flex-col items-end">
+                           <span className="text-[10px] font-black uppercase tracking-widest text-gray-400 mb-2">Judged On</span>
+                           <span className="font-bold text-gray-700 text-sm">{new Date(result.createdAt).toLocaleDateString()}</span>
+                        </div>
+                     </div>
+
+                     <div className="relative z-10">
+                        <p className="text-[10px] font-black uppercase tracking-widest text-gray-400 mb-2">Instructor Remarks</p>
+                        <p className="text-xs text-gray-500 font-medium italic leading-relaxed">
+                           "{result.remarks || 'Excellent participation and effort in the challenge.'}"
+                        </p>
+                     </div>
+                  </div>
+               ))}
+            </div>
+         </section>
+      )}
+
       {/* 1.5 My Participations Section */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-12 relative z-20">
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-16 relative z-20">
         <div className="flex items-center justify-between mb-8">
           <div>
             <h2 className="text-2xl font-black text-gray-900 tracking-tight">Joined Contests</h2>
@@ -355,9 +425,10 @@ export default function UserDashboard() {
                   onSuccess={fetchMyParticipations}
                   title={contest.contestTitle}
                   category={contest.category}
+                  status={contest.status}
                   description={contest.contestDescription}
                   daysLeft={getDaysLeft(contest.contestDeadLine)}
-                  entries={`${contest.limit || 100} Entries`}
+                  entries={`${contest.entryLimit || 100} Entries`}
                   image={contest.category?.toLowerCase().includes('mern') 
                     ? "https://images.unsplash.com/photo-1555066931-4365d14bab8c?q=80&w=2670&auto=format&fit=crop"
                     : contest.category?.toLowerCase().includes('design')

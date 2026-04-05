@@ -53,7 +53,33 @@ const useUserActions = () => {
     }
   };
 
-  return { deleteUser, getUserById, loading, error };
+  const updateUserRole = async (id, role) => {
+    setLoading(true);
+    setError(null);
+
+    try {
+      const res = await axios.patch(
+        `https://contest-backend-td3m.onrender.com/api/v1/user/update-role/${id}`,
+        { role },
+        { withCredentials: true }
+      );
+
+      if (res.data && res.data.success) {
+        return { success: true, message: res.data.message };
+      } else {
+        setError(res.data.message || "Failed to update role");
+        return { success: false, message: res.data.message };
+      }
+    } catch (err) {
+      const errMsg = err.response?.data?.message || err.message || "Something went wrong";
+      setError(errMsg);
+      return { success: false, message: errMsg };
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return { deleteUser, getUserById, updateUserRole, loading, error };
 };
 
 export default useUserActions;

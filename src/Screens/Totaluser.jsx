@@ -6,7 +6,7 @@ import useUserActions from '../hooks/useUserActions';
 
 export default function Totaluser() {
   const { data, loading, error, refetch } = useFetchUsers();
-  const { deleteUser, getUserById, loading: actionLoading } = useUserActions();
+  const { deleteUser, getUserById, updateUserRole, loading: actionLoading } = useUserActions();
   const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = React.useState("");
   const [searchResults, setSearchResults] = React.useState(null);
@@ -35,6 +35,19 @@ export default function Totaluser() {
         refetch();
       } else {
         alert(result.message || "Failed to delete user");
+      }
+    }
+  };
+
+  const handleRoleToggle = async (id, currentRole, name) => {
+    const newRole = currentRole === 'Admin' ? 'User' : 'Admin';
+    if (window.confirm(`Change ${name}'s role from "${currentRole}" to "${newRole}"?`)) {
+      const result = await updateUserRole(id, newRole);
+      if (result.success) {
+        alert(result.message || `Role updated to ${newRole}`);
+        refetch();
+      } else {
+        alert(result.message || "Failed to update role");
       }
     }
   };
@@ -103,6 +116,7 @@ export default function Totaluser() {
                   <th className="p-4 font-semibold">Gender</th>
                   <th className="p-4 font-semibold">Verified</th>
                   <th className="p-4 font-semibold">Joined At</th>
+                  <th className="p-4 font-semibold">Change Role</th>
                   <th className="p-4 font-semibold text-right">Actions</th>
                 </tr>
               </thead>
@@ -131,6 +145,19 @@ export default function Totaluser() {
                     <td className="p-4 text-gray-500 whitespace-nowrap">
                       {new Date(user.createdAt).toLocaleDateString()}
                     </td>
+                    <td className="p-4">
+                      <button
+                        onClick={() => handleRoleToggle(user._id, user.role, user.userName)}
+                        disabled={actionLoading}
+                        className={`px-3 py-1.5 rounded-lg text-xs font-bold transition disabled:opacity-50 ${
+                          user.role === 'Admin'
+                            ? 'bg-[#8cc63f]/10 text-[#7ab033] hover:bg-[#8cc63f]/20'
+                            : 'bg-[#fcb900]/10 text-[#e6a800] hover:bg-[#fcb900]/20'
+                        }`}
+                      >
+                        {user.role === 'Admin' ? '→ Make User' : '→ Make Admin'}
+                      </button>
+                    </td>
                     <td className="p-4 text-right">
                       <button 
                         onClick={() => handleDelete(user._id, user.userName)}
@@ -144,7 +171,7 @@ export default function Totaluser() {
                 ))}
                 {(!data?.users || data.users.length === 0) && (
                   <tr>
-                    <td colSpan="9" className="p-8 text-center text-gray-500">
+                    <td colSpan="10" className="p-8 text-center text-gray-500">
                       No users found.
                     </td>
                   </tr>

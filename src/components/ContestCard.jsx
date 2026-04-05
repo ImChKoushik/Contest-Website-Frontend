@@ -9,7 +9,8 @@ export default function ContestCard({
   description, 
   daysLeft, 
   entries,
-  onSuccess
+  onSuccess,
+  status
 }) {
   const { joinContest, loading } = useParticipation();
 
@@ -68,13 +69,31 @@ export default function ContestCard({
 
         {/* Action Buttons Row */}
         <div className="flex gap-3 mt-auto">
-          <button 
-            onClick={handleApply}
-            disabled={loading}
-            className="flex-1 bg-[#8cc63f] hover:bg-[#7db435] text-white py-2.5 rounded-full font-bold text-[13px] tracking-wide transition-colors shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            {loading ? "Joining..." : "Apply"}
-          </button>
+          {/* Status badge based on backend enum */}
+          {status === 'Upcoming' ? (
+            <button
+              disabled
+              className="flex-1 bg-[#fcb900]/10 text-[#e6a800] border border-[#fcb900]/30 py-2.5 rounded-full font-bold text-[13px] tracking-wide cursor-not-allowed flex items-center justify-center gap-1.5"
+            >
+              <span className="w-1.5 h-1.5 rounded-full bg-[#fcb900] inline-block"></span>
+              Upcoming
+            </button>
+          ) : status === 'On-Going' ? (
+            <button 
+              onClick={handleApply}
+              disabled={loading}
+              className="flex-1 bg-[#8cc63f] hover:bg-[#7db435] text-white py-2.5 rounded-full font-bold text-[13px] tracking-wide transition-colors shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {loading ? "Joining..." : "Apply"}
+            </button>
+          ) : (
+            <button
+              disabled
+              className="flex-1 bg-gray-100 text-gray-400 border border-gray-200 py-2.5 rounded-full font-bold text-[13px] tracking-wide cursor-not-allowed"
+            >
+              Closed
+            </button>
+          )}
           <button className="flex-1 bg-[#fcb900] hover:bg-[#e6a800] text-white py-2.5 rounded-full font-bold text-[13px] tracking-wide transition-colors shadow-sm">
             View Details
           </button>
