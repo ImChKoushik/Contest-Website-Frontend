@@ -35,7 +35,7 @@ export default function AddContest() {
     const result = await addContest(formData);
     
     if (result) {
-      alert("Contest Created Successfully!");
+      showToast("Contest Created Successfully!", "success");
       navigate("/admin-dashboard");
     }
   };

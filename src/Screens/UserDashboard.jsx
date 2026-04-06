@@ -19,18 +19,6 @@ export default function UserDashboard() {
     fetchMyResults();
   }, []);
 
-  // Filter myParticipations to only show current user's ones
-  const userParticipations = useMemo(() => {
-    const currentId = currentUser?._id || currentUser?.id;
-    if (!currentId || !myParticipations) return [];
-    
-    return myParticipations.filter(p => {
-      // Handle various formats of user ID in participation object
-      const pUserId = p.user?._id || p.user?.id || (typeof p.user === 'string' ? p.user : null);
-      return pUserId && pUserId.toString() === currentId.toString();
-    });
-  }, [myParticipations, currentUser]);
-
   const slides = [
     {
       badge: "MERN CONTEST",
@@ -115,7 +103,7 @@ export default function UserDashboard() {
 
   // Only show Upcoming and On-Going contests to users
   const visibleContests = useMemo(() => {
-    if (!data?.contests) return [];
+    if (!Array.isArray(data?.contests)) return [];
     return data.contests.filter(c => c.status === 'Upcoming' || c.status === 'On-Going');
   }, [data?.contests]);
 
@@ -225,7 +213,7 @@ export default function UserDashboard() {
       </section>
 
       {/* 1.2 Performance & Leaderboard Section */}
-      {myResults.length > 0 && (
+      {Array.isArray(myResults) && myResults.length > 0 && (
          <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-16 relative z-20">
             <div className="flex items-center gap-4 mb-8">
                <div className="w-10 h-10 rounded-2xl bg-yellow-50 flex items-center justify-center text-yellow-600 shadow-sm border border-yellow-100/50">
@@ -291,19 +279,17 @@ export default function UserDashboard() {
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-16 relative z-20">
         <div className="flex items-center justify-between mb-8">
           <div>
-            <h2 className="text-2xl font-black text-gray-900 tracking-tight">Joined Contests</h2>
+            <div className="flex items-center gap-4">
+              <h2 className="text-2xl font-black text-gray-900 tracking-tight">Joined Contests</h2>
+            </div>
             <p className="text-sm text-gray-400 font-medium italic">Contests you've applied for</p>
           </div>
           <div className="h-px flex-grow mx-8 bg-gray-100 hidden md:block"></div>
         </div>
         
-        {participationLoading ? (
-           <div className="flex justify-center p-10">
-              <div className="w-8 h-8 border-4 border-purple-200 border-t-purple-600 rounded-full animate-spin"></div>
-           </div>
-        ) : userParticipations.length > 0 ? (
+        {myParticipations.length > 0 ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {userParticipations.map((p) => (
+            {myParticipations.map((p) => (
               <div key={p._id} className="bg-white p-6 rounded-[32px] border border-gray-100 shadow-[0_4px_20px_rgba(0,0,0,0.02)] hover:shadow-xl hover:shadow-purple-500/5 transition-all group relative overflow-hidden">
                 {/* Status Badge */}
                 <div className="flex items-start justify-between mb-6">

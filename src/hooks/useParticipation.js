@@ -1,5 +1,6 @@
 import { useState } from "react";
 import axios from "axios";
+import { useToast } from "../context/ToastContext";
 
 const useParticipation = () => {
   const [loading, setLoading] = useState(false);
@@ -8,6 +9,7 @@ const useParticipation = () => {
   const [participantsData, setParticipantsData] = useState({ total: 0, data: [] });
 
   const [myParticipations, setMyParticipations] = useState([]);
+  const { showToast } = useToast();
 
   const joinContest = async (contestId) => {
     setLoading(true);
@@ -26,6 +28,7 @@ const useParticipation = () => {
     } catch (err) {
       const msg = err.response?.data?.message || err.message || "Failed to join contest";
       setError(msg);
+      showToast(msg, "error");
       return { success: false, message: msg };
     } finally {
       setLoading(false);
@@ -49,6 +52,7 @@ const useParticipation = () => {
     } catch (err) {
       const msg = err.response?.data?.message || err.message || "Failed to submit project";
       setError(msg);
+      showToast(msg, "error");
       return { success: false, message: msg };
     } finally {
       setLoading(false);
@@ -58,23 +62,22 @@ const useParticipation = () => {
   const fetchAllParticipants = async () => {
     setLoading(true);
     setError(null);
-
     try {
       const res = await axios.get(
-        "https://contest-backend-td3m.onrender.com/api/v1/participate/all",
+        "https://contest-backend-td3m.onrender.com/api/v1/participate/admin/all",
         { withCredentials: true }
       );
-
-      if (res.data) {
+      if (res.data && res.data.data) {
         setParticipantsData({
-          total: res.data.total || 0,
-          data: res.data.data || []
+          total: res.data.data.total || 0,
+          data: Array.isArray(res.data.data.data) ? res.data.data.data : []
         });
-        return { success: true, data: res.data };
+        return { success: true, data: res.data.data };
       }
     } catch (err) {
       const msg = err.response?.data?.message || err.message || "Failed to fetch participants";
       setError(msg);
+      showToast(msg, "error");
       return { success: false, message: msg };
     } finally {
       setLoading(false);
@@ -85,34 +88,59 @@ const useParticipation = () => {
     setLoading(true);
     setError(null);
     try {
-      // Try /my-participations first as it's the standard student endpoint
-      // Fallback to /all if /my-participations fails (for backward compatibility or open backends)
-      let res;
-      try {
-        res = await axios.get(
-          "https://contest-backend-td3m.onrender.com/api/v1/participate/my-participations",
-          { withCredentials: true }
-        );
-      } catch (e) {
-        res = await axios.get(
-          "https://contest-backend-td3m.onrender.com/api/v1/participate/all",
-          { withCredentials: true }
-        );
-      }
-
+      const res = await axios.get(
+        "https://contest-backend-td3m.onrender.com/api/v1/participate/all",
+        { withCredentials: true }
+      );
       if (res.data && res.data.data) {
-        setMyParticipations(res.data.data);
-        return { success: true, data: res.data.data };
+        // If data is nested as { data: { data: [...] } }
+        if (Array.isArray(res.data.data.data)) {
+          setMyParticipations(res.data.data.data);
+          return { success: true, data: res.data.data.data };
+        }
+        // If data is nested as { data: [...] }
+        if (Array.isArray(res.data.data)) {
+          setMyParticipations(res.data.data);
+          return { success: true, data: res.data.data };
+        }
+      } else if (res.data && Array.isArray(res.data)) {
+        // Fallback if the array is directly at the root
+        setMyParticipations(res.data);
+        return { success: true, data: res.data };
       }
     } catch (err) {
-      setError(err.message || "Failed to fetch your participations");
-      return { success: false, message: err.message };
+      const msg = err.message || "Failed to fetch your participations";
+      setError(msg);
+      showToast(msg, "error");
+      return { success: false, message: msg };
     } finally {
       setLoading(false);
     }
   };
 
-  return { joinContest, submitProject, fetchAllParticipants, fetchMyParticipations, participantsData, myParticipations, loading, error };
+  const deleteParticipation = async (participationId) => {
+    setLoading(true);
+    setError(null);
+    try {
+      const res = await axios.delete(
+        `https://contest-backend-td3m.onrender.com/api/v1/participate/admin/delete/${participationId}`,
+        { withCredentials: true }
+      );
+      if (res.data) {
+        showToast("Participation deleted successfully", "success");
+        return { success: true, message: res.data.message };
+      }
+    } catch (err) {
+      const msg = err.response?.data?.message || err.message || "Failed to delete participation";
+      setError(msg);
+      showToast(msg, "error");
+      return { success: false, message: msg };
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return { joinContest, submitProject, fetchAllParticipants, fetchMyParticipations, deleteParticipation, participantsData, myParticipations, loading, error };
 };
 
 export default useParticipation;

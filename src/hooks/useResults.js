@@ -1,11 +1,13 @@
 import { useState, useCallback } from "react";
 import axios from "axios";
+import { useToast } from "../context/ToastContext";
 
 const useResults = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [allResults, setAllResults] = useState([]);
   const [myResults, setMyResults] = useState([]);
+  const { showToast } = useToast();
 
   const uploadResult = async (resultData) => {
     setLoading(true);
@@ -23,6 +25,7 @@ const useResults = () => {
     } catch (err) {
       const msg = err.response?.data?.message || err.message || "An error occurred";
       setError(msg);
+      showToast(msg, "error");
       return { success: false, message: msg };
     } finally {
       setLoading(false);
@@ -43,7 +46,9 @@ const useResults = () => {
         setError(res.data.message || "Failed to fetch results");
       }
     } catch (err) {
-      setError(err.response?.data?.message || err.message || "An error occurred");
+      const msg = err.response?.data?.message || err.message || "An error occurred";
+      setError(msg);
+      showToast(msg, "error");
     } finally {
       setLoading(false);
     }
@@ -63,7 +68,9 @@ const useResults = () => {
         setError(res.data.message || "Failed to fetch your results");
       }
     } catch (err) {
-      setError(err.response?.data?.message || err.message || "An error occurred");
+      const msg = err.response?.data?.message || err.message || "An error occurred";
+      setError(msg);
+      showToast(msg, "error");
     } finally {
       setLoading(false);
     }
@@ -85,6 +92,7 @@ const useResults = () => {
     } catch (err) {
       const msg = err.response?.data?.message || err.message || "An error occurred during update";
       setError(msg);
+      showToast(msg, "error");
       return { success: false, message: msg };
     } finally {
       setLoading(false);
@@ -106,6 +114,7 @@ const useResults = () => {
     } catch (err) {
       const msg = err.response?.data?.message || err.message || "An error occurred during delete";
       setError(msg);
+      showToast(msg, "error");
       return { success: false, message: msg };
     } finally {
       setLoading(false);

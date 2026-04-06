@@ -5,6 +5,7 @@ import Input from '../components/Input';
 import Button from '../components/Button';
 import Form from '../components/Form';
 import useAuth from '../hooks/useAuth';
+import { useToast } from '../context/ToastContext';
 
 const UserIcon = () => (
   <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5">
@@ -54,6 +55,7 @@ export default function SignUpForm() {
   const [termsAccepted, setTermsAccepted] = useState(false);
   const { sendRequest, loading, error } = useAuth();
   const { user } = useAuthContext();
+  const { showToast } = useToast();
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -77,15 +79,15 @@ export default function SignUpForm() {
     e.preventDefault();
 
     if (formData.password.length < 8) {
-      alert("Password must be at least 8 characters long");
+      showToast("Password must be at least 8 characters long", "warning");
       return;
     }
     if (formData.password !== formData.confirmPassword) {
-      alert("Passwords do not match");
+      showToast("Passwords do not match", "warning");
       return;
     }
     if (!/^[0-9]{10}$/.test(formData.contact)) {
-      alert("Contact number must be exactly 10 digits");
+      showToast("Contact number must be exactly 10 digits", "warning");
       return;
     }
 
@@ -93,12 +95,12 @@ export default function SignUpForm() {
     if (formattedGender === 'other') formattedGender = 'others';
     
     if (!['male', 'female', 'others'].includes(formattedGender)) {
-      alert("Gender must be Male, Female, or Others");
+      showToast("Gender must be Male, Female, or Others", "warning");
       return;
     }
 
     if (!termsAccepted) {
-      alert("Please accept the terms and conditions");
+      showToast("Please accept the terms and conditions", "warning");
       return;
     }
 
@@ -113,8 +115,8 @@ export default function SignUpForm() {
     const result = await sendRequest("https://contest-backend-td3m.onrender.com/api/v1/user/register-user", payload);
     
     if (result) {
-      alert("User Registered Successfully");
-      // Possibly redirect or clear form here
+      showToast("User Registered Successfully! You can now sign in.", "success");
+      navigate("/signin");
     }
   };
 

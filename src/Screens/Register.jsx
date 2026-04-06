@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
 
 import axios from "axios"
+import { useToast } from "../context/ToastContext";
 
 const Register = () => {
+  const { showToast } = useToast();
   const [form, setForm] = useState({
     userName: "",
     email: "",
@@ -23,11 +25,11 @@ const Register = () => {
       const res = await axios.post("https://contest-backend-td3m.onrender.com/api/v1/user/register-user", form);
 
       console.log(res.data);
-      alert("User Registered Successfully");
+      showToast("User Registered Successfully", "success");
 
     } catch (err) {
       console.error(err.response?.data); // 👈 ADD THIS
-      alert(err.response?.data?.message || "Error registering user");
+      showToast(err.response?.data?.message || "Error registering user", "error");
     }
   };
   return (

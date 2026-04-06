@@ -1,9 +1,11 @@
 import { useState } from "react";
 import axios from "axios";
+import { useToast } from "../context/ToastContext";
 
 const useAuth = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const { showToast } = useToast();
 
   const sendRequest = async (url, formData) => {
     setLoading(true);
@@ -19,8 +21,9 @@ const useAuth = () => {
       return res.data; // important
 
     } catch (err) {
-      setError(err.response?.data?.message || err.message || "Something went wrong");
-      // Optionally rethrow or handle differently depending on your UI needs
+      const message = err.response?.data?.message || err.message || "Something went wrong";
+      setError(message);
+      showToast(message, "error");
     } finally {
       setLoading(false);
     }

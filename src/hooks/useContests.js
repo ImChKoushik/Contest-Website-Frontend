@@ -1,10 +1,12 @@
 import { useState, useEffect, useCallback } from "react";
 import axios from "axios";
+import { useToast } from "../context/ToastContext";
 
 const useContests = () => {
   const [data, setData] = useState({ total: 0, contests: [] });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const { showToast } = useToast();
 
   const fetchContests = useCallback(async () => {
     setLoading(true);
@@ -22,7 +24,9 @@ const useContests = () => {
         setError(res.data.message || "Failed to fetch contests");
       }
     } catch (err) {
-      setError(err.response?.data?.message || err.message || "An error occurred while fetching contests");
+      const message = err.response?.data?.message || err.message || "An error occurred while fetching contests";
+      setError(message);
+      showToast(message, "error");
     } finally {
       setLoading(false);
     }
@@ -48,6 +52,7 @@ const useContests = () => {
     } catch (err) {
       const msg = err.response?.data?.message || err.message || "Failed to create contest";
       setError(msg);
+      showToast(msg, "error");
       return null;
     } finally {
       setLoading(false);
@@ -72,11 +77,29 @@ const useContests = () => {
     }
   };
 
+  const deleteContest = async (contestId) => {
+    try {
+      const res = await axios.delete(
+        `https://contest-backend-td3m.onrender.com/api/v1/contest/delete-contest/${contestId}`,
+        { withCredentials: true }
+      );
+      if (res.data && res.data.success) {
+        showToast(res.data.message || "Contest deleted successfully", "success");
+        return { success: true };
+      }
+      return { success: false, message: res.data.message || "Delete failed" };
+    } catch (err) {
+      const msg = err.response?.data?.message || err.message || "Failed to delete contest";
+      showToast(msg, "error");
+      return { success: false, message: msg };
+    }
+  };
+
   useEffect(() => {
     fetchContests();
   }, [fetchContests]);
 
-  return { data, loading, error, fetchContests, addContest, updateContestStatus };
+  return { data, loading, error, fetchContests, addContest, updateContestStatus, deleteContest };
 };
 
 export default useContests;

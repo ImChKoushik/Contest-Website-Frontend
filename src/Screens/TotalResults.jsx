@@ -2,9 +2,11 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import useResults from '../hooks/useResults';
 import Button from '../components/Button';
+import { useToast } from '../context/ToastContext';
 
 export default function TotalResults() {
   const { fetchAllResults, allResults, deleteResult, updateResult, loading, error } = useResults();
+  const { showToast } = useToast();
   const navigate = useNavigate();
 
   // Modal State
@@ -24,10 +26,10 @@ export default function TotalResults() {
     if (window.confirm("Are you sure you want to delete this result? This action cannot be undone.")) {
       const { success, message } = await deleteResult(resultId);
       if (success) {
-        alert("Result deleted successfully.");
+        showToast("Result deleted successfully.", "success");
         fetchAllResults();
       } else {
-        alert(message);
+        showToast(message || "Failed to delete result", "error");
       }
     }
   };
@@ -46,11 +48,11 @@ export default function TotalResults() {
     e.preventDefault();
     const { success, message } = await updateResult(selectedResult._id, editForm);
     if (success) {
-      alert("Result updated successfully.");
+      showToast("Result updated successfully.", "success");
       setIsEditModalOpen(false);
       fetchAllResults();
     } else {
-      alert(message);
+      showToast(message || "Failed to update result", "error");
     }
   };
 

@@ -3,10 +3,12 @@ import useFetchUsers from '../hooks/useFetchUsers';
 import { useNavigate } from 'react-router-dom';
 import Button from '../components/Button';
 import useUserActions from '../hooks/useUserActions';
+import { useToast } from '../context/ToastContext';
 
 export default function Totaluser() {
   const { data, loading, error, refetch } = useFetchUsers();
   const { deleteUser, getUserById, updateUserRole, loading: actionLoading } = useUserActions();
+  const { showToast } = useToast();
   const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = React.useState("");
   const [searchResults, setSearchResults] = React.useState(null);
@@ -22,7 +24,7 @@ export default function Totaluser() {
     if (result.success) {
       setSearchResults({ users: [result.data], total: 1 });
     } else {
-      alert(result.message || "User not found with this ID");
+      showToast(result.message || "User not found with this ID", "error");
       setSearchResults(null);
     }
   };
@@ -31,10 +33,10 @@ export default function Totaluser() {
     if (window.confirm(`Are you sure you want to delete user: ${name}?`)) {
       const result = await deleteUser(id);
       if (result.success) {
-        alert(result.message || "User deleted successfully");
+        showToast(result.message || "User deleted successfully", "success");
         refetch();
       } else {
-        alert(result.message || "Failed to delete user");
+        showToast(result.message || "Failed to delete user", "error");
       }
     }
   };
@@ -44,10 +46,10 @@ export default function Totaluser() {
     if (window.confirm(`Change ${name}'s role from "${currentRole}" to "${newRole}"?`)) {
       const result = await updateUserRole(id, newRole);
       if (result.success) {
-        alert(result.message || `Role updated to ${newRole}`);
+        showToast(result.message || `Role updated to ${newRole}`, "success");
         refetch();
       } else {
-        alert(result.message || "Failed to update role");
+        showToast(result.message || "Failed to update role", "error");
       }
     }
   };

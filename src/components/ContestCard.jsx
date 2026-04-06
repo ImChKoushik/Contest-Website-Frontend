@@ -1,5 +1,6 @@
 import React from 'react';
 import useParticipation from '../hooks/useParticipation';
+import { useToast } from '../context/ToastContext';
 
 export default function ContestCard({ 
   id,
@@ -13,19 +14,20 @@ export default function ContestCard({
   status
 }) {
   const { joinContest, loading } = useParticipation();
+  const { showToast } = useToast();
 
   const handleApply = async () => {
     if (!id) {
-      alert("Contest ID missing. Cannot apply.");
+      showToast("Contest ID missing. Cannot apply.", "error");
       return;
     }
 
     const { success, message } = await joinContest(id);
     if (success) {
-      alert(message);
+      showToast(message || "Successfully joined the contest!", "success");
       if (onSuccess) onSuccess();
     } else {
-      alert(message);
+      showToast(message || "Failed to join contest", "error");
     }
   };
 

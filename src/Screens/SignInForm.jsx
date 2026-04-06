@@ -5,6 +5,7 @@ import Form from '../components/Form';
 import useAuth from '../hooks/useAuth';
 import { useAuthContext } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
+import { useToast } from '../context/ToastContext';
 
 export default function SignInForm() {
   const [formData, setFormData] = useState({
@@ -15,6 +16,7 @@ export default function SignInForm() {
   const [rememberMe, setRememberMe] = useState(false);
   const { sendRequest, loading, error } = useAuth();
   const { login, user } = useAuthContext();
+  const { showToast } = useToast();
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -38,7 +40,7 @@ export default function SignInForm() {
     e.preventDefault();
 
     if (!formData.email || !formData.password) {
-      alert("Please fill in all fields");
+      showToast("Please fill in all fields", "warning");
       return;
     }
 
@@ -55,6 +57,8 @@ export default function SignInForm() {
       const userData = result.data?.user || result.user || result;
       login(userData);
       
+      showToast("Login Successful! Welcome back.", "success");
+
       // Navigate to respective dashboard
       if (userData.role === "Admin") {
         navigate("/admin-dashboard");

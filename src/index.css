@@ -20,4 +20,31 @@
   .animate-border-shimmer {
     animation: border-shimmer 4s ease-in-out infinite;
   }
+
+  @keyframes toast-in-right {
+    0% { transform: translateX(100%); opacity: 0; }
+    100% { transform: translateX(0); opacity: 1; }
+  }
+
+  @keyframes toast-out-right {
+    0% { transform: translateX(0); opacity: 1; }
+    100% { transform: translateX(100%); opacity: 0; }
+  }
+
+  @keyframes progress-shrink {
+    0% { width: 100%; }
+    100% { width: 0%; }
+  }
+
+  .animate-toast-in {
+    animation: toast-in-right 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  }
+
+  .animate-toast-out {
+    animation: toast-out-right 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  }
+
+  .animate-progress {
+    animation: progress-shrink linear forwards;
+  }
 }

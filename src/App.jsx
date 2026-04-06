@@ -3,6 +3,7 @@ import SignUpForm from './Screens/SignUpForm'
 import SignInForm from './Screens/SignInForm'
 import Footer from './components/Footer'
 import Navbar from './components/Navbar'
+import ToastContainer from './components/ToastContainer'
 import ProtectedRoute from './components/ProtectedRoute'
 import AdminDashboard from './Screens/AdminDashboard'
 import UserDashboard from './Screens/UserDashboard'
@@ -27,6 +28,7 @@ function App() {
   return (
     <>
       <Navbar />
+      <ToastContainer />
 
       <main className="min-h-[calc(100vh-80px)] bg-[#fbfcfb]">
         <Routes>

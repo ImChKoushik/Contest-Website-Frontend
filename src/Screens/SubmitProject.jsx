@@ -4,12 +4,14 @@ import useParticipation from '../hooks/useParticipation';
 import Input from '../components/Input';
 import Button from '../components/Button';
 import Form from '../components/Form';
+import { useToast } from '../context/ToastContext';
 
 export default function SubmitProject() {
   const { contestId } = useParams();
   const location = useLocation();
   const navigate = useNavigate();
   const { submitProject, fetchMyParticipations, myParticipations, loading, error } = useParticipation();
+  const { showToast } = useToast();
   
   const contest = location.state?.contest;
   const initialParticipation = location.state?.participation;
@@ -50,14 +52,14 @@ export default function SubmitProject() {
     e.preventDefault();
     
     if (!formData.submissionLink.trim()) {
-      alert("Please provide a submission link.");
+      showToast("Please provide a submission link.", "warning");
       return;
     }
 
     const result = await submitProject(contestId, formData.submissionLink, formData.description);
     
     if (result.success) {
-      alert(isUpdate ? "Project updated successfully!" : "Project submitted successfully!");
+      showToast(isUpdate ? "Project updated successfully!" : "Project submitted successfully!", "success");
       navigate("/dashboard");
     }
   };

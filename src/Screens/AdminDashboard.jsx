@@ -44,7 +44,7 @@ export default function AdminDashboard() {
     const list = [];
     
     // Recent Users
-    if (usersData?.users) {
+    if (Array.isArray(usersData?.users)) {
       usersData.users.slice(0, 5).forEach(u => {
         list.push({
           id: `u-${u._id}`,
@@ -57,7 +57,7 @@ export default function AdminDashboard() {
     }
 
     // Recent Contests
-    if (contestsData?.contests) {
+    if (Array.isArray(contestsData?.contests)) {
       contestsData.contests.slice(0, 5).forEach(c => {
         list.push({
           id: `c-${c._id}`,
@@ -70,7 +70,7 @@ export default function AdminDashboard() {
     }
 
     // Recent Participations
-    if (participantsData?.data) {
+    if (Array.isArray(participantsData?.data)) {
       participantsData.data.slice(0, 5).forEach(p => {
         list.push({
           id: `p-${p._id}`,
@@ -152,7 +152,7 @@ export default function AdminDashboard() {
                   <tr>
                     <td colSpan="4" className="p-8 text-center text-gray-400 font-medium italic">Loading contest data...</td>
                   </tr>
-                ) : contestsData?.contests?.length > 0 ? (
+                ) : Array.isArray(contestsData?.contests) && contestsData.contests.length > 0 ? (
                   contestsData.contests.slice(0, 5).map((item, idx) => (
                     <tr key={idx} className="hover:bg-gray-50/50 transition-colors">
                       <td className="p-4 font-medium text-gray-800">{item.contestTitle}</td>
