@@ -4,7 +4,7 @@ import Button from '../components/Button';
 import { useNavigate } from 'react-router-dom';
 import useFetchUsers from '../hooks/useFetchUsers';
 import useContests from '../hooks/useContests';
-import useParticipation from '../hooks/useParticipation';
+import useTeam from '../hooks/useTeam';
 import useResults from '../hooks/useResults';
 
 // Helper for "X time ago" format
@@ -25,18 +25,24 @@ export default function AdminDashboard() {
   const navigate = useNavigate();
   const { data: usersData, loading: usersLoading } = useFetchUsers();
   const { data: contestsData, loading: contestsLoading } = useContests();
-  const { fetchAllParticipants, participantsData, loading: participantsLoading } = useParticipation();
+  const { viewAllTeams, loading: teamLoading } = useTeam();
   const { fetchAllResults, allResults, loading: resultsFetchingLoading } = useResults();
 
+  const [teamsData, setTeamsData] = React.useState([]);
+
   React.useEffect(() => {
-    fetchAllParticipants();
+    const fetchTeams = async () => {
+      const { success, data } = await viewAllTeams();
+      if (success) setTeamsData(data || []);
+    };
+    fetchTeams();
     fetchAllResults();
-  }, []);
+  }, [viewAllTeams]);
   
   const totalUsersValue = usersLoading ? '...' : (usersData?.total || 0);
   const totalContestsValue = contestsLoading ? '...' : (contestsData?.total || 0);
   const activeContestsCount = contestsLoading ? '...' : (contestsData?.contests?.filter(c => c.status === 'On-Going').length || 0);
-  const totalParticipantsValue = participantsLoading ? '...' : (participantsData?.total || 0);
+  const totalTeamsValue = teamLoading ? '...' : (teamsData.length || 0);
   const totalResultsValue = resultsFetchingLoading ? '...' : (allResults?.length || 0);
 
   // Aggregate and sort activity feed
@@ -69,26 +75,26 @@ export default function AdminDashboard() {
       });
     }
 
-    // Recent Participations
-    if (Array.isArray(participantsData?.data)) {
-      participantsData.data.slice(0, 5).forEach(p => {
+    // Recent Teams
+    if (Array.isArray(teamsData)) {
+      teamsData.slice(0, 5).forEach(team => {
         list.push({
-          id: `p-${p._id}`,
-          title: 'New Participation',
-          desc: `${p.user?.userName || 'A student'} joined ${p.contest?.contestTitle || 'a contest'}.`,
-          time: getTimeAgo(p.createdAt),
-          date: new Date(p.createdAt)
+          id: `t-${team._id}`,
+          title: 'New Team Formed',
+          desc: `${team.teamName} (Leader: ${team.leader?.userName || 'User'}) joined ${team.contest?.contestTitle || 'a contest'}.`,
+          time: getTimeAgo(team.createdAt),
+          date: new Date(team.createdAt)
         });
       });
     }
 
     return list.sort((a, b) => b.date - a.date).slice(0, 8);
-  }, [usersData, contestsData, participantsData]);
+  }, [usersData, contestsData, teamsData]);
 
   const stats = [
     { label: 'Total Users', value: totalUsersValue, change: '+12%', color: 'from-[#8cc63f] to-[#7ab033]', link: '/admin-dashboard/total-users' },
     { label: 'Active Contests', value: activeContestsCount, change: '+2', color: 'from-[#fcb900] to-[#e6a800]' },
-    { label: 'Total Participants', value: totalParticipantsValue, change: 'Joined', color: 'from-purple-500 to-indigo-600', link: '/admin-dashboard/total-participants' },
+    { label: 'Total Teams', value: totalTeamsValue, change: 'Submissions', color: 'from-purple-500 to-indigo-600', link: '/admin-dashboard/total-participants' },
     { label: 'Total Results', value: totalResultsValue, change: 'Leaderboard', color: 'from-pink-500 to-rose-600', link: '/admin-dashboard/total-results' },
     { label: 'Total Contests', value: totalContestsValue, change: 'All time', color: 'from-blue-500 to-blue-600', link: '/admin-dashboard/total-contests' },
   ];

@@ -11,7 +11,7 @@ export const useAuthContext = () => {
 };
 
 export const AuthProvider = ({ children }) => {
-  // Always use localStorage so the session survives browser close/reopen
+  const [token, setToken] = useState(() => localStorage.getItem('authToken'));
   const [user, setUser] = useState(() => {
     const savedUser = localStorage.getItem('authUser');
     if (savedUser && savedUser !== "undefined" && savedUser !== "null") {
@@ -27,30 +27,41 @@ export const AuthProvider = ({ children }) => {
     return null;
   });
 
-  // tokenExpired flag: true when access token has expired but refresh token still valid
   const [tokenExpired, setTokenExpired] = useState(false);
 
-  const login = useCallback((userData) => {
+  const login = useCallback((userData, authToken) => {
     if (!userData || typeof userData !== 'object') return;
     if (userData.role || userData.email || userData._id) {
       setUser(userData);
-      setTokenExpired(false);
       localStorage.setItem('authUser', JSON.stringify(userData));
+      
+      if (authToken) {
+        setToken(authToken);
+        localStorage.setItem('authToken', authToken);
+      } else if (authToken === null) {
+        // Explicitly clear token if null is passed
+        setToken(null);
+        localStorage.removeItem('authToken');
+      }
+      
+      setTokenExpired(false);
     }
   }, []);
 
-  // updateUser: refreshes in-memory state only — does NOT touch storage.
   const updateUser = useCallback((userData) => {
     if (userData && (userData.role || userData.email || userData._id)) {
       setUser(userData);
+      localStorage.setItem('authUser', JSON.stringify(userData));
       setTokenExpired(false);
     }
   }, []);
 
   const logout = useCallback(() => {
     setUser(null);
+    setToken(null);
     setTokenExpired(false);
     localStorage.removeItem('authUser');
+    localStorage.removeItem('authToken');
   }, []);
 
   const markTokenExpired = useCallback(() => {
@@ -58,7 +69,7 @@ export const AuthProvider = ({ children }) => {
   }, []);
 
   return (
-    <AuthContext.Provider value={{ user, login, logout, updateUser, tokenExpired, markTokenExpired }}>
+    <AuthContext.Provider value={{ user, token, login, logout, updateUser, tokenExpired, markTokenExpired }}>
       {children}
     </AuthContext.Provider>
   );

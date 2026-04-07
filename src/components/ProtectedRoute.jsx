@@ -40,24 +40,41 @@ export default function ProtectedRoute({ allowedRoles }) {
         if (status === 401 || status === 403) {
           // Access token expired — try to refresh silently
           try {
-            await axios.post("https://contest-backend-td3m.onrender.com/api/v1/user/generate-access", {}, { withCredentials: true });
+            let refreshRes;
+            try {
+              refreshRes = await axios.post("https://contest-backend-td3m.onrender.com/api/v1/user/generate-access", {}, { withCredentials: true });
+            } catch (err) {
+              // Fallback to refresh-token if generate-access is 404
+              if (err.response?.status === 404) {
+                refreshRes = await axios.post("https://contest-backend-td3m.onrender.com/api/v1/user/refresh-token", {}, { withCredentials: true });
+              } else {
+                throw err;
+              }
+            }
+            
+            // Extract new token from refresh response
+            const newToken = refreshRes.data?.data?.accessToken || refreshRes.data?.accessToken || refreshRes.data?.token || refreshRes.data?.data?.token || null;
+            
             const retryRes = await axios.get("https://contest-backend-td3m.onrender.com/api/v1/user/me", { withCredentials: true });
             const userData = retryRes.data?.user || retryRes.data?.data?.user;
 
             if (userData) {
-              if (updateUser) updateUser(userData);
+              // Sync user and the new token (if any) to localStorage.
+              // If newToken is null, login will clear the stale authToken from localStorage.
+              if (login) login(userData, newToken);
               handleRoleAccess(userData);
             } else {
               throw new Error("Refresh succeeded but user not found");
             }
           } catch (refreshErr) {
             if (!isMounted) return;
-            // Refresh token also expired — mark token as expired so Navbar shows Sign In
+            // Refresh token also expired or invalid — mark token as expired and logout
             if (markTokenExpired) markTokenExpired();
             if (logout) logout();
             navigate("/signin", { replace: true });
           }
-        } else {
+        }
+ else {
           // Network/server error — stay optimistic, trust local user
           console.warn("Backend unreachable, trusting local session.");
           handleRoleAccess(user);

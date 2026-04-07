@@ -32,6 +32,29 @@ const useContests = () => {
     }
   }, []);
 
+  const fetchAllContests = useCallback(async () => {
+    setLoading(true);
+    setError(null);
+
+    try {
+      const res = await axios.get("https://contest-backend-td3m.onrender.com/api/v1/contest/all-contests", {
+        withCredentials: true
+      });
+
+      if (res.data && res.data.success) {
+        setData(res.data.data);
+      } else {
+        setError(res.data.message || "Failed to fetch all contests");
+      }
+    } catch (err) {
+      const message = err.response?.data?.message || err.message || "An error occurred while fetching all contests";
+      setError(message);
+      showToast(message, "error");
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
   const addContest = async (contestData) => {
     setLoading(true);
     setError(null);
@@ -99,7 +122,7 @@ const useContests = () => {
     fetchContests();
   }, [fetchContests]);
 
-  return { data, loading, error, fetchContests, addContest, updateContestStatus, deleteContest };
+  return { data, loading, error, fetchContests, fetchAllContests, addContest, updateContestStatus, deleteContest };
 };
 
 export default useContests;

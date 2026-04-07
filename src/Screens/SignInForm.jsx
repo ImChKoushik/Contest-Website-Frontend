@@ -53,9 +53,11 @@ export default function SignInForm() {
     const result = await sendRequest("https://contest-backend-td3m.onrender.com/api/v1/user/login-user", payload);
     
     if (result) {
-      // Store user info in global context
+      // Store user info and token in global context
       const userData = result.data?.user || result.user || result;
-      login(userData);
+      const authToken = result.data?.accessToken || result.accessToken || result.data?.token || result.token;
+      
+      login(userData, authToken);
       
       showToast("Login Successful! Welcome back.", "success");
 

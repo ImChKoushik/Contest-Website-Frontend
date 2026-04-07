@@ -1,16 +1,18 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import useParticipation from '../hooks/useParticipation';
+import useTeam from '../hooks/useTeam';
 import useResults from '../hooks/useResults';
 import Button from '../components/Button';
 import { useToast } from '../context/ToastContext';
 
-export default function TotalParticipants() {
-  const { fetchAllParticipants, participantsData, deleteParticipation, loading, error } = useParticipation();
+export default function TotalTeams() {
+  const { viewAllTeams, deleteTeam, updateSubmissionStatus, loading, error } = useTeam();
   const { uploadResult, loading: resultLoading } = useResults();
   const { showToast } = useToast();
   const navigate = useNavigate();
-  const [selectedParticipation, setSelectedParticipation] = useState(null);
+  
+  const [teamsData, setTeamsData] = useState([]);
+  const [selectedTeam, setSelectedTeam] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   // Result form state
@@ -20,15 +22,22 @@ export default function TotalParticipants() {
     remarks: ''
   });
 
-  useEffect(() => {
-    fetchAllParticipants();
-  }, []);
+  const fetchTeams = async () => {
+    const { success, data } = await viewAllTeams();
+    if (success) {
+      setTeamsData(data || []);
+    }
+  };
 
-  const openModal = (participation) => {
-    setSelectedParticipation(participation);
+  useEffect(() => {
+    fetchTeams();
+  }, [viewAllTeams]);
+
+  const openModal = (team) => {
+    setSelectedTeam(team);
     setResultForm({
       rank: 'Participant',
-      score: participation.score || 0,
+      score: team.score || 0,
       remarks: ''
     });
     setIsModalOpen(true);
@@ -36,22 +45,21 @@ export default function TotalParticipants() {
 
   const closeModal = () => {
     setIsModalOpen(false);
-    setSelectedParticipation(null);
+    setSelectedTeam(null);
   };
 
   const handleResultSubmit = async (e) => {
     e.preventDefault();
-    if (!selectedParticipation) return;
+    if (!selectedTeam) return;
 
-    const contestId = selectedParticipation.contest?._id || selectedParticipation.contest?.id || selectedParticipation.contest;
-    const userId = selectedParticipation.user?._id || selectedParticipation.user?.id || selectedParticipation.user;
-    const participationId = selectedParticipation._id || selectedParticipation.id;
+    const contestId = selectedTeam.contest?._id || selectedTeam.contest;
+    const teamId = selectedTeam._id;
 
     const resultData = {
       contestId: contestId,
       results: [
         {
-          userId: userId,
+          teamId: teamId,
           rank: resultForm.rank,
           score: resultForm.score,
           remarks: resultForm.remarks
@@ -61,19 +69,19 @@ export default function TotalParticipants() {
 
     const { success, message } = await uploadResult(resultData);
     if (success) {
-      showToast("Result Recorded Successfully!", "success");
+      showToast("Result Recorded for Team Successfully!", "success");
       closeModal();
-      fetchAllParticipants(); // Refresh to show score if updated
+      fetchTeams();
     } else {
       showToast(message || "Failed to record result", "error");
     }
   };
 
   const handleDelete = async (id) => {
-    if (window.confirm("Are you sure you want to delete this participation?")) {
-      const { success } = await deleteParticipation(id);
+    if (window.confirm("Are you sure you want to delete this team? This action cannot be undone.")) {
+      const { success } = await deleteTeam(id);
       if (success) {
-        fetchAllParticipants();
+        fetchTeams();
       }
     }
   };
@@ -93,15 +101,15 @@ export default function TotalParticipants() {
             </svg>
           </button>
           <div>
-            <h1 className="text-3xl font-bold text-gray-900 tracking-tight">Total Participants</h1>
-            <p className="text-gray-500 mt-1">View participation details and contest submissions.</p>
+            <h1 className="text-3xl font-bold text-gray-900 tracking-tight">Team Submissions</h1>
+            <p className="text-gray-500 mt-1">Manage contest teams and evaluate their project submissions.</p>
           </div>
         </div>
       </div>
 
       {loading ? (
         <div className="flex justify-center items-center py-20">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600"></div>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#8cc63f]"></div>
         </div>
       ) : error ? (
         <div className="bg-red-50 text-red-500 p-4 rounded-xl text-center border border-red-100 font-medium">
@@ -111,59 +119,66 @@ export default function TotalParticipants() {
         <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
           <div className="p-6 border-b border-gray-50 flex justify-between items-center">
             <h3 className="font-bold text-lg text-gray-800">
-              Participation Database ({participantsData?.total || 0})
+              Active Teams ({teamsData.length})
             </h3>
           </div>
           <div className="overflow-x-auto">
             <table className="w-full text-left border-collapse">
               <thead>
                 <tr className="bg-gray-50 text-gray-500 text-xs uppercase tracking-wider">
-                  <th className="p-4 font-semibold">Participation ID</th>
-                  <th className="p-4 font-semibold">User Name</th>
-                  <th className="p-4 font-semibold">Contest Title</th>
+                  <th className="p-4 font-semibold">Team Name</th>
+                  <th className="p-4 font-semibold">Leader</th>
+                  <th className="p-4 font-semibold">Members</th>
+                  <th className="p-4 font-semibold">Contest</th>
                   <th className="p-4 font-semibold">Status</th>
-                  <th className="p-4 font-semibold">Submission Date</th>
                   <th className="p-4 font-semibold text-right">Actions</th>
                 </tr>
               </thead>
               <tbody className="text-sm divide-y divide-gray-50">
-                {participantsData?.data?.map((p) => (
-                  <tr key={p._id} className="hover:bg-gray-50/50 transition-colors">
-                    <td className="p-4 font-mono text-[11px] text-gray-400">
+                {teamsData.map((team) => (
+                  <tr key={team._id} className="hover:bg-gray-50/50 transition-colors">
+                    <td className="p-4">
                       <button 
-                        onClick={() => openModal(p)}
-                        className="hover:text-purple-600 hover:underline transition-all"
+                        onClick={() => openModal(team)}
+                        className="font-bold text-gray-900 hover:text-[#8cc63f] transition-all text-left"
                       >
-                        {p._id}
+                        {team.teamName}
                       </button>
+                      <div className="text-[10px] text-gray-400 font-mono">{team._id}</div>
                     </td>
                     <td className="p-4">
-                      <div className="font-medium text-gray-800">{p.user?.userName || 'N/A'}</div>
-                      <div className="text-[11px] text-gray-400">{p.user?.email}</div>
+                      <div className="font-medium text-gray-800">{team.leader?.userName || 'N/A'}</div>
+                      <div className="text-[11px] text-gray-400">{team.leader?.email}</div>
                     </td>
-                    <td className="p-4 font-medium text-gray-700">{p.contest?.contestTitle || 'N/A'}</td>
+                    <td className="p-4">
+                       <div className="flex -space-x-2">
+                          {team.members?.map((m, i) => (
+                             <div key={i} title={m.userName} className="w-7 h-7 rounded-full bg-gray-100 border border-white flex items-center justify-center text-[10px] font-black text-gray-400">
+                                {m.userName?.charAt(0).toUpperCase()}
+                             </div>
+                          ))}
+                       </div>
+                    </td>
+                    <td className="p-4 font-medium text-gray-700">{team.contest?.contestTitle || 'N/A'}</td>
                     <td className="p-4">
                       <span className={`px-2.5 py-1 rounded-full text-xs font-bold ${
-                        p.submissionStatus === 'Submitted' ? 'bg-green-100 text-green-600' : 'bg-gray-100 text-gray-400'
+                        team.submissionStatus === 'Submitted' ? 'bg-green-100 text-green-600' : 'bg-gray-100 text-gray-400'
                       }`}>
-                        {p.submissionStatus || 'Pending'}
+                        {team.submissionStatus || 'Draft'}
                       </span>
-                    </td>
-                    <td className="p-4 text-gray-500">
-                      {p.submittedAt ? new Date(p.submittedAt).toLocaleDateString() : '---'}
                     </td>
                     <td className="p-4 text-right flex justify-end gap-2">
                       <Button 
-                        onClick={() => openModal(p)}
+                        onClick={() => openModal(team)}
                         variant="secondary" 
                         className="px-3 py-1.5 text-xs bg-gray-100 text-gray-600 hover:bg-gray-200 border-none"
                       >
-                        {p.submissionStatus === 'Submitted' ? 'Grade Work' : 'View Details'}
+                        {team.submissionStatus === 'Submitted' ? 'Grade Team' : 'View Team'}
                       </Button>
                       <button 
-                        onClick={() => handleDelete(p._id)}
+                        onClick={() => handleDelete(team._id)}
                         className="p-1.5 rounded-lg bg-red-50 text-red-500 hover:bg-red-100 transition-colors"
-                        title="Delete Participation"
+                        title="Delete Team"
                       >
                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                           <path strokeLinecap="round" strokeLinejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
@@ -172,10 +187,10 @@ export default function TotalParticipants() {
                     </td>
                   </tr>
                 ))}
-                {(!participantsData?.data || participantsData.data.length === 0) && (
+                {teamsData.length === 0 && (
                   <tr>
                     <td colSpan="6" className="p-8 text-center text-gray-400 italic">
-                      No participation history found.
+                      No teams have been formed yet.
                     </td>
                   </tr>
                 )}
@@ -186,15 +201,15 @@ export default function TotalParticipants() {
       )}
 
       {/* Details Modal */}
-      {isModalOpen && selectedParticipation && (
+      {isModalOpen && selectedTeam && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
           <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" onClick={closeModal}></div>
           <div className="bg-white rounded-[32px] w-full max-w-2xl max-h-[90vh] overflow-y-auto relative z-10 shadow-2xl animate-in fade-in zoom-in duration-200">
             {/* Modal Header */}
             <div className="p-8 border-b border-gray-100 flex justify-between items-start sticky top-0 bg-white z-10">
               <div>
-                <h2 className="text-2xl font-black text-gray-900 tracking-tight">Participation Details</h2>
-                <p className="text-sm text-gray-400 font-mono mt-1">ID: {selectedParticipation._id}</p>
+                <h2 className="text-2xl font-black text-gray-900 tracking-tight">Team Overview</h2>
+                <p className="text-sm text-[#8cc63f] font-mono mt-1">Ref: {selectedTeam._id}</p>
               </div>
               <button 
                 onClick={closeModal}
@@ -208,54 +223,51 @@ export default function TotalParticipants() {
 
             {/* Modal Content */}
             <div className="p-8 space-y-10">
-              {/* User Section */}
-              <section>
-                <div className="flex items-center gap-2 mb-4">
-                   <div className="w-8 h-8 rounded-lg bg-blue-500/10 flex items-center justify-center text-blue-600 font-bold text-lg">U</div>
-                   <h3 className="font-bold text-gray-800">User Information</h3>
-                </div>
-                <div className="grid grid-cols-2 gap-6 bg-gray-50/50 p-6 rounded-2xl border border-gray-100">
-                  <div>
-                    <p className="text-[10px] uppercase font-black text-gray-400 tracking-widest mb-1">Full Name</p>
-                    <p className="font-bold text-gray-800">{selectedParticipation.user?.userName || 'N/A'}</p>
-                  </div>
-                  <div>
-                    <p className="text-[10px] uppercase font-black text-gray-400 tracking-widest mb-1">Email Address</p>
-                    <p className="font-bold text-gray-800">{selectedParticipation.user?.email || 'N/A'}</p>
-                  </div>
-                  <div>
-                    <p className="text-[10px] uppercase font-black text-gray-400 tracking-widest mb-1">Contact</p>
-                    <p className="font-bold text-gray-800">{selectedParticipation.user?.contact || 'N/A'}</p>
-                  </div>
-                  <div>
-                    <p className="text-[10px] uppercase font-black text-gray-400 tracking-widest mb-1">Gender</p>
-                    <p className="font-bold text-gray-800 capitalize">{selectedParticipation.user?.gender || 'N/A'}</p>
-                  </div>
-                </div>
-              </section>
-
               {/* Contest Section */}
               <section>
+                 <div className="flex items-center gap-2 mb-4">
+                    <div className="w-8 h-8 rounded-lg bg-[#8cc63f]/10 flex items-center justify-center text-[#8cc63f] font-bold text-lg">C</div>
+                    <h3 className="font-bold text-gray-800">Contest Information</h3>
+                 </div>
+                 <div className="bg-gray-50/50 p-6 rounded-2xl border border-gray-100">
+                    <p className="text-[10px] uppercase font-black text-gray-400 tracking-widest mb-1">Active Contest</p>
+                    <p className="font-bold text-gray-800 text-lg">{selectedTeam.contest?.contestTitle || 'N/A'}</p>
+                 </div>
+              </section>
+
+              {/* Team Section */}
+              <section>
                 <div className="flex items-center gap-2 mb-4">
-                   <div className="w-8 h-8 rounded-lg bg-[#8cc63f]/10 flex items-center justify-center text-[#8cc63f] font-bold text-lg">C</div>
-                   <h3 className="font-bold text-gray-800">Contest Details</h3>
+                   <div className="w-8 h-8 rounded-lg bg-blue-500/10 flex items-center justify-center text-blue-600 font-bold text-lg">T</div>
+                   <h3 className="font-bold text-gray-800">Team Structure</h3>
                 </div>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 bg-gray-50/50 p-6 rounded-2xl border border-gray-100">
-                  <div className="md:col-span-2">
-                    <p className="text-[10px] uppercase font-black text-gray-400 tracking-widest mb-1">Title</p>
-                    <p className="font-bold text-gray-800 text-lg">{selectedParticipation.contest?.contestTitle || 'N/A'}</p>
-                  </div>
+                <div className="bg-gray-50/50 p-6 rounded-2xl border border-gray-100 space-y-6">
                   <div>
-                    <p className="text-[10px] uppercase font-black text-gray-400 tracking-widest mb-1">Category</p>
-                    <p className="inline-block px-2.5 py-0.5 bg-purple-100 text-purple-600 rounded text-[11px] font-black uppercase">{selectedParticipation.contest?.category || 'N/A'}</p>
+                    <p className="text-[10px] uppercase font-black text-gray-400 tracking-widest mb-1">Team Name</p>
+                    <p className="font-bold text-gray-800 text-xl">{selectedTeam.teamName}</p>
                   </div>
-                  <div>
-                    <p className="text-[10px] uppercase font-black text-gray-400 tracking-widest mb-1">Status</p>
-                    <p className="font-bold text-gray-800">{selectedParticipation.contest?.status || 'N/A'}</p>
-                  </div>
-                  <div className="md:col-span-2">
-                    <p className="text-[10px] uppercase font-black text-gray-400 tracking-widest mb-1">Description</p>
-                    <p className="text-sm text-gray-600 leading-relaxed">{selectedParticipation.contest?.contestDescription || 'No description provided.'}</p>
+                  
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                      <p className="text-[10px] uppercase font-black text-gray-400 tracking-widest mb-2">Leader</p>
+                      <div className="bg-white p-3 rounded-xl border border-gray-100 flex items-center gap-3">
+                         <div className="w-10 h-10 rounded-full bg-[#8cc63f] text-white flex items-center justify-center font-bold">L</div>
+                         <div>
+                            <p className="text-sm font-bold text-gray-800">{selectedTeam.leader?.userName}</p>
+                            <p className="text-[10px] text-gray-400">{selectedTeam.leader?.email}</p>
+                         </div>
+                      </div>
+                    </div>
+                    <div>
+                      <p className="text-[10px] uppercase font-black text-gray-400 tracking-widest mb-2">Members ({selectedTeam.members?.length})</p>
+                      <div className="flex flex-wrap gap-2">
+                        {selectedTeam.members?.map((m, i) => (
+                           <div key={i} className="px-3 py-1.5 bg-white rounded-lg border border-gray-100 text-[11px] font-bold text-gray-600">
+                             {m.userName}
+                           </div>
+                        ))}
+                      </div>
+                    </div>
                   </div>
                 </div>
               </section>
@@ -264,48 +276,34 @@ export default function TotalParticipants() {
               <section>
                 <div className="flex items-center gap-2 mb-4">
                    <div className="w-8 h-8 rounded-lg bg-orange-500/10 flex items-center justify-center text-orange-600 font-bold text-lg">S</div>
-                   <h3 className="font-bold text-gray-800">Submission Details</h3>
+                   <h3 className="font-bold text-gray-800">Team Submission</h3>
                 </div>
                 <div className="bg-gray-50/50 p-6 rounded-2xl border border-gray-100 space-y-6">
-                  <div className="flex items-center justify-between">
-                     <div>
-                        <p className="text-[10px] uppercase font-black text-gray-400 tracking-widest mb-1">Status</p>
-                        <span className={`px-3 py-1 rounded-full text-xs font-black uppercase ${
-                          selectedParticipation.submissionStatus === 'Submitted' ? 'bg-green-500 text-white' : 'bg-gray-200 text-gray-500'
-                        }`}>
-                          {selectedParticipation.submissionStatus || 'Pending'}
-                        </span>
-                     </div>
-                     <div>
-                        <p className="text-[10px] uppercase font-black text-gray-400 tracking-widest mb-1">Submission Date</p>
-                        <p className="font-bold text-gray-800">{selectedParticipation.submittedAt ? new Date(selectedParticipation.submittedAt).toLocaleString() : '---'}</p>
-                     </div>
-                  </div>
+                   <div className="flex items-center justify-between">
+                      <span className={`px-3 py-1 rounded-full text-xs font-black uppercase ${
+                        selectedTeam.submissionStatus === 'Submitted' ? 'bg-green-500 text-white' : 'bg-gray-200 text-gray-500'
+                      }`}>
+                        {selectedTeam.submissionStatus || 'Open'}
+                      </span>
+                   </div>
                   
-                  {selectedParticipation.submissionLink && (
+                  {selectedTeam.submissionLink && (
                     <div>
-                      <p className="text-[10px] uppercase font-black text-gray-400 tracking-widest mb-1">Live/GitHub Link</p>
-                      <a href={selectedParticipation.submissionLink} target="_blank" rel="noopener noreferrer" className="text-blue-500 hover:underline font-bold break-all">
-                        {selectedParticipation.submissionLink}
+                      <p className="text-[10px] uppercase font-black text-gray-400 tracking-widest mb-1">Shared Link</p>
+                      <a href={selectedTeam.submissionLink} target="_blank" rel="noopener noreferrer" className="text-blue-500 hover:underline font-bold break-all">
+                        {selectedTeam.submissionLink}
                       </a>
                     </div>
                   )}
-
-                  <div>
-                    <p className="text-[10px] uppercase font-black text-gray-400 tracking-widest mb-1">Project Description</p>
-                    <p className="text-sm text-gray-600 leading-relaxed italic">
-                      "{selectedParticipation.description || 'No description provided with this submission.'}"
-                    </p>
-                  </div>
                 </div>
               </section>
 
               {/* Result Recording Form (Admin Only) */}
-              {selectedParticipation.submissionStatus === 'Submitted' && (
+              {selectedTeam.submissionStatus === 'Submitted' && (
                 <section className="animate-in slide-in-from-bottom duration-500">
                   <div className="flex items-center gap-2 mb-4">
                     <div className="w-8 h-8 rounded-lg bg-purple-500/10 flex items-center justify-center text-purple-600 font-bold text-lg">R</div>
-                    <h3 className="font-bold text-gray-800">Evaluate & Record Result</h3>
+                    <h3 className="font-bold text-gray-800">Team Grading</h3>
                   </div>
                   <form onSubmit={handleResultSubmit} className="bg-purple-50/30 p-6 rounded-2xl border border-purple-100 space-y-6">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -323,7 +321,7 @@ export default function TotalParticipants() {
                         </select>
                       </div>
                       <div className="flex flex-col">
-                        <label className="text-[10px] uppercase font-black text-gray-400 tracking-widest mb-2">Final Score (0-100)</label>
+                        <label className="text-[10px] uppercase font-black text-gray-400 tracking-widest mb-2">Team Score (0-100)</label>
                         <input 
                           type="number"
                           min="0"
@@ -336,11 +334,11 @@ export default function TotalParticipants() {
                       </div>
                     </div>
                     <div className="flex flex-col">
-                      <label className="text-[10px] uppercase font-black text-gray-400 tracking-widest mb-2">Internal Remarks</label>
+                      <label className="text-[10px] uppercase font-black text-gray-400 tracking-widest mb-2">Feedback for Team</label>
                       <textarea 
                         value={resultForm.remarks}
                         onChange={(e) => setResultForm({...resultForm, remarks: e.target.value})}
-                        placeholder="Add some feedback or internal notes..."
+                        placeholder="Add some team-specific feedback..."
                         className="w-full px-4 py-3 rounded-xl border border-purple-100 bg-white shadow-sm focus:outline-none focus:ring-2 focus:ring-purple-200 text-sm font-medium text-gray-700 min-h-[100px] resize-none"
                       />
                     </div>
@@ -349,7 +347,7 @@ export default function TotalParticipants() {
                       disabled={resultLoading}
                       className="w-full py-4 bg-purple-600 hover:bg-purple-700 text-white font-black uppercase tracking-widest text-xs shadow-lg shadow-purple-200"
                     >
-                      {resultLoading ? "Submitting Result..." : "Finalize & Record Result"}
+                      {resultLoading ? "Recording Results..." : "Finalize Team Results"}
                     </Button>
                   </form>
                 </section>

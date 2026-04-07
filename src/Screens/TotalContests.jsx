@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import useContests from '../hooks/useContests';
 import Button from '../components/Button';
@@ -28,7 +28,7 @@ const STATUS_STYLES = {
 };
 
 export default function TotalContests() {
-  const { data, loading, error, fetchContests, updateContestStatus, deleteContest } = useContests();
+  const { data, loading, error, fetchAllContests, updateContestStatus, deleteContest } = useContests();
   const { showToast } = useToast();
   const navigate = useNavigate();
   const [pendingStatus, setPendingStatus] = useState({});
@@ -47,7 +47,7 @@ export default function TotalContests() {
     const result = await updateContestStatus(id, apiValue);
     if (result.success) {
       showToast(result.message || 'Contest status updated successfully!', 'success');
-      fetchContests();
+      fetchAllContests();
       setPendingStatus(prev => { const n = { ...prev }; delete n[id]; return n; });
     } else {
       showToast(result.message || 'Failed to update status', 'error');
@@ -58,10 +58,14 @@ export default function TotalContests() {
     if (window.confirm("ARE YOU ABSOLUTELY SURE? Deleting a contest will also remove all associated results and participations. This cannot be undone.")) {
       const result = await deleteContest(id);
       if (result.success) {
-        fetchContests();
+        fetchAllContests();
       }
     }
   };
+
+  useEffect(() => {
+    fetchAllContests();
+  }, [fetchAllContests]);
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
@@ -83,7 +87,7 @@ export default function TotalContests() {
         <div className="flex gap-3">
           <Button 
             variant="secondary" 
-            onClick={fetchContests}
+            onClick={fetchAllContests}
             className="px-5 py-2.5 text-sm font-bold flex items-center gap-2"
           >
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-4 h-4">
@@ -117,11 +121,11 @@ export default function TotalContests() {
             <thead>
               <tr className="bg-gray-50/50 border-b border-gray-100 text-gray-500 text-[11px] uppercase font-black tracking-[0.1em]">
                 <th className="p-6">Internal ID</th>
-                <th className="p-6">Contest Details</th>
+                <th className="p-6">Details</th>
                 <th className="p-6">Category</th>
+                <th className="p-6">Type</th>
                 <th className="p-6">Status</th>
-                <th className="p-6">Metrics</th>
-                <th className="p-6 text-right">Deadline</th>
+                <th className="p-6 text-right">Settings</th>
                 <th className="p-6 text-right">Actions</th>
               </tr>
             </thead>
@@ -135,26 +139,34 @@ export default function TotalContests() {
                     </div>
                   </td>
                 </tr>
-              ) : data?.contests?.length >0 ? (
+              ) : data?.contests?.length > 0 ? (
                 data.contests.map((contest, i) => (
                   <tr key={contest._id} className="hover:bg-gray-50/30 transition-colors group">
                     <td className="p-6">
-                      <div className="flex items-center gap-2">
-                        <code className="text-[11px] font-mono bg-gray-100 text-gray-400 px-2 py-1 rounded group-hover:bg-[#8cc63f]/10 group-hover:text-[#8cc63f] transition-colors">
-                          {contest._id}
-                        </code>
+                      <code className="text-[11px] font-mono bg-gray-100 text-gray-400 px-2 py-1 rounded group-hover:bg-[#8cc63f]/10 group-hover:text-[#8cc63f] transition-colors">
+                        {contest._id.slice(-6)}
+                      </code>
+                    </td>
+                    <td className="p-6">
+                      <div className="max-w-[200px]">
+                        <h4 className="font-bold text-gray-900 text-[14px] mb-0.5 truncate">{contest.contestTitle}</h4>
+                        <p className="text-[10px] text-gray-400 font-bold uppercase">{new Date(contest.contestDeadLine).toLocaleDateString()}</p>
                       </div>
                     </td>
                     <td className="p-6">
-                      <div>
-                        <h4 className="font-bold text-gray-900 text-[15px] mb-0.5">{contest.contestTitle}</h4>
-                        <p className="text-xs text-gray-400 line-clamp-1 max-w-[200px]">{contest.contestDescription}</p>
-                      </div>
-                    </td>
-                    <td className="p-6">
-                      <span className="text-[13px] font-bold text-gray-600 bg-gray-50 px-3 py-1 rounded-full border border-gray-100">
-                        {contest.category || 'Uncategorized'}
+                      <span className="text-[11px] font-black uppercase tracking-wider text-gray-600 bg-gray-100 px-2.5 py-1 rounded-md border border-gray-200">
+                        {contest.category}
                       </span>
+                    </td>
+                    <td className="p-6">
+                      <div className="flex flex-col gap-1">
+                        <span className={`text-[11px] font-black uppercase ${contest.projectType === 'Team' ? 'text-blue-600' : 'text-purple-600'}`}>
+                          {contest.projectType}
+                        </span>
+                        {contest.projectType === 'Team' && (
+                          <span className="text-[10px] font-bold text-gray-400">Size: {contest.teamSize}</span>
+                        )}
+                      </div>
                     </td>
                     <td className="p-6">
                       {(() => {
@@ -162,27 +174,24 @@ export default function TotalContests() {
                         const selected = pendingStatus[contest._id] ?? currentLabel;
                         return (
                           <div className="flex items-center gap-2">
-                            {/* Current status badge */}
-                            <div className="flex items-center gap-1.5 text-xs font-black uppercase tracking-wider mr-2">
+                            <div className="flex items-center gap-1.5 text-[11px] font-black uppercase tracking-wider min-w-[100px]">
                               <span className={`w-2 h-2 rounded-full ${STATUS_STYLES[currentLabel]?.dot || 'bg-gray-300'}`}></span>
                               <span className={STATUS_STYLES[currentLabel]?.text || 'text-gray-500'}>{currentLabel}</span>
                             </div>
-                            {/* Dropdown — shows UI labels */}
                             <select
                               value={selected}
                               onChange={(e) => handleStatusChange(contest._id, e.target.value)}
-                              className="text-xs border border-gray-200 rounded-lg px-2 py-1.5 bg-gray-50 text-gray-700 font-semibold focus:outline-none focus:ring-2 focus:ring-[#8cc63f]/30 cursor-pointer"
+                              className="text-[11px] border border-gray-200 rounded-lg px-2 py-1.5 bg-gray-50 text-gray-700 font-bold focus:outline-none focus:ring-2 focus:ring-[#8cc63f]/30 cursor-pointer"
                             >
                               {STATUS_OPTIONS.map(s => (
                                 <option key={s} value={s}>{s}</option>
                               ))}
                             </select>
-                            {/* Save button — only when selection differs from current */}
                             {selected !== currentLabel && (
                               <button
                                 onClick={() => handleSaveStatus(contest._id)}
                                 disabled={savingId === contest._id}
-                                className="px-3 py-1.5 text-[11px] font-black uppercase tracking-wider bg-[#8cc63f] text-white rounded-lg hover:bg-[#7ab033] transition disabled:opacity-50"
+                                className="px-2.5 py-1.5 text-[10px] font-black uppercase tracking-wider bg-[#8cc63f] text-white rounded-lg hover:bg-[#7ab033] transition disabled:opacity-50"
                               >
                                 {savingId === contest._id ? '...' : 'Save'}
                               </button>
@@ -191,27 +200,17 @@ export default function TotalContests() {
                         );
                       })()}
                     </td>
-                    <td className="p-6">
-                      <div className="flex flex-col">
-                        <span className="text-[14px] font-extrabold text-gray-800">{contest.entryLimit}</span>
-                        <span className="text-[10px] text-gray-400 font-bold uppercase tracking-tight">Slot Limit</span>
-                      </div>
-                    </td>
                     <td className="p-6 text-right">
                       <div className="flex flex-col items-end">
-                        <span className="text-[13px] font-bold text-gray-700">
-                          {new Date(contest.contestDeadLine).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })}
-                        </span>
-                         <span className="text-[10px] font-bold text-gray-400 uppercase">
-                          {new Date(contest.contestDeadLine).toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit' })}
-                        </span>
+                        <span className="text-[12px] font-black text-gray-800">{contest.entryLimit}</span>
+                        <span className="text-[9px] text-gray-400 font-bold uppercase tracking-widest">Limit</span>
                       </div>
                     </td>
                     <td className="p-6 text-right">
                       <button 
                         onClick={() => handleDelete(contest._id)}
-                        className="p-2.5 rounded-xl bg-red-50 text-red-500 hover:bg-red-500 hover:text-white transition-all transform hover:scale-110 active:scale-95 shadow-sm border border-red-100"
-                        title="Permanently Delete Contest"
+                        className="p-2 rounded-xl bg-red-50 text-red-500 hover:bg-red-500 hover:text-white transition-all shadow-sm border border-red-100"
+                        title="Delete Contest"
                       >
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-4 h-4">
                           <path strokeLinecap="round" strokeLinejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" />
@@ -224,14 +223,9 @@ export default function TotalContests() {
                 <tr>
                   <td colSpan="7" className="p-20 text-center">
                     <div className="flex flex-col items-center gap-3">
-                      <div className="w-16 h-16 bg-gray-50 rounded-full flex items-center justify-center mb-2">
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-8 h-8 text-gray-300">
-                          <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" />
-                        </svg>
-                      </div>
-                      <h3 className="text-lg font-bold text-gray-900">Registry is empty</h3>
-                      <p className="text-gray-500 text-[15px] max-w-[300px]">No contests found in the database. Launch your first one to populate the list.</p>
-                      <Button variant="primary" onClick={() => navigate("/admin-dashboard/add-contest")} className="mt-4 px-8">Launch Contest</Button>
+                      <h3 className="text-lg font-bold text-gray-900">No contests found</h3>
+                      <p className="text-gray-500 text-sm">The registry appears to be empty.</p>
+                      <Button variant="primary" onClick={() => navigate("/admin-dashboard/add-contest")} className="mt-4 px-8">Create First Contest</Button>
                     </div>
                   </td>
                 </tr>

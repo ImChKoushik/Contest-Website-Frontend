@@ -4,6 +4,7 @@ import Input from '../components/Input';
 import Button from '../components/Button';
 import Form from '../components/Form';
 import useContests from '../hooks/useContests';
+import { useToast } from '../context/ToastContext';
 
 export default function AddContest() {
   const [formData, setFormData] = useState({
@@ -13,19 +14,24 @@ export default function AddContest() {
     contestDeadLine: '',
     status: 'Upcoming',
     category: 'MERN',
-    entryLimit: 100
+    entryLimit: 100,
+    projectType: 'Individual',
+    teamSize: 1
   });
 
   const CATEGORY_OPTIONS = ["MERN", "UI/UX DESIGN", "DIGITAL MARKETING"];
   const STATUS_OPTIONS = ["Upcoming", "On-Going", "Completed"];
+  const PROJECT_TYPE_OPTIONS = ["Individual", "Team"];
 
   const { addContest, loading, error } = useContests();
+  const { showToast } = useToast();
   const navigate = useNavigate();
 
   const handleChange = (e) => {
+    const { name, value } = e.target;
     setFormData({
       ...formData,
-      [e.target.name]: e.target.value
+      [name]: name === 'teamSize' || name === 'entryLimit' ? Number(value) : value
     });
   };
 
@@ -36,7 +42,7 @@ export default function AddContest() {
     
     if (result) {
       showToast("Contest Created Successfully!", "success");
-      navigate("/admin-dashboard");
+      navigate("/admin-dashboard/total-contests");
     }
   };
 
@@ -129,6 +135,33 @@ export default function AddContest() {
             </div>
 
             <div className="flex flex-col">
+              <label className="block text-sm font-bold text-gray-700 mb-2">Project Type</label>
+              <select 
+                name="projectType"
+                value={formData.projectType}
+                onChange={handleChange}
+                className="w-full px-5 py-4 rounded-2xl bg-gray-50/50 border border-gray-200 focus:border-[#8cc63f] focus:ring-4 focus:ring-[#8cc63f]/10 outline-none transition-all text-gray-800 font-medium text-[15px] cursor-pointer appearance-none"
+                required
+              >
+                {PROJECT_TYPE_OPTIONS.map(type => (
+                  <option key={type} value={type}>{type}</option>
+                ))}
+              </select>
+            </div>
+
+            {formData.projectType === 'Team' && (
+              <Input 
+                label="Max Team Size" 
+                type="number" 
+                name="teamSize"
+                value={formData.teamSize}
+                onChange={handleChange}
+                min="2"
+                required
+              />
+            )}
+
+            <div className="flex flex-col">
               <label className="block text-sm font-bold text-gray-700 mb-2">Initial Status</label>
               <select 
                 name="status"
@@ -144,7 +177,7 @@ export default function AddContest() {
             </div>
 
             <Input 
-              label="Participant Limit" 
+              label="Participant/Team Limit" 
               type="number" 
               name="entryLimit"
               value={formData.entryLimit}

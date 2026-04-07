@@ -47,4 +47,84 @@
   .animate-progress {
     animation: progress-shrink linear forwards;
   }
+
+  /* Hamburger Animation */
+  .hamburger-box {
+    width: 24px;
+    height: 18px;
+    display: inline-block;
+    position: relative;
+  }
+
+  .hamburger-inner {
+    display: block;
+    top: 50%;
+    margin-top: -1px;
+  }
+
+  .hamburger-inner,
+  .hamburger-inner::before,
+  .hamburger-inner::after {
+    width: 24px;
+    height: 2px;
+    background-color: #8cc63f;
+    position: absolute;
+    transition-property: transform;
+    transition-duration: 0.2s;
+    transition-timing-function: cubic-bezier(0.55, 0.055, 0.675, 0.19);
+    border-radius: 4px;
+  }
+
+  .hamburger-inner::before,
+  .hamburger-inner::after {
+    content: "";
+    display: block;
+  }
+
+  .hamburger-inner::before {
+    top: -8px;
+  }
+
+  .hamburger-inner::after {
+    bottom: -8px;
+  }
+
+  /* Hamburger Open State */
+  .hamburger-open .hamburger-inner {
+    transform: rotate(45deg);
+    transition-delay: 0.12s;
+    transition-timing-function: cubic-bezier(0.215, 0.61, 0.355, 1);
+  }
+
+  .hamburger-open .hamburger-inner::before {
+    top: 0;
+    opacity: 0;
+    transition: top 0.07s ease, opacity 0.07s 0.12s ease;
+  }
+
+  .hamburger-open .hamburger-inner::after {
+    bottom: 0;
+    transform: rotate(-90deg);
+    transition: bottom 0.07s ease, transform 0.2s 0.12s cubic-bezier(0.215, 0.61, 0.355, 1);
+  }
+
+  /* Mobile Menu Transitions */
+  .mobile-menu-enter {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  .mobile-menu-enter-active {
+    opacity: 1;
+    transform: translateY(0);
+    transition: opacity 300ms, transform 300ms;
+  }
+  .mobile-menu-exit {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  .mobile-menu-exit-active {
+    opacity: 0;
+    transform: translateY(-10px);
+    transition: opacity 200ms, transform 200ms;
+  }
 }

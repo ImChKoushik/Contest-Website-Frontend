@@ -107,7 +107,7 @@ export default function TotalResults() {
               <thead>
                 <tr className="bg-gray-50/50 text-gray-400 text-[10px] uppercase font-black tracking-widest border-b border-gray-100">
                   <th className="p-6">Rank</th>
-                  <th className="p-6">Student</th>
+                  <th className="p-6">Team</th>
                   <th className="p-6">Contest</th>
                   <th className="p-6">Score</th>
                   <th className="p-6">Remarks</th>
@@ -132,8 +132,8 @@ export default function TotalResults() {
                       </span>
                     </td>
                     <td className="p-6">
-                      <div className="font-bold text-gray-900">{res.user?.userName || 'N/A'}</div>
-                      <div className="text-[11px] text-gray-400 font-medium">{res.user?.email}</div>
+                      <div className="font-bold text-gray-900">{res.team?.teamName || 'N/A'}</div>
+                      <div className="text-[11px] text-gray-400 font-medium">Ref: {res.team?._id?.substring(0, 8)}...</div>
                     </td>
                     <td className="p-6">
                       <div className="font-bold text-gray-700">{res.contest?.contestTitle || 'N/A'}</div>

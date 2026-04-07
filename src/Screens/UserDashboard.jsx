@@ -2,22 +2,70 @@ import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import ContestCard from '../components/ContestCard';
 import useContests from '../hooks/useContests';
-import useParticipation from '../hooks/useParticipation';
+import useTeam from '../hooks/useTeam';
+import TeamSelectionModal from '../components/TeamSelectionModal';
+import InviteModal from '../components/InviteModal';
 import { useAuthContext } from '../context/AuthContext';
 import useResults from '../hooks/useResults';
+import { useToast } from '../context/ToastContext';
+import Button from '../components/Button';
 
 export default function UserDashboard() {
   const { user: currentUser } = useAuthContext();
   const [currentSlide, setCurrentSlide] = useState(0);
   const navigate = useNavigate();
 
-  const { joinContest, fetchMyParticipations, myParticipations, loading: participationLoading } = useParticipation();
+  const { 
+    viewAllTeams, getTeamDetails, getMyTeam, 
+    acceptInvite, rejectInvite, acceptRequest, rejectRequest, 
+    loading: teamLoading 
+  } = useTeam();
   const { fetchMyResults, myResults, loading: resultsLoading } = useResults();
+  const { showToast } = useToast();
+
+  const [myTeams, setMyTeams] = useState([]);
+  const [selectedContestForTeam, setSelectedContestForTeam] = useState(null);
+  const [isTeamModalOpen, setIsTeamModalOpen] = useState(false);
+  const [isInviteModalOpen, setIsInviteModalOpen] = useState(false);
+  const [teamToInvite, setTeamToInvite] = useState(null);
+
+  const { data, loading, error } = useContests();
+  const [selectedCategory, setSelectedCategory] = useState('All');
+
+  const fetchUserTeams = async () => {
+    if (!currentUser) return;
+    
+    if (currentUser.role === 'Admin') {
+      const { success, data: allTeams } = await viewAllTeams();
+      if (success) setMyTeams(allTeams);
+      return;
+    }
+
+    // For regular users, fetch each team separately
+    if (!loading && data?.contests) {
+      const teamPromises = data.contests.map(c => getMyTeam(c._id));
+      const results = await Promise.all(teamPromises);
+      
+      const rawTeams = results
+        .filter(r => r.success && r.data)
+        .map(r => r.data);
+        
+      // Fetch full details for each team to get the latest members and join requests
+      const detailPromises = rawTeams.map(t => getTeamDetails(t._id));
+      const detailResults = await Promise.all(detailPromises);
+      
+      const userTeams = detailResults
+        .filter(r => r.success && r.data)
+        .map(r => r.data);
+        
+      setMyTeams(userTeams);
+    }
+  };
 
   useEffect(() => {
-    fetchMyParticipations();
+    fetchUserTeams();
     fetchMyResults();
-  }, []);
+  }, [currentUser, data?.contests]);
 
   const slides = [
     {
@@ -88,8 +136,7 @@ export default function UserDashboard() {
     }
   };
 
-  const { data, loading, error } = useContests();
-  const [selectedCategory, setSelectedCategory] = useState('All');
+
 
   // Helper to format deadline
   const getDaysLeft = (deadline) => {
@@ -275,57 +322,227 @@ export default function UserDashboard() {
          </section>
       )}
 
-      {/* 1.5 My Participations Section */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-16 relative z-20">
-        <div className="flex items-center justify-between mb-8">
+      {/* 1.5 My Teams Section */}
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-24 relative z-20">
+        <div className="flex flex-col md:flex-row md:items-end justify-between mb-10 gap-4">
           <div>
-            <div className="flex items-center gap-4">
-              <h2 className="text-2xl font-black text-gray-900 tracking-tight">Joined Contests</h2>
+            <div className="flex items-center gap-3 mb-2">
+               <div className="w-8 h-8 rounded-lg bg-[#8cc63f]/20 flex items-center justify-center text-[#8cc63f]">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M18 18.72a9.094 9.094 0 003.741-.479 3 3 0 00-4.682-2.72m.94 3.198l.001.031c0 .225-.012.447-.037.666A11.944 11.944 0 0112 21c-2.17 0-4.207-.576-5.963-1.584A6.062 6.062 0 016 18.719m12 0a5.971 5.971 0 00-.941-3.197m0 0A5.995 5.995 0 0012 12.75a5.995 5.995 0 00-5.058 2.772m0 0a5.971 5.971 0 00-.941 3.197m0 0l.001.031c0 .225.012.447.038.666M12 18.75a.75.75 0 100-1.5.75.75 0 000 1.5Z" />
+                  </svg>
+               </div>
+               <h2 className="text-3xl font-black text-gray-900 tracking-tight">Active Squads</h2>
             </div>
-            <p className="text-sm text-gray-400 font-medium italic">Contests you've applied for</p>
+            <p className="text-[#6b7280] font-medium">Manage your participations and collaborate with teammates.</p>
           </div>
-          <div className="h-px flex-grow mx-8 bg-gray-100 hidden md:block"></div>
+          
+          <div className="flex items-center gap-2">
+             <span className="text-xs font-black text-gray-400 uppercase tracking-widest bg-gray-100 px-3 py-1.5 rounded-full">
+               Total: {myTeams.length} Teams
+             </span>
+          </div>
         </div>
         
-        {myParticipations.length > 0 ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {myParticipations.map((p) => (
-              <div key={p._id} className="bg-white p-6 rounded-[32px] border border-gray-100 shadow-[0_4px_20px_rgba(0,0,0,0.02)] hover:shadow-xl hover:shadow-purple-500/5 transition-all group relative overflow-hidden">
+        {myTeams.length > 0 ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8">
+            {myTeams.map((team) => (
+              <div key={team._id} className="bg-white rounded-[44px] p-8 shadow-[0_8px_30px_rgb(0,0,0,0.02)] border border-gray-50 hover:border-[#8cc63f]/20 hover:shadow-[0_20px_50px_rgba(140,198,63,0.08)] transition-all duration-500 group relative overflow-hidden flex flex-col">
+                
                 {/* Status Badge */}
-                <div className="flex items-start justify-between mb-6">
-                  <div className="w-12 h-12 rounded-2xl bg-purple-50 flex items-center justify-center text-purple-600 transition-transform group-hover:scale-110">
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-6 h-6">
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M15.59 14.37a6 6 0 01-5.84 7.38v-4.8m5.84-2.58a14.98 14.98 0 006.16-12.12A14.98 14.98 0 009.63 3.18a14.98 14.98 0 00-4.97 8.91 14.97 14.97 0 003.57 12.2m12-19.91a6.75 6.75 0 00-5.1-5.1m5.1 5.1a14.98 14.98 0 01-12 12m12-12c-2.1 4.7-6.8 6-12 6" />
-                    </svg>
-                  </div>
-                  <span className={`px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider ${
-                    p.submissionStatus === 'Submitted' ? 'bg-green-500 text-white shadow-lg shadow-green-200' : 'bg-orange-500 text-white shadow-lg shadow-orange-200'
-                  }`}>
-                    {p.submissionStatus || 'Draft'}
-                  </span>
+                <div className="flex items-start justify-between mb-8 relative z-10">
+                   <div className="flex flex-col">
+                      <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest mb-3 w-max ${
+                        team.submissionStatus === 'Submitted' 
+                        ? 'bg-[#8cc63f]/10 text-[#8cc63f]' 
+                        : 'bg-[#fcb900]/10 text-[#fcb900]'
+                      }`}>
+                         <span className={`w-1.5 h-1.5 rounded-full ${team.submissionStatus === 'Submitted' ? 'bg-[#8cc63f]' : 'bg-[#fcb900]'}`}></span>
+                         {team.submissionStatus || 'Draft In Progress'}
+                      </span>
+                      <h3 className="text-2xl font-black text-gray-900 leading-tight group-hover:text-[#8cc63f] transition-colors line-clamp-1">{team.teamName}</h3>
+                   </div>
+                   <div className="w-12 h-12 rounded-2xl bg-gray-50 flex items-center justify-center text-gray-300 group-hover:bg-[#8cc63f]/10 group-hover:text-[#8cc63f] transition-all">
+                      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-6 h-6">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M15.59 14.37a6 6 0 0 1-5.84 7.38v-4.8m5.84-2.58a14.98 14.98 0 0 0 6.16-12.12A14.98 14.98 0 0 0 9.63 3.11a14.98 14.98 0 0 0-6.16 12.12c0 1.25.15 2.45.43 3.61l.16.66m11.56-4.02L9.63 15.38" />
+                      </svg>
+                   </div>
                 </div>
-                
-                <h3 className="font-extrabold text-gray-900 line-clamp-1 mb-1 text-lg">{p.contest?.contestTitle || 'Unknown Contest'}</h3>
-                <p className="text-[12px] text-gray-400 font-bold mb-6 flex items-center gap-2">
-                  <span className="w-1.5 h-1.5 rounded-full bg-purple-400"></span>
-                  {p.contest?.category}
-                </p>
-                
-                <button 
-                  onClick={() => navigate(`/dashboard/submit-project/${p.contest?._id}`, { state: { contest: p.contest, participation: p } })}
-                  className="w-full py-3.5 rounded-2xl bg-gray-50 border border-gray-100/50 hover:bg-gray-900 group-hover:bg-gray-900 hover:text-white text-gray-700 font-black text-xs transition-all flex items-center justify-center gap-2 tracking-widest uppercase"
-                >
-                  {p.submissionStatus === 'Submitted' ? 'Update Submission' : 'Submit Project'}
-                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-3.5 h-3.5 transition-transform group-hover:translate-x-1">
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
-                  </svg>
-                </button>
+
+                <div className="space-y-6 flex-grow relative z-10">
+                  {/* Contest Info */}
+                  <div className="bg-gray-50/80 rounded-[28px] p-5 border border-gray-100">
+                     <p className="text-[10px] font-black uppercase text-gray-400 tracking-widest mb-1.5">Participating In</p>
+                     <p className="text-sm font-extrabold text-gray-700 line-clamp-1">{team.contest?.contestTitle}</p>
+                     <p className="text-[11px] font-bold text-[#8cc63f] mt-1">{team.contest?.category}</p>
+                  </div>
+
+                  {/* Members */}
+                  <div>
+                    <div className="flex items-center justify-between mb-3 px-1">
+                       <p className="text-[10px] font-black uppercase text-gray-400 tracking-widest">The Squad</p>
+                       <span className="text-[10px] font-black text-gray-400">{team.members?.length} / {team.contest?.teamSize || '∞'}</span>
+                    </div>
+                    <div className="flex flex-wrap gap-2.5">
+                       {team.members?.map((m, i) => (
+                         <div key={i} title={m.userName} className="relative group/member">
+                            <div className="w-11 h-11 rounded-2xl bg-white border-2 border-gray-100 flex items-center justify-center text-xs font-black text-gray-400 hover:border-[#8cc63f] hover:text-[#8cc63f] transition-all cursor-help shadow-sm overflow-hidden">
+                               {m.userName?.substring(0, 2).toUpperCase()}
+                            </div>
+                            {m._id === team.leader?._id && (
+                               <div className="absolute -top-1 -right-1 w-4 h-4 bg-[#fcb900] rounded-full border-2 border-white flex items-center justify-center">
+                                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="white" className="w-2 h-2">
+                                    <path d="M11.645 20.91l-.007-.003-.022-.012a15.247 15.247 0 01-.383-.218 25.18 25.18 0 01-4.244-3.17C4.688 15.36 2.25 12.174 2.25 8.25 2.25 5.322 4.714 3 7.688 3A5.5 5.5 0 0112 5.052 5.5 5.5 0 0116.313 3c2.973 0 5.437 2.322 5.437 5.25 0 3.925-2.438 7.111-4.739 9.256a25.175 25.175 0 01-4.244 3.17 15.247 15.247 0 01-.383.219l-.022.012-.007.004-.003.001z" />
+                                  </svg>
+                               </div>
+                            )}
+                         </div>
+                       ))}
+                       
+                       {String(team.leader?._id) === String(currentUser?._id) && (team.members?.length || 0) < (team.contest?.teamSize || 10) && (
+                          <button 
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setTeamToInvite(team);
+                              setIsInviteModalOpen(true);
+                            }}
+                            className="w-11 h-11 rounded-2xl border-2 border-dashed border-gray-200 flex items-center justify-center text-gray-400 hover:border-[#8cc63f] hover:bg-[#8cc63f]/5 hover:text-[#8cc63f] transition-all group/invite active:scale-90"
+                            title="Invite Team Members"
+                          >
+                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={3} stroke="currentColor" className="w-5 h-5">
+                               <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+                             </svg>
+                          </button>
+                       )}
+                    </div>
+                  </div>
+
+                  {/* Pending Join Requests (Leader Only) */}
+                  {(String(team.leader?._id || team.leader) === String(currentUser?._id || currentUser?.id)) && 
+                   (team.joinRequests || team.requests || team.pendingMembers) && 
+                   (team.joinRequests?.length > 0 || team.requests?.length > 0 || team.pendingMembers?.length > 0) && (
+                    <div className="mt-8 pt-8 border-t-2 border-gray-100/50">
+                      <div className="flex items-center justify-between mb-5">
+                        <div className="flex flex-col">
+                           <p className="text-[10px] font-black uppercase text-[#fcb900] tracking-widest flex items-center gap-2 mb-1">
+                              <span className="w-1.5 h-1.5 rounded-full bg-[#fcb900] animate-ping"></span>
+                              Join Requests
+                           </p>
+                           <p className="text-[9px] font-bold text-gray-400">Review prospective teammates</p>
+                        </div>
+                        <span className="text-[10px] font-black text-[#fcb900] bg-[#fcb900]/10 px-3 py-1 rounded-full border border-[#fcb900]/20">
+                          {(team.joinRequests || team.requests || team.pendingMembers).length} Pending
+                        </span>
+                      </div>
+                      <div className="space-y-3">
+                        {(team.joinRequests || team.requests || team.pendingMembers).map((request, reqIdx) => {
+                          // Backend uses { user: ObjectId } which might be populated
+                          const userObj = request.user || request;
+                          const requestEmail = typeof userObj === 'string' ? userObj : (userObj.email || userObj.requestUserEmail);
+                          const requestName = typeof userObj === 'string' ? 'New Applicant' : (userObj.userName || userObj.name || 'Anonymous Scout');
+                          
+                          if (!requestEmail) return null;
+
+                          return (
+                            <div key={reqIdx} className="flex items-center justify-between bg-yellow-50/40 p-4 rounded-3xl border border-yellow-100/30 group/req hover:bg-yellow-50 hover:border-yellow-200 transition-all">
+                              <div className="flex items-center gap-3">
+                                 <div className="w-10 h-10 rounded-2xl bg-white border border-yellow-100 flex items-center justify-center text-xs font-black text-yellow-600 shadow-sm">
+                                    {requestName.substring(0, 2).toUpperCase()}
+                                 </div>
+                                 <div className="flex flex-col">
+                                   <span className="text-[13px] font-black text-gray-800">{requestName}</span>
+                                   <span className="text-[10px] font-bold text-gray-400">{requestEmail}</span>
+                                 </div>
+                              </div>
+                              <div className="flex gap-2.5">
+                                <button 
+                                  onClick={async (e) => {
+                                    e.stopPropagation();
+                                    const { success } = await acceptRequest(team._id, requestEmail);
+                                    if (success) fetchUserTeams();
+                                  }}
+                                  className="w-10 h-10 rounded-[18px] bg-[#8cc63f] text-white flex items-center justify-center hover:bg-black transition-all shadow-lg shadow-[#8cc63f]/20 active:scale-90"
+                                  title="Approve Member"
+                                >
+                                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={3} stroke="currentColor" className="w-4.5 h-4.5">
+                                    <path strokeLinecap="round" strokeLinejoin="round" d="m4.5 12.75 6 6 9-13.5" />
+                                  </svg>
+                                </button>
+                                <button 
+                                  onClick={async (e) => {
+                                    e.stopPropagation();
+                                    const { success } = await rejectRequest(team._id, requestEmail);
+                                    if (success) fetchUserTeams();
+                                  }}
+                                  className="w-10 h-10 rounded-[18px] bg-white border-2 border-red-50 text-red-300 flex items-center justify-center hover:bg-red-50 hover:border-red-100 hover:text-red-500 transition-all active:scale-90"
+                                  title="Decline Request"
+                                >
+                                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={3} stroke="currentColor" className="w-4.5 h-4.5">
+                                    <path strokeLinecap="round" strokeLinejoin="round" d="M6 18 18 6M6 6l12 12" />
+                                  </svg>
+                                </button>
+                              </div>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+                <div className="mt-10 relative z-10 pt-6 border-t border-gray-50">
+                  {/* Action Button */}
+                  {team.members?.some(m => m._id === currentUser?._id || m === currentUser?._id) ? (
+                    <button 
+                      onClick={() => navigate(`/dashboard/submit-project/${team.contest?._id}`, { state: { contest: team.contest, team: team } })}
+                      className="w-full py-5 rounded-[22px] bg-gray-900 border-2 border-gray-900 text-white font-black text-[13px] transition-all flex items-center justify-center gap-3 tracking-[0.1em] uppercase hover:bg-white hover:text-gray-900 active:scale-[0.98] shadow-2xl shadow-gray-200 group/btn"
+                    >
+                      <span>{team.submissionStatus === 'Submitted' ? 'Update Submission' : 'Launch Project'}</span>
+                      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={3} stroke="currentColor" className="w-4 h-4 transition-transform group-hover/btn:translate-x-1">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
+                      </svg>
+                    </button>
+                  ) : (
+                    <button 
+                      onClick={async () => {
+                        const { success } = await acceptInvite(team._id);
+                        if (success) fetchUserTeams();
+                      }}
+                      className="w-full py-5 rounded-[22px] bg-[#8cc63f] text-white font-black text-[13px] uppercase tracking-[0.1em] hover:bg-black transition-all active:scale-[0.98] shadow-lg shadow-[#8cc63f]/10"
+                    >
+                      Accept Squad Invitation
+                    </button>
+                  )}
+                </div>
+
+                {/* Decorative background element */}
+                <div className="absolute -bottom-20 -right-20 w-48 h-48 bg-gray-50 rounded-full group-hover:bg-[#8cc63f]/5 group-hover:scale-150 transition-all duration-700 z-0"></div>
               </div>
             ))}
           </div>
         ) : (
-          <div className="bg-gray-50/50 border-2 border-dashed border-gray-100 rounded-[32px] p-12 text-center">
-            <p className="text-gray-400 font-medium text-sm">You haven't joined any contests yet. Explore below to get started!</p>
+          <div className="bg-white border border-gray-100 rounded-[50px] p-24 text-center shadow-[0_10px_40px_rgba(0,0,0,0.02)] relative overflow-hidden group">
+            <div className="absolute inset-0 bg-gradient-to-br from-gray-50/50 to-transparent"></div>
+            <div className="relative z-10 flex flex-col items-center">
+               <div className="w-24 h-24 rounded-[32px] bg-gray-50 flex items-center justify-center mb-8 border border-gray-100 group-hover:scale-110 group-hover:rotate-6 transition-all duration-500">
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1} stroke="currentColor" className="w-12 h-12 text-gray-300">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M15 19.128a9.38 9.38 0 0 0 2.625.372 9.337 9.337 0 0 0 4.121-.952 4.125 4.125 0 0 0-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 0 1 8.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0 1 11.964-3.07M12 6.375a3.375 3.375 0 1 1-6.75 0 3.375 3.375 0 0 1 6.75 0zm8.25 2.25a2.625 2.625 0 1 1-5.25 0 2.625 2.625 0 0 1 5.25 0z" />
+                  </svg>
+               </div>
+               <h3 className="text-2xl font-black text-gray-900 mb-3 tracking-tight">No squads assembled yet</h3>
+               <p className="text-gray-400 font-medium text-sm max-w-sm mx-auto leading-relaxed px-6">
+                 Your journey begins with a single step. Explore the active contests below and form your first elite team!
+               </p>
+               <button 
+                 onClick={() => {
+                   const section = document.getElementById('active-contests');
+                   if(section) section.scrollIntoView({ behavior: 'smooth' });
+                 }}
+                 className="mt-10 px-10 py-4 rounded-full bg-gray-900 text-white font-black text-xs uppercase tracking-widest hover:bg-[#8cc63f] transition-all active:scale-95 shadow-xl shadow-gray-200"
+               >
+                 Discover Contests
+               </button>
+            </div>
           </div>
         )}
       </section>
@@ -408,10 +625,15 @@ export default function UserDashboard() {
                 <ContestCard 
                   key={contest._id || index} 
                   id={contest._id}
-                  onSuccess={fetchMyParticipations}
+                  onApply={() => {
+                    setSelectedContestForTeam(contest);
+                    setIsTeamModalOpen(true);
+                  }}
                   title={contest.contestTitle}
                   category={contest.category}
                   status={contest.status}
+                  projectType={contest.projectType}
+                  teamSize={contest.teamSize}
                   description={contest.contestDescription}
                   daysLeft={getDaysLeft(contest.contestDeadLine)}
                   entries={`${contest.entryLimit || 100} Entries`}
@@ -427,6 +649,28 @@ export default function UserDashboard() {
           )}
         </div>
       </section>
+
+      {/* Modals */}
+      <TeamSelectionModal 
+        isOpen={isTeamModalOpen}
+        onClose={() => setIsTeamModalOpen(false)}
+        contestId={selectedContestForTeam?._id}
+        contestTitle={selectedContestForTeam?.contestTitle}
+        projectType={selectedContestForTeam?.projectType}
+        onSuccess={fetchUserTeams}
+      />
+
+      {teamToInvite && (
+        <InviteModal 
+          team={teamToInvite}
+          isOpen={isInviteModalOpen}
+          onClose={() => {
+            setIsInviteModalOpen(false);
+            setTeamToInvite(null);
+            fetchUserTeams();
+          }}
+        />
+      )}
 
       
       {/* 3. Bottom CTA Section */}
