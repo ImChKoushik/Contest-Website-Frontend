@@ -548,6 +548,45 @@ export default function UserDashboard() {
       </section>
 
 
+      {/* 1.8 Explore Categories Section */}
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-24 relative z-20">
+        <div className="flex flex-col md:flex-row md:items-end justify-between mb-10 gap-4">
+          <div>
+            <div className="flex items-center gap-3 mb-2">
+               <div className="w-8 h-8 rounded-lg bg-orange-50 flex items-center justify-center text-orange-600 border border-orange-100/50">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M9.568 3H5.25A2.25 2.25 0 0 0 3 5.25v4.318c0 .597.237 1.17.659 1.591l9.581 9.581c.699.699 1.78.872 2.607.33a18.095 18.095 0 0 0 5.223-5.223c.542-.827.369-1.908-.33-2.607L11.16 3.659A2.25 2.25 0 0 0 9.568 3Z" />
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M6 6h.008v.008H6V6Z" />
+                  </svg>
+               </div>
+               <h2 className="text-3xl font-black text-gray-900 tracking-tight uppercase">Specializations</h2>
+            </div>
+            <p className="text-[#6b7280] font-medium">Jump into a specific domain and find your next challenge.</p>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          {[
+            { name: 'MERN', slug: 'mern', icon: 'M', color: 'bg-blue-50 text-blue-600', border: 'border-blue-100' },
+            { name: 'UI/UX', slug: 'ui-ux', icon: 'U', color: 'bg-purple-50 text-purple-600', border: 'border-purple-100' },
+            { name: 'Digital Marketing', slug: 'digital-marketing', icon: 'D', color: 'bg-orange-50 text-orange-600', border: 'border-orange-100' },
+            { name: 'Web Designing', slug: 'web-designing', icon: 'W', color: 'bg-green-50 text-green-600', border: 'border-green-100' }
+          ].map((cat) => (
+             <div 
+               key={cat.slug}
+               onClick={() => navigate(`/contests/category/${cat.slug}`)}
+               className="bg-white rounded-[32px] p-8 border border-gray-100 shadow-sm hover:border-[#8cc63f] hover:shadow-xl hover:shadow-green-900/5 transition-all cursor-pointer group flex flex-col items-center text-center"
+             >
+                <div className={`w-14 h-14 ${cat.color} ${cat.border} border-2 rounded-2xl flex items-center justify-center text-xl font-black mb-6 group-hover:scale-110 transition-transform`}>
+                   {cat.icon}
+                </div>
+                <h3 className="font-black text-gray-900 mb-1 group-hover:text-[#8cc63f] transition-colors">{cat.name}</h3>
+                <p className="text-[11px] font-bold text-gray-400 uppercase tracking-widest">Browse Quests</p>
+             </div>
+          ))}
+        </div>
+      </section>
+
       {/* 2. Active Contests Section */}
       <section id="active-contests" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-24 sm:-mt-10 relative z-20 pt-20">
 

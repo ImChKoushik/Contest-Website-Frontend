@@ -2,11 +2,28 @@ import React, { useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import ContestCard from '../components/ContestCard';
 import useContests from '../hooks/useContests';
+import { useAuthContext } from '../context/AuthContext';
 import heroImg from '../resources/hero.png';
 
 const Home = () => {
   const navigate = useNavigate();
+  const { user } = useAuthContext();
   const { data, loading, error } = useContests();
+
+  const categories = [
+    { name: 'MERN', slug: 'mern', icon: 'M', color: 'bg-blue-50 text-blue-600', border: 'border-blue-100', image: 'https://images.unsplash.com/photo-1555066931-4365d14bab8c?q=80&w=2670&auto=format&fit=crop' },
+    { name: 'UI/UX', slug: 'ui-ux', icon: 'U', color: 'bg-purple-50 text-purple-600', border: 'border-purple-100', image: 'https://images.unsplash.com/photo-1618761714954-0b8cd0026356?q=80&w=2670&auto=format&fit=crop' },
+    { name: 'Digital Marketing', slug: 'digital-marketing', icon: 'D', color: 'bg-orange-50 text-orange-600', border: 'border-orange-100', image: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?q=80&w=2426&auto=format&fit=crop' },
+    { name: 'Web Designing', slug: 'web-designing', icon: 'W', color: 'bg-green-50 text-green-600', border: 'border-green-100', image: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?q=80&w=2426&auto=format&fit=crop' }
+  ];
+
+  const handleCategoryClick = (slug) => {
+    if (!user) {
+      navigate('/signin');
+    } else {
+      navigate(`/contests/category/${slug}`);
+    }
+  };
 
   const getDaysLeft = (deadline) => {
     const d = new Date(deadline);
@@ -87,8 +104,48 @@ const Home = () => {
         </div>
       </section>
 
+      {/* Explore Categories Section */}
+      <section className="py-20 bg-white">
+        <div className="container mx-auto px-6 text-center">
+          <div className="mb-16">
+            <h2 className="text-3xl font-black text-gray-900 mb-4 tracking-tight uppercase">Explore <span className="text-[#8cc63f]">Categories</span></h2>
+            <p className="text-gray-500 max-w-2xl mx-auto font-medium">
+              Filter challenges by your expertise. Deep dive into specialized contests and showcase your mastery in specific domains.
+            </p>
+          </div>
+          
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+            {categories.map((cat) => (
+              <div 
+                key={cat.slug}
+                onClick={() => handleCategoryClick(cat.slug)}
+                className="group cursor-pointer"
+              >
+                <div className="bg-white rounded-[40px] p-8 border-2 border-gray-50 shadow-sm transition-all duration-500 hover:border-[#8cc63f] hover:shadow-2xl hover:shadow-green-900/5 hover:-translate-y-2 relative overflow-hidden flex flex-col items-center">
+                   <div className={`w-16 h-16 ${cat.color} ${cat.border} border-2 rounded-[24px] flex items-center justify-center text-2xl font-black mb-6 group-hover:scale-110 transition-transform duration-500`}>
+                      {cat.icon}
+                   </div>
+                   <h3 className="text-xl font-black text-gray-900 mb-2 tracking-tight group-hover:text-[#8cc63f] transition-colors">{cat.name}</h3>
+                   <p className="text-gray-400 text-sm font-medium mb-8">Click to view all {cat.name} contests.</p>
+                   
+                   <div className="flex items-center gap-2 text-[#8cc63f] font-black uppercase tracking-widest text-[10px] opacity-0 group-hover:opacity-100 transition-all duration-500">
+                      Explore Now
+                      <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                      </svg>
+                   </div>
+                   
+                   {/* Abstract decoration */}
+                   <div className="absolute -bottom-10 -right-10 w-32 h-32 bg-gray-50 rounded-full z-0 group-hover:scale-125 transition-transform duration-700 opacity-50"></div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
       {/* Active Contests Section */}
-      <section className="py-24 bg-gray-50/50">
+      <section id="active-contests" className="py-24 bg-gray-50/50">
         <div className="container mx-auto px-6">
           <div className="flex justify-between items-end mb-12">
             <div>
