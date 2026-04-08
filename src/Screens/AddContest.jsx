@@ -19,7 +19,7 @@ export default function AddContest() {
     teamSize: 1
   });
 
-  const CATEGORY_OPTIONS = ["MERN", "UI/UX DESIGN", "DIGITAL MARKETING"];
+  const CATEGORY_OPTIONS = ["MERN", "UI/UX DESIGN", "DIGITAL MARKETING", "WEBSITE DESIGNING"];
   const STATUS_OPTIONS = ["Upcoming", "On-Going", "Completed"];
   const PROJECT_TYPE_OPTIONS = ["Individual", "Team"];
 

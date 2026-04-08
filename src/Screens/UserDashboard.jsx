@@ -153,7 +153,7 @@ export default function UserDashboard() {
     const lowerName = categoryName.toLowerCase();
     if (lowerName.includes('ui/ux')) slug = 'ui-ux';
     else if (lowerName.includes('digital')) slug = 'digital-marketing';
-    else if (lowerName.includes('website') || lowerName.includes('web')) slug = 'web-designing';
+    else if (lowerName.includes('website') || lowerName.includes('web')) slug = 'website-designing';
 
     navigate(`/contests/category/${slug}`);
   };
@@ -474,15 +474,26 @@ export default function UserDashboard() {
                       </svg>
                     </button>
                   ) : (
-                    <button
-                      onClick={async () => {
-                        const { success } = await acceptInvite(team._id);
-                        if (success) fetchUserTeams();
-                      }}
-                      className="w-full py-5 rounded-[22px] bg-[#8cc63f] text-white font-black text-[13px] uppercase tracking-[0.1em] hover:bg-black transition-all active:scale-[0.98] shadow-lg shadow-[#8cc63f]/10"
-                    >
-                      Accept Squad Invitation
-                    </button>
+                    <div className="flex flex-col gap-3">
+                      <button
+                        onClick={async () => {
+                          const { success } = await acceptInvite(team._id);
+                          if (success) fetchUserTeams();
+                        }}
+                        className="w-full py-5 rounded-[22px] bg-[#8cc63f] text-white font-black text-[13px] uppercase tracking-[0.1em] hover:bg-black transition-all active:scale-[0.98] shadow-lg shadow-[#8cc63f]/10"
+                      >
+                        Accept Squad Invitation
+                      </button>
+                      <button
+                        onClick={async () => {
+                          const { success } = await rejectInvite(team._id);
+                          if (success) fetchUserTeams();
+                        }}
+                        className="w-full py-4 rounded-[22px] bg-red-50 text-red-600 border border-red-100 font-bold text-[12px] uppercase tracking-wider hover:bg-red-600 hover:text-white transition-all active:scale-[0.95] font-sans"
+                      >
+                        Decline Invitation
+                      </button>
+                    </div>
                   )}
                 </div>
 
@@ -536,9 +547,9 @@ export default function UserDashboard() {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
           {[
             { name: 'MERN', slug: 'mern', icon: 'M', color: 'bg-blue-50 text-blue-600', border: 'border-blue-100' },
-            { name: 'UI/UX', slug: 'ui-ux', icon: 'U', color: 'bg-purple-50 text-purple-600', border: 'border-purple-100' },
-            { name: 'Digital Marketing', slug: 'digital-marketing', icon: 'D', color: 'bg-orange-50 text-orange-600', border: 'border-orange-100' },
-            { name: 'Web Designing', slug: 'web-designing', icon: 'W', color: 'bg-green-50 text-green-600', border: 'border-green-100' }
+            { name: 'UI/UX DESIGN', slug: 'ui-ux', icon: 'U', color: 'bg-purple-50 text-purple-600', border: 'border-purple-100' },
+            { name: 'DIGITAL MARKETING', slug: 'digital-marketing', icon: 'D', color: 'bg-orange-50 text-orange-600', border: 'border-orange-100' },
+            { name: 'WEBSITE DESIGNING', slug: 'website-designing', icon: 'W', color: 'bg-green-50 text-green-600', border: 'border-green-100' }
           ].map((cat) => (
             <div
               key={cat.slug}

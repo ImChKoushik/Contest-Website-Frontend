@@ -11,7 +11,7 @@ const Home = () => {
     { name: 'MERN', slug: 'mern', icon: 'M', color: 'bg-blue-50 text-blue-600', border: 'border-blue-100', image: 'https://images.unsplash.com/photo-1555066931-4365d14bab8c?q=80&w=2670&auto=format&fit=crop' },
     { name: 'UI/UX DESIGN', slug: 'ui-ux', icon: 'U', color: 'bg-purple-50 text-purple-600', border: 'border-purple-100', image: 'https://images.unsplash.com/photo-1618761714954-0b8cd0026356?q=80&w=2670&auto=format&fit=crop' },
     { name: 'DIGITAL MARKETING', slug: 'digital-marketing', icon: 'D', color: 'bg-orange-50 text-orange-600', border: 'border-orange-100', image: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?q=80&w=2426&auto=format&fit=crop' },
-    { name: 'WEB DESIGNING', slug: 'web-designing', icon: 'W', color: 'bg-green-50 text-green-600', border: 'border-green-100', image: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?q=80&w=2426&auto=format&fit=crop' }
+    { name: 'WEBSITE DESIGNING', slug: 'website-designing', icon: 'W', color: 'bg-green-50 text-green-600', border: 'border-green-100', image: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?q=80&w=2426&auto=format&fit=crop' }
   ];
 
   const handleCategoryClick = (slug) => {

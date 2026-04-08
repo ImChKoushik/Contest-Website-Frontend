@@ -54,10 +54,10 @@ const useTeam = () => {
     }
   };
 
-  const rejectInvite = async (teamId, requestUserEmail) => {
+  const rejectInvite = async (teamId) => {
     setLoading(true);
     try {
-      const res = await axiosInstance.post("/team/reject-request", { teamId, requestUserEmail });
+      const res = await axiosInstance.post("/team/reject-invite", { teamId });
       showToast(res.data.message || "Invite rejected", "success");
       return { success: true, data: res.data.data };
     } catch (err) {

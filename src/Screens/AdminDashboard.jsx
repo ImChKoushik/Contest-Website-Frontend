@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useState, useEffect } from 'react';
 import { useAuthContext } from '../context/AuthContext';
 import Button from '../components/Button';
 import { useNavigate } from 'react-router-dom';
@@ -6,6 +6,17 @@ import useFetchUsers from '../hooks/useFetchUsers';
 import useContests from '../hooks/useContests';
 import useTeam from '../hooks/useTeam';
 import useResults from '../hooks/useResults';
+import { 
+  BarChart, 
+  Bar, 
+  XAxis, 
+  YAxis, 
+  CartesianGrid, 
+  Tooltip, 
+  Legend, 
+  ResponsiveContainer,
+  Cell
+} from 'recharts';
 
 // Helper for "X time ago" format
 const getTimeAgo = (date) => {
@@ -28,9 +39,9 @@ export default function AdminDashboard() {
   const { viewAllTeams, loading: teamLoading } = useTeam();
   const { fetchAllResults, allResults, loading: resultsFetchingLoading } = useResults();
 
-  const [teamsData, setTeamsData] = React.useState([]);
+  const [teamsData, setTeamsData] = useState([]);
 
-  React.useEffect(() => {
+  useEffect(() => {
     const fetchTeams = async () => {
       const { success, data } = await viewAllTeams();
       if (success) setTeamsData(data || []);
@@ -44,6 +55,54 @@ export default function AdminDashboard() {
   const activeContestsCount = contestsLoading ? '...' : (contestsData?.contests?.filter(c => c.status === 'On-Going').length || 0);
   const totalTeamsValue = teamLoading ? '...' : (teamsData.length || 0);
   const totalResultsValue = resultsFetchingLoading ? '...' : (allResults?.length || 0);
+
+  // Observations Chart Data Processing
+  const chartData = useMemo(() => {
+    const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    const now = new Date();
+    const last6Months = [];
+    
+    for (let i = 5; i >= 0; i--) {
+      const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+      last6Months.push({
+        month: d.getMonth(),
+        year: d.getFullYear(),
+        name: months[d.getMonth()],
+        Users: 0,
+        Contests: 0,
+        Teams: 0
+      });
+    }
+
+    // Process Users
+    if (Array.isArray(usersData?.users)) {
+      usersData.users.forEach(u => {
+        const uDate = new Date(u.createdAt);
+        const match = last6Months.find(m => m.month === uDate.getMonth() && m.year === uDate.getFullYear());
+        if (match) match.Users++;
+      });
+    }
+
+    // Process Contests
+    if (Array.isArray(contestsData?.contests)) {
+      contestsData.contests.forEach(c => {
+        const cDate = new Date(c.createdAt);
+        const match = last6Months.find(m => m.month === cDate.getMonth() && m.year === cDate.getFullYear());
+        if (match) match.Contests++;
+      });
+    }
+
+    // Process Teams
+    if (Array.isArray(teamsData)) {
+      teamsData.forEach(t => {
+        const tDate = new Date(t.createdAt);
+        const match = last6Months.find(m => m.month === tDate.getMonth() && m.year === tDate.getFullYear());
+        if (match) match.Teams++;
+      });
+    }
+
+    return last6Months;
+  }, [usersData, contestsData, teamsData]);
 
   // Aggregate and sort activity feed
   const activities = useMemo(() => {
@@ -104,7 +163,7 @@ export default function AdminDashboard() {
       {/* Header Section */}
       <div className="flex flex-col md:flex-row md:items-center justify-between mb-8 pb-5 border-b border-gray-100">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900 tracking-tight">Admin Overview</h1>
+          <h1 className="text-3xl font-bold text-gray-900 tracking-tight font-display">Admin Overview</h1>
           <p className="text-gray-500 mt-1">Welcome back, {displayName}. Here's what's happening today.</p>
         </div>
         <div className="mt-4 md:mt-0 flex gap-3">
@@ -114,7 +173,7 @@ export default function AdminDashboard() {
       </div>
 
       {/* Stats Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 gap-6 mb-8">
         {stats.map((stat, i) => (
           <div 
             key={i} 
@@ -130,6 +189,63 @@ export default function AdminDashboard() {
             </div>
           </div>
         ))}
+      </div>
+
+      {/* Observations Section */}
+      <div className="mb-8 bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
+        <div className="flex justify-between items-center mb-6">
+          <div>
+            <h3 className="font-bold text-lg text-gray-800">Observations</h3>
+            <p className="text-xs text-gray-400">Activity overview across contests, teams, and users.</p>
+          </div>
+          <div className="flex gap-4">
+             <div className="flex items-center gap-1.5">
+                <div className="w-3 h-3 rounded-full bg-[#8cc63f]"></div>
+                <span className="text-xs font-semibold text-gray-500 uppercase tracking-wider">Contests</span>
+             </div>
+             <div className="flex items-center gap-1.5">
+                <div className="w-3 h-3 rounded-full bg-blue-500"></div>
+                <span className="text-xs font-semibold text-gray-500 uppercase tracking-wider">Teams</span>
+             </div>
+             <div className="flex items-center gap-1.5">
+                <div className="w-3 h-3 rounded-full bg-purple-500"></div>
+                <span className="text-xs font-semibold text-gray-500 uppercase tracking-wider">Users</span>
+             </div>
+          </div>
+        </div>
+        
+        <div className="h-[300px] w-full">
+          <ResponsiveContainer width="100%" height="100%">
+            <BarChart data={chartData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+              <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f0f0f0" />
+              <XAxis 
+                dataKey="name" 
+                axisLine={false} 
+                tickLine={false} 
+                tick={{ fill: '#9ca3af', fontSize: 12, fontWeight: 600 }}
+                dy={10}
+              />
+              <YAxis 
+                axisLine={false} 
+                tickLine={false} 
+                tick={{ fill: '#9ca3af', fontSize: 12, fontWeight: 600 }}
+              />
+              <Tooltip 
+                cursor={{ fill: 'transparent' }} 
+                contentStyle={{ 
+                  borderRadius: '12px', 
+                  border: 'none', 
+                  boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1)',
+                  padding: '12px'
+                }}
+                labelStyle={{ fontWeight: 'bold', marginBottom: '4px', color: '#111827' }}
+              />
+              <Bar dataKey="Contests" fill="#8cc63f" radius={[4, 4, 0, 0]} barSize={34} />
+              <Bar dataKey="Teams" fill="#3b82f6" radius={[4, 4, 0, 0]} barSize={34} />
+              <Bar dataKey="Users" fill="#a855f7" radius={[4, 4, 0, 0]} barSize={34} />
+            </BarChart>
+          </ResponsiveContainer>
+        </div>
       </div>
 
       {/* Main Content Area */}

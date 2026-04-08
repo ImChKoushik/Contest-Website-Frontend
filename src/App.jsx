@@ -18,6 +18,7 @@ import AboutUs from './Screens/AboutUs'
 import CategoryContestPage from './Screens/CategoryContestPage'
 import Contests from './Screens/Contests'
 import ContestDetails from './Screens/ContestDetails'
+import ContactUs from './Screens/ContactUs'
 import { useAuthContext } from './context/AuthContext'
 
 // Smart landing: redirect logged-in users to their dashboard
@@ -43,6 +44,7 @@ function App() {
           <Route path="/contests/category/:categorySlug" element={<CategoryContestPage />} />
           <Route path="/signup" element={<SignUpForm />} />
           <Route path="/signin" element={<SignInForm />} />
+          <Route path="/contact" element={<ContactUs />} />
           
           {/* Admin Routes */}
           <Route element={<ProtectedRoute allowedRoles={['Admin']} />}>

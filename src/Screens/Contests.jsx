@@ -10,7 +10,7 @@ export default function Contests() {
     { name: 'MERN', slug: 'mern', icon: 'M', color: 'bg-blue-50 text-blue-600', border: 'border-blue-100' },
     { name: 'UI/UX DESIGN', slug: 'ui-ux', icon: 'U', color: 'bg-purple-50 text-purple-600', border: 'border-purple-100' },
     { name: 'DIGITAL MARKETING', slug: 'digital-marketing', icon: 'D', color: 'bg-orange-50 text-orange-600', border: 'border-orange-100' },
-    { name: 'WEB DESIGNING', slug: 'web-designing', icon: 'W', color: 'bg-green-50 text-green-600', border: 'border-green-100' }
+    { name: 'WEBSITE DESIGNING', slug: 'website-designing', icon: 'W', color: 'bg-green-50 text-green-600', border: 'border-green-100' }
   ];
 
   const handleCategoryClick = (slug) => {

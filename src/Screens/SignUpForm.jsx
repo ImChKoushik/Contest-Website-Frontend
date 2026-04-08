@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuthContext } from '../context/AuthContext';
 import Input from '../components/Input';
+import Select from '../components/Select';
 import Button from '../components/Button';
 import Form from '../components/Form';
 import useAuth from '../hooks/useAuth';
@@ -179,16 +180,6 @@ export default function SignUpForm() {
               </div>
             </div>
           </div>
-
-          {/* Upcoming Contest Card */}
-          <div className="bg-white rounded-[24px] p-6 shadow-[0_8px_30px_rgb(0,0,0,0.04)] max-w-sm border border-gray-100 mt-10 relative overflow-hidden">
-            <div className="flex items-center gap-2 mb-3">
-              <span className="w-2 h-2 rounded-full bg-orange-500 animate-pulse"></span>
-              <span className="uppercase text-xs font-bold tracking-wider text-gray-500">Upcoming Contest</span>
-            </div>
-            <h4 className="text-xl font-bold text-gray-900 mb-2">Advanced UI Algorithms</h4>
-            <p className="font-semibold text-[#8cc63f]">Prize Pool: $5,000</p>
-          </div>
         </div>
 
         {/* Right Side: Form Component */}
@@ -237,14 +228,17 @@ export default function SignUpForm() {
                 />
               </div>
               <div className="flex-1">
-                <Input 
+                <Select 
                   label="Gender" 
-                  type="text" 
                   name="gender"
                   value={formData.gender}
                   onChange={handleChange}
-                  placeholder="Male/Female/Others" 
                   icon={<GenderIcon />} 
+                  options={[
+                    { value: 'male', label: 'Male' },
+                    { value: 'female', label: 'Female' },
+                    { value: 'others', label: 'Others' }
+                  ]}
                   required
                 />
               </div>
@@ -312,9 +306,12 @@ export default function SignUpForm() {
             
             <p className="text-center text-[15px] text-gray-500 mt-8">
               Already have an account?{' '}
-              <a href="#" className="font-semibold text-[#8cc63f] hover:underline">
+              <button 
+                onClick={() => navigate('/signin')} 
+                className="font-semibold text-[#8cc63f] hover:underline bg-transparent border-none p-0"
+              >
                 Sign In
-              </a>
+              </button>
             </p>
           </Form>
         </div>

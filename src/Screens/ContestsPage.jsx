@@ -41,7 +41,7 @@ const CONTEST_CATEGORIES = [
     ]
   },
   {
-    title: "WEB DESIGNING CONTEST",
+    title: "WEBSITE DESIGNING CONTEST",
     description: "Create stunning, responsive, and cross-browser compatible frontend web interfaces.",
     color: "from-blue-500 to-indigo-700",
     shadow: "shadow-indigo-500/20",

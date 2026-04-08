@@ -73,7 +73,7 @@ export default function Navbar() {
     { name: 'Home', path: '/' },
     { name: 'Contests', path: '/contests' },
     { name: 'About Us', path: '/about' },
-    { name: 'Contact', path: '#' },
+    { name: 'Contact', path: '/contact' },
   ];
 
   return (
