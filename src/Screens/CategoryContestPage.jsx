@@ -16,19 +16,22 @@ const CategoryContestPage = () => {
   // Map slugs to display names if necessary
   const categoryMap = {
     'mern': 'MERN',
-    'ui-ux': 'UI/UX',
-    'digital-marketing': 'Digital Marketing',
-    'web-designing': 'Web Designing'
+    'ui-ux': 'UI/UX DESIGN',
+    'digital-marketing': 'DIGITAL MARKETING',
+    'web-designing': 'WEB DESIGNING'
   };
 
   const displayName = categoryMap[categorySlug?.toLowerCase()] || categorySlug;
 
   const filteredContests = useMemo(() => {
     if (!data?.contests) return [];
-    return data.contests.filter(c => 
-      c.category?.toLowerCase() === displayName.toLowerCase() &&
-      (c.status === 'Upcoming' || c.status === 'On-Going')
-    );
+    return data.contests.filter(c => {
+      if (!c.category || !displayName) return false;
+      const cleanDB = c.category.toLowerCase().replace(/[^a-z0-9]/g, '');
+      const cleanDisplay = displayName.toLowerCase().replace(/[^a-z0-9]/g, '');
+      return cleanDB === cleanDisplay &&
+        ['Upcoming', 'On-Going', 'Completed', 'Complete', 'Closed'].includes(c.status);
+    });
   }, [data?.contests, displayName]);
 
   const getDaysLeft = (deadline) => {
@@ -55,7 +58,7 @@ const CategoryContestPage = () => {
       <div className="bg-[#063327] py-20 px-6 mb-12 relative overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-r from-green-900/40 via-transparent to-transparent opacity-30"></div>
         <div className="max-w-7xl mx-auto relative z-10">
-          <button 
+          <button
             onClick={() => navigate(-1)}
             className="flex items-center gap-2 text-white/70 hover:text-white mb-6 transition-colors font-bold text-sm uppercase tracking-widest"
           >
@@ -92,7 +95,7 @@ const CategoryContestPage = () => {
             </div>
             <p className="text-xl text-gray-900 font-black">No active contests in {displayName}</p>
             <p className="text-sm max-w-sm">We're currently preparing new challenges for this category. Stay tuned!</p>
-            <button 
+            <button
               onClick={() => navigate('/contests')}
               className="text-[#8cc63f] font-black uppercase tracking-widest text-xs hover:underline"
             >
@@ -102,7 +105,7 @@ const CategoryContestPage = () => {
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {filteredContests.map((contest) => (
-              <ContestCard 
+              <ContestCard
                 key={contest._id}
                 id={contest._id}
                 title={contest.contestTitle}
@@ -111,16 +114,16 @@ const CategoryContestPage = () => {
                 status={contest.status}
                 projectType={contest.projectType}
                 teamSize={contest.teamSize}
-                daysLeft={getDaysLeft(contest.contestDeadLine)}
+                deadline={contest.contestDeadLine}
                 entries={`${contest.entryLimit || 100} Slots`}
                 onApply={() => handleApply(contest)}
-                image={displayName === 'MERN' 
+                image={displayName === 'MERN'
                   ? "https://images.unsplash.com/photo-1555066931-4365d14bab8c?q=80&w=2670&auto=format&fit=crop"
                   : displayName === 'UI/UX'
-                  ? "https://images.unsplash.com/photo-1618761714954-0b8cd0026356?q=80&w=2670&auto=format&fit=crop"
-                  : displayName === 'Web Designing'
-                  ? "https://images.unsplash.com/photo-1460925895917-afdab827c52f?q=80&w=2426&auto=format&fit=crop"
-                  : "https://images.unsplash.com/photo-1460925895917-afdab827c52f?q=80&w=2426&auto=format&fit=crop"
+                    ? "https://images.unsplash.com/photo-1618761714954-0b8cd0026356?q=80&w=2670&auto=format&fit=crop"
+                    : displayName === 'Web Designing'
+                      ? "https://images.unsplash.com/photo-1460925895917-afdab827c52f?q=80&w=2426&auto=format&fit=crop"
+                      : "https://images.unsplash.com/photo-1460925895917-afdab827c52f?q=80&w=2426&auto=format&fit=crop"
                 }
               />
             ))}
@@ -128,7 +131,7 @@ const CategoryContestPage = () => {
         )}
       </div>
 
-      <TeamSelectionModal 
+      <TeamSelectionModal
         isOpen={isTeamModalOpen}
         onClose={() => setIsTeamModalOpen(false)}
         contestId={selectedContestForTeam?._id}

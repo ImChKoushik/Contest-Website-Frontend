@@ -30,7 +30,6 @@ export default function UserDashboard() {
   const [teamToInvite, setTeamToInvite] = useState(null);
 
   const { data, loading, error } = useContests();
-  const [selectedCategory, setSelectedCategory] = useState('All');
 
   const fetchUserTeams = async () => {
     if (!currentUser) return;
@@ -148,39 +147,15 @@ export default function UserDashboard() {
     return `${days} Days Left`;
   };
 
-  // Only show Upcoming and On-Going contests to users
-  const visibleContests = useMemo(() => {
-    if (!Array.isArray(data?.contests)) return [];
-    return data.contests.filter(c => c.status === 'Upcoming' || c.status === 'On-Going');
-  }, [data?.contests]);
-
-  // Get unique categories from visible contests only
-  const categories = useMemo(() => {
-    const cats = visibleContests
-      .map(c => c.category)
-      .filter((cat, index, self) => cat && self.indexOf(cat) === index);
-    return ['All', ...cats];
-  }, [visibleContests]);
-
-  // Filter contests based on selected category
-  const filteredContests = useMemo(() => {
-    if (selectedCategory === 'All') return visibleContests;
-    return visibleContests.filter(c => c.category === selectedCategory);
-  }, [visibleContests, selectedCategory]);
-
   // Handle category click from hero badge
   const handleHeroBadgeClick = (categoryName) => {
-    // If the badge is like "MERN CONTEST", try to match "MERN"
-    const simplifiedCat = categoryName.split(' ')[0].toUpperCase();
-    const match = categories.find(c => c.toUpperCase() === simplifiedCat);
-    if (match) {
-      setSelectedCategory(match);
-      // Scroll to contest section
-      const contestSection = document.getElementById('active-contests');
-      if (contestSection) {
-        contestSection.scrollIntoView({ behavior: 'smooth' });
-      }
-    }
+    let slug = 'mern';
+    const lowerName = categoryName.toLowerCase();
+    if (lowerName.includes('ui/ux')) slug = 'ui-ux';
+    else if (lowerName.includes('digital')) slug = 'digital-marketing';
+    else if (lowerName.includes('website') || lowerName.includes('web')) slug = 'web-designing';
+    
+    navigate(`/contests/category/${slug}`);
   };
 
 
@@ -231,7 +206,7 @@ export default function UserDashboard() {
           </p>
 
           <div className="flex flex-col sm:flex-row gap-4 mb-20">
-            <button className="bg-[#8cc63f] hover:bg-[#7eb830] transition-colors text-white font-bold py-3.5 px-8 rounded-full shadow-[0_4px_14px_rgba(140,198,63,0.39)] flex items-center justify-center gap-2 group tracking-wide">
+            <button onClick={() => navigate('/contests')} className="bg-[#8cc63f] hover:bg-[#7eb830] transition-colors text-white font-bold py-3.5 px-8 rounded-full shadow-[0_4px_14px_rgba(140,198,63,0.39)] flex items-center justify-center gap-2 group tracking-wide">
               Explore Contests
               <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-4 h-4 group-hover:translate-x-1 transition-transform">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />
@@ -531,13 +506,10 @@ export default function UserDashboard() {
                </div>
                <h3 className="text-2xl font-black text-gray-900 mb-3 tracking-tight">No squads assembled yet</h3>
                <p className="text-gray-400 font-medium text-sm max-w-sm mx-auto leading-relaxed px-6">
-                 Your journey begins with a single step. Explore the active contests below and form your first elite team!
+                 Your journey begins with a single step. Explore the categories below and form your first elite team!
                </p>
                <button 
-                 onClick={() => {
-                   const section = document.getElementById('active-contests');
-                   if(section) section.scrollIntoView({ behavior: 'smooth' });
-                 }}
+                 onClick={() => navigate('/contests')}
                  className="mt-10 px-10 py-4 rounded-full bg-gray-900 text-white font-black text-xs uppercase tracking-widest hover:bg-[#8cc63f] transition-all active:scale-95 shadow-xl shadow-gray-200"
                >
                  Discover Contests
@@ -549,7 +521,7 @@ export default function UserDashboard() {
 
 
       {/* 1.8 Explore Categories Section */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-24 relative z-20">
+      <section id="explore-categories" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-24 relative z-20">
         <div className="flex flex-col md:flex-row md:items-end justify-between mb-10 gap-4">
           <div>
             <div className="flex items-center gap-3 mb-2">
@@ -584,108 +556,6 @@ export default function UserDashboard() {
                 <p className="text-[11px] font-bold text-gray-400 uppercase tracking-widest">Browse Quests</p>
              </div>
           ))}
-        </div>
-      </section>
-
-      {/* 2. Active Contests Section */}
-      <section id="active-contests" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-24 sm:-mt-10 relative z-20 pt-20">
-
-        
-        {/* Header Row */}
-        <div className="flex flex-col md:flex-row md:items-end justify-between mb-10">
-          <div className="max-w-xl">
-            <h2 className="text-[32px] md:text-[38px] font-extrabold text-[#111827] mb-3 tracking-tight">Active Contests</h2>
-            <p className="text-[#6b7280] text-[15px] font-medium leading-relaxed">
-              Choose your specialization and compete with the brightest minds in the industry.
-            </p>
-          </div>
-          
-          {/* Pagination/Filter Row */}
-          <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 mt-6 md:mt-0">
-            {/* Category Filter Bar */}
-            <div className="flex flex-wrap gap-2">
-              {categories.map((cat) => (
-                <button
-                  key={cat}
-                  onClick={() => setSelectedCategory(cat)}
-                  className={`px-5 py-2 rounded-full text-[13px] font-bold transition-all ${
-                    selectedCategory === cat
-                      ? "bg-[#8cc63f] text-white shadow-[0_4px_12px_rgba(140,198,63,0.3)]"
-                      : "bg-white border border-gray-200 text-gray-500 hover:border-[#8cc63f] hover:text-[#8cc63f]"
-                  }`}
-                >
-                  {cat}
-                </button>
-              ))}
-            </div>
-
-            <div className="hidden md:flex gap-2.5 ml-auto">
-              <button className="w-[36px] h-[36px] rounded-full border-2 border-gray-200 flex flex-col items-center justify-center text-gray-400 hover:text-gray-600 hover:border-gray-300 transition-colors">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-4 h-4 ml-[-1px]">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
-                </svg>
-              </button>
-              <button className="w-[36px] h-[36px] rounded-full border-2 border-gray-200 flex flex-col items-center justify-center text-gray-400 hover:text-gray-600 hover:border-gray-300 transition-colors">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-4 h-4 mr-[-1px]">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
-                </svg>
-              </button>
-            </div>
-          </div>
-        </div>
-
-        {/* Dynamic Card Grid */}
-        <div className="min-h-[400px] relative">
-          {loading ? (
-            <div className="absolute inset-0 flex items-center justify-center">
-              <div className="w-12 h-12 border-4 border-[#8cc63f]/20 border-t-[#8cc63f] rounded-full animate-spin"></div>
-            </div>
-          ) : error ? (
-            <div className="bg-red-50 text-red-500 p-8 rounded-[32px] text-center border border-red-100 font-medium">
-              <p className="mb-2">Oops! Something went wrong while fetching contests.</p>
-              <p className="text-sm opacity-80">{error}</p>
-            </div>
-          ) : filteredContests.length === 0 ? (
-            <div className="bg-gray-50 text-gray-400 p-20 rounded-[32px] text-center border border-gray-100 font-medium flex flex-col items-center gap-4">
-               <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-16 h-16 opacity-20">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 13.5h3.86a2.25 2.25 0 012.008 1.24l.14.28a2.25 2.25 0 002.008 1.24h2.464a2.25 2.25 0 002.008-1.24l.14-.28a2.25 2.25 0 012.008-1.24h3.86m-18 0V7.5A2.25 2.25 0 014.5 5.25h15a2.25 2.25 0 012.25 2.25v6.75m-18 0A2.25 2.25 0 002.25 15.75a2.25 2.25 0 002.25 2.25h15a2.25 2.25 0 002.25-2.25 2.25 2.25 0 00-2.25-2.25H2.25z" />
-              </svg>
-              <p>No contests found in <span className="text-gray-900 font-bold">"{selectedCategory}"</span> category.</p>
-              <button 
-                onClick={() => setSelectedCategory('All')}
-                className="text-[#8cc63f] font-bold hover:underline"
-              >
-                Back to All Contests
-              </button>
-            </div>
-          ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {filteredContests.map((contest, index) => (
-                <ContestCard 
-                  key={contest._id || index} 
-                  id={contest._id}
-                  onApply={() => {
-                    setSelectedContestForTeam(contest);
-                    setIsTeamModalOpen(true);
-                  }}
-                  title={contest.contestTitle}
-                  category={contest.category}
-                  status={contest.status}
-                  projectType={contest.projectType}
-                  teamSize={contest.teamSize}
-                  description={contest.contestDescription}
-                  daysLeft={getDaysLeft(contest.contestDeadLine)}
-                  entries={`${contest.entryLimit || 100} Entries`}
-                  image={contest.category?.toLowerCase().includes('mern') 
-                    ? "https://images.unsplash.com/photo-1555066931-4365d14bab8c?q=80&w=2670&auto=format&fit=crop"
-                    : contest.category?.toLowerCase().includes('design')
-                    ? "https://images.unsplash.com/photo-1618761714954-0b8cd0026356?q=80&w=2670&auto=format&fit=crop"
-                    : "https://images.unsplash.com/photo-1460925895917-afdab827c52f?q=80&w=2426&auto=format&fit=crop"
-                  }
-                />
-              ))}
-            </div>
-          )}
         </div>
       </section>
 

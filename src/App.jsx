@@ -16,6 +16,8 @@ import SubmitProject from './Screens/SubmitProject'
 import Home from './Screens/Home'
 import AboutUs from './Screens/AboutUs'
 import CategoryContestPage from './Screens/CategoryContestPage'
+import Contests from './Screens/Contests'
+import ContestDetails from './Screens/ContestDetails'
 import { useAuthContext } from './context/AuthContext'
 
 // Smart landing: redirect logged-in users to their dashboard
@@ -36,6 +38,8 @@ function App() {
         <Routes>
           <Route path="/" element={<LandingRedirect />} />
           <Route path="/about" element={<AboutUs />} />
+          <Route path="/contests" element={<Contests />} />
+          <Route path="/contests/details/:contestId" element={<ContestDetails />} />
           <Route path="/contests/category/:categorySlug" element={<CategoryContestPage />} />
           <Route path="/signup" element={<SignUpForm />} />
           <Route path="/signin" element={<SignInForm />} />

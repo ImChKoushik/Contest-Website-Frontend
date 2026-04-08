@@ -1,13 +1,14 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useToast } from '../context/ToastContext';
+import { useNavigate } from 'react-router-dom';
 
-export default function ContestCard({ 
+export default function ContestCard({
   id,
-  image, 
-  category, 
-  title, 
-  description, 
-  daysLeft, 
+  image,
+  category,
+  title,
+  description,
+  deadline,
   entries,
   onApply,
   status,
@@ -15,6 +16,36 @@ export default function ContestCard({
   teamSize
 }) {
   const { showToast } = useToast();
+  const navigate = useNavigate();
+  const [timeLeft, setTimeLeft] = useState("");
+
+  useEffect(() => {
+    if (!deadline) {
+      setTimeLeft("No Deadline");
+      return;
+    }
+    const updateCountdown = () => {
+      const diff = new Date(deadline).getTime() - new Date().getTime();
+      if (diff <= 0) {
+        setTimeLeft("Closed");
+        return;
+      }
+      const d = Math.floor(diff / (1000 * 60 * 60 * 24));
+      const h = Math.floor((diff / (1000 * 60 * 60)) % 24);
+      const m = Math.floor((diff / 1000 / 60) % 60);
+      const s = Math.floor((diff / 1000) % 60);
+      
+      if (d > 0) {
+        setTimeLeft(`${d}d ${h}h ${m}m`);
+      } else {
+        setTimeLeft(`${h}h ${m}m ${s}s`);
+      }
+    };
+
+    updateCountdown();
+    const timer = setInterval(updateCountdown, 1000);
+    return () => clearInterval(timer);
+  }, [deadline]);
 
   const handleApply = () => {
     if (!id) {
@@ -29,9 +60,9 @@ export default function ContestCard({
     <div className="bg-white rounded-[24px] overflow-hidden shadow-[0_4px_20px_rgb(0,0,0,0.03)] border border-gray-100 hover:shadow-lg transition-shadow duration-300 flex flex-col h-full">
       {/* Top Image / Graphic Area */}
       <div className="relative h-48 w-full bg-slate-900 p-2">
-        <img 
-          src={image} 
-          alt={title} 
+        <img
+          src={image}
+          alt={title}
           className="w-full h-full object-cover rounded-[16px]"
         />
         {/* Category Pill Tag */}
@@ -53,11 +84,11 @@ export default function ContestCard({
 
         {/* Meta Info */}
         <div className="flex items-center gap-4 mb-6 pb-1">
-          <div className="flex items-center gap-1.5 text-xs font-bold text-gray-500 bg-gray-50 px-2.5 py-1.5 rounded-lg border border-gray-100">
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-3.5 h-3.5">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5m-9-6h.008v.008H12v-.008zM12 15h.008v.008H12V15zm0 2.25h.008v.008H12v-.008zM9.75 15h.008v.008H9.75V15zm0 2.25h.008v.008H9.75v-.008zM7.5 15h.008v.008H7.5V15zm0 2.25h.008v.008H7.5v-.008zm6.75-4.5h.008v.008h-.008v-.008zm0 2.25h.008v.008h-.008V15zm0 2.25h.008v.008h-.008v-.008zm2.25-4.5h.008v.008H16.5v-.008zm0 2.25h.008v.008H16.5V15z" />
+          <div className="flex items-center gap-1.5 text-xs font-bold text-red-500 bg-red-50 px-2.5 py-1.5 rounded-lg border border-red-100">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-3.5 h-3.5 animate-pulse">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z" />
             </svg>
-            {daysLeft}
+            <span suppressHydrationWarning className="tabular-nums font-mono tracking-tighter w-[80px] text-center inline-block">{timeLeft}</span>
           </div>
           <div className="flex items-center gap-1.5 text-xs font-bold text-gray-500 bg-gray-50 px-2.5 py-1.5 rounded-lg border border-gray-100">
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-3.5 h-3.5">
@@ -87,7 +118,7 @@ export default function ContestCard({
               Upcoming
             </button>
           ) : status === 'On-Going' ? (
-            <button 
+            <button
               onClick={handleApply}
               className="flex-1 bg-[#8cc63f] hover:bg-[#7db435] text-white py-2.5 rounded-full font-bold text-[13px] tracking-wide transition-colors shadow-sm"
             >
@@ -101,7 +132,7 @@ export default function ContestCard({
               Closed
             </button>
           )}
-          <button className="flex-1 bg-gray-50 hover:bg-gray-100 text-gray-600 border border-gray-200 py-2.5 rounded-full font-bold text-[13px] tracking-wide transition-colors shadow-sm">
+          <button onClick={() => navigate(`/contests/details/${id}`)} className="flex-1 bg-gray-50 hover:bg-gray-100 text-gray-600 border border-gray-200 py-2.5 rounded-full font-bold text-[13px] tracking-wide transition-colors shadow-sm">
             Details
           </button>
         </div>
