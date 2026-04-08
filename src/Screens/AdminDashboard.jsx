@@ -160,15 +160,43 @@ export default function AdminDashboard() {
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full">
-      {/* Header Section */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between mb-8 pb-5 border-b border-gray-100">
-        <div>
-          <h1 className="text-3xl font-bold text-gray-900 tracking-tight font-display">Admin Overview</h1>
-          <p className="text-gray-500 mt-1">Welcome back, {displayName}. Here's what's happening today.</p>
-        </div>
-        <div className="mt-4 md:mt-0 flex gap-3">
-          <Button variant="secondary" className="px-4 py-2 text-sm font-semibold">Generate Reports</Button>
-          <Button variant="primary" onClick={() => navigate("/admin-dashboard/add-contest")} className="px-4 py-2 text-sm font-semibold shadow-md active:scale-95 transition-transform">+ New Contest</Button>
+      {/* Enhanced Header Section */}
+      <div className="mb-10 bg-gradient-to-r from-gray-900 to-gray-800 rounded-[2rem] p-8 md:p-12 text-white shadow-2xl relative overflow-hidden">
+        {/* Decorative background elements */}
+        <div className="absolute top-0 right-0 w-64 h-64 bg-[#8cc63f]/10 rounded-full blur-3xl -mr-20 -mt-20"></div>
+        <div className="absolute bottom-0 left-0 w-48 h-48 bg-blue-500/10 rounded-full blur-3xl -ml-20 -mb-20"></div>
+        
+        <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
+          <div>
+            <div className="flex items-center gap-3 mb-4">
+              <span className="bg-[#8cc63f] text-white text-[10px] font-black uppercase tracking-[0.2em] px-3 py-1 rounded-full shadow-lg shadow-[#8cc63f]/20">Administrator Account</span>
+              <div className="h-px w-8 bg-white/20"></div>
+              <span className="text-white/40 text-[10px] font-bold uppercase tracking-widest leading-none">Status: Active</span>
+            </div>
+            <h1 className="text-4xl md:text-5xl font-black tracking-tight mb-2 font-display">
+              You're an <span className="text-[#8cc63f]">Admin</span>.
+            </h1>
+            <p className="text-gray-400 text-lg max-w-xl font-medium leading-relaxed">
+              Welcome back, {displayName}. You have full control over contests, participants, and platform results.
+            </p>
+          </div>
+          <div className="flex flex-wrap gap-4">
+            <button 
+              onClick={() => navigate("/admin-dashboard/total-participants")}
+              className="bg-white text-gray-900 hover:bg-gray-100 px-8 py-4 rounded-2xl font-black text-sm uppercase tracking-wider transition-all shadow-xl hover:-translate-y-1 active:scale-95 flex items-center gap-2 group"
+            >
+              View Teams
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={3} stroke="currentColor" className="w-4 h-4 text-[#8cc63f] group-hover:translate-x-1 transition-transform">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
+              </svg>
+            </button>
+            <button 
+              onClick={() => navigate("/admin-dashboard/add-contest")}
+              className="bg-[#8cc63f] hover:bg-[#7ab033] text-white px-8 py-4 rounded-2xl font-black text-sm uppercase tracking-wider transition-all shadow-xl shadow-[#8cc63f]/20 hover:-translate-y-1 active:scale-95 flex items-center gap-2"
+            >
+              + New Contest
+            </button>
+          </div>
         </div>
       </div>
 
