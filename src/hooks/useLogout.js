@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import axios from 'axios';
+import axiosInstance from '../utils/axiosInstance';
 import { useNavigate } from 'react-router-dom';
 import { useAuthContext } from '../context/AuthContext';
 
@@ -14,9 +14,7 @@ export const useLogout = () => {
     setError(null);
     try {
       // Make the GET request to the explicit API endpoint you provided
-      const response = await axios.get("https://contest-backend-td3m.onrender.com/api/v1/user/logout-user", {
-        withCredentials: true // Ensure cookies are sent/cleared if applicable
-      });
+      const response = await axiosInstance.get('/user/logout-user');
       
       // Clear the user from the global context
       contextLogout();

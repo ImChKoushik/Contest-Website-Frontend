@@ -3,7 +3,7 @@ import { useNavigate, Link } from 'react-router-dom';
 import Button from './Button';
 import { useAuthContext } from '../context/AuthContext';
 import { useLogout } from '../hooks/useLogout';
-import axios from 'axios';
+import axiosInstance from '../utils/axiosInstance';
 import logo from '../assets/images/logo.png';
 
 export default function Navbar() {
@@ -27,20 +27,25 @@ export default function Navbar() {
     try {
       let refreshRes;
       try {
-        refreshRes = await axios.post("https://contest-backend-td3m.onrender.com/api/v1/user/generate-access", {}, { withCredentials: true });
+        // Backend defines this as GET; axiosInstance sends Bearer + x-refresh-token header automatically
+        refreshRes = await axiosInstance.get('/user/generate-access');
       } catch (err) {
-        // Fallback to refresh-token if generate-access is 404
+        // Fallback to refresh-token if generate-access 404s
         if (err.response?.status === 404) {
-          refreshRes = await axios.post("https://contest-backend-td3m.onrender.com/api/v1/user/refresh-token", {}, { withCredentials: true });
+          refreshRes = await axiosInstance.get('/user/refresh-token');
         } else {
           throw err;
         }
       }
-      
-      // Extract potentially new token
-      const newToken = refreshRes.data?.data?.accessToken || refreshRes.data?.accessToken || refreshRes.data?.token || refreshRes.data?.data?.token || null;
 
-      const res = await axios.get("https://contest-backend-td3m.onrender.com/api/v1/user/me", { withCredentials: true });
+      const newToken =
+        refreshRes.data?.data?.accessToken ||
+        refreshRes.data?.accessToken ||
+        refreshRes.data?.token ||
+        refreshRes.data?.data?.token ||
+        null;
+
+      const res = await axiosInstance.get('/user/me');
       const userData = res.data?.user || res.data?.data?.user;
       
       if (userData) {
@@ -116,7 +121,7 @@ export default function Navbar() {
                     disabled={refreshing}
                     className="px-6 py-2.5 text-[13px] font-black bg-[#8cc63f] hover:bg-[#7ab033] text-white rounded-full transition-all duration-300 shadow-[0_4px_14px_rgba(140,198,63,0.3)] hover:shadow-lg hover:-translate-y-0.5 uppercase tracking-wider"
                   >
-                    {refreshing ? 'Reconnecting...' : 'Sign In'}
+                    {refreshing ? 'Reconnecting...' : 'Refresh Token'}
                   </button>
                 </div>
               ) : user ? (

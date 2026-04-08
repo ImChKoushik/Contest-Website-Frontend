@@ -62,6 +62,7 @@ export const AuthProvider = ({ children }) => {
     setTokenExpired(false);
     localStorage.removeItem('authUser');
     localStorage.removeItem('authToken');
+    localStorage.removeItem('refreshToken');
   }, []);
 
   const markTokenExpired = useCallback(() => {

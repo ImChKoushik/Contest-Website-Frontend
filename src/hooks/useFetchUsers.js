@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import axios from "axios";
+import axiosInstance from "../utils/axiosInstance";
 
 const useFetchUsers = () => {
   const [data, setData] = useState({ total: 0, users: [] });
@@ -9,12 +9,8 @@ const useFetchUsers = () => {
   const fetchUsers = async () => {
     setLoading(true);
     setError(null);
-
     try {
-      const res = await axios.get("https://contest-backend-td3m.onrender.com/api/v1/user/get-all-users", {
-        withCredentials: true
-      });
-
+      const res = await axiosInstance.get("/user/get-all-users");
       if (res.data && res.data.success) {
         setData(res.data.data);
       } else {

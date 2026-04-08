@@ -1,5 +1,5 @@
 import { useState, useCallback } from "react";
-import axios from "axios";
+import axiosInstance from "../utils/axiosInstance";
 import { useToast } from "../context/ToastContext";
 
 const useResults = () => {
@@ -13,11 +13,7 @@ const useResults = () => {
     setLoading(true);
     setError(null);
     try {
-      const res = await axios.post(
-        "https://contest-backend-td3m.onrender.com/api/v1/result/upload",
-        resultData,
-        { withCredentials: true }
-      );
+      const res = await axiosInstance.post("/result/upload", resultData);
       if (res.data && res.data.success) {
         return { success: true, message: res.data.message };
       }
@@ -36,10 +32,7 @@ const useResults = () => {
     setLoading(true);
     setError(null);
     try {
-      const res = await axios.get(
-        "https://contest-backend-td3m.onrender.com/api/v1/result/all",
-        { withCredentials: true }
-      );
+      const res = await axiosInstance.get("/result/all");
       if (res.data && res.data.success) {
         setAllResults(res.data.data || []);
       } else {
@@ -58,16 +51,19 @@ const useResults = () => {
     setLoading(true);
     setError(null);
     try {
-      const res = await axios.get(
-        "https://contest-backend-td3m.onrender.com/api/v1/result/my",
-        { withCredentials: true }
-      );
+      const res = await axiosInstance.get("/result/my");
       if (res.data && res.data.success) {
         setMyResults(res.data.data || []);
       } else {
         setError(res.data.message || "Failed to fetch your results");
       }
     } catch (err) {
+      const status = err.response?.status;
+      // Silently ignore 401/403 — user is not authenticated
+      if (status === 401 || status === 403) {
+        setMyResults([]);
+        return;
+      }
       const msg = err.response?.data?.message || err.message || "An error occurred";
       setError(msg);
       showToast(msg, "error");
@@ -80,11 +76,7 @@ const useResults = () => {
     setLoading(true);
     setError(null);
     try {
-      const res = await axios.patch(
-        `https://contest-backend-td3m.onrender.com/api/v1/result/${resultId}`,
-        updateData,
-        { withCredentials: true }
-      );
+      const res = await axiosInstance.patch(`/result/${resultId}`, updateData);
       if (res.data && res.data.success) {
         return { success: true, message: res.data.message };
       }
@@ -103,10 +95,7 @@ const useResults = () => {
     setLoading(true);
     setError(null);
     try {
-      const res = await axios.delete(
-        `https://contest-backend-td3m.onrender.com/api/v1/result/${resultId}`,
-        { withCredentials: true }
-      );
+      const res = await axiosInstance.delete(`/result/${resultId}`);
       if (res.data && res.data.success) {
         return { success: true, message: res.data.message };
       }

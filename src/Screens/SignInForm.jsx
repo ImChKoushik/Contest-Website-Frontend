@@ -53,15 +53,18 @@ export default function SignInForm() {
     const result = await sendRequest("https://contest-backend-td3m.onrender.com/api/v1/user/login-user", payload);
     
     if (result) {
-      // Store user info and token in global context
-      const userData = result.data?.user || result.user || result;
-      const authToken = result.data?.accessToken || result.accessToken || result.data?.token || result.token;
-      
+      const userData = result.data?.user || result.user;
+      const authToken = result.data?.accessToken || result.accessToken || null;
+      const refreshToken = result.data?.refreshToken || result.refreshToken || null;
+
+      // Store tokens in localStorage so they persist across browser restarts
+      if (authToken) localStorage.setItem('authToken', authToken);
+      if (refreshToken) localStorage.setItem('refreshToken', refreshToken);
+
       login(userData, authToken);
-      
+
       showToast("Login Successful! Welcome back.", "success");
 
-      // Navigate to respective dashboard
       if (userData.role === "Admin") {
         navigate("/admin-dashboard");
       } else {

@@ -1,10 +1,10 @@
 import { useEffect, useState } from 'react';
 import { useNavigate, Outlet } from 'react-router-dom';
-import axios from 'axios';
+import axiosInstance from '../utils/axiosInstance';
 import { useAuthContext } from '../context/AuthContext';
 
 export default function ProtectedRoute({ allowedRoles }) {
-  const { user, updateUser, logout, markTokenExpired } = useAuthContext();
+  const { user, login, updateUser, logout, markTokenExpired } = useAuthContext();
   const [isAuthenticated, setIsAuthenticated] = useState(!!user);
   const [loading, setLoading] = useState(!!user); // verify in background only if user exists
   const navigate = useNavigate();
@@ -20,7 +20,7 @@ export default function ProtectedRoute({ allowedRoles }) {
 
     const checkAuth = async () => {
       try {
-        const res = await axios.get("https://contest-backend-td3m.onrender.com/api/v1/user/me", { withCredentials: true });
+        const res = await axiosInstance.get('/user/me');
         if (!isMounted) return;
 
         const userData = res.data?.user || res.data?.data?.user;
@@ -42,11 +42,11 @@ export default function ProtectedRoute({ allowedRoles }) {
           try {
             let refreshRes;
             try {
-              refreshRes = await axios.post("https://contest-backend-td3m.onrender.com/api/v1/user/generate-access", {}, { withCredentials: true });
+              // Backend defines this as GET, not POST; axiosInstance sends Bearer + x-refresh-token header
+              refreshRes = await axiosInstance.get('/user/generate-access');
             } catch (err) {
-              // Fallback to refresh-token if generate-access is 404
               if (err.response?.status === 404) {
-                refreshRes = await axios.post("https://contest-backend-td3m.onrender.com/api/v1/user/refresh-token", {}, { withCredentials: true });
+                refreshRes = await axiosInstance.get('/user/refresh-token');
               } else {
                 throw err;
               }
@@ -55,7 +55,7 @@ export default function ProtectedRoute({ allowedRoles }) {
             // Extract new token from refresh response
             const newToken = refreshRes.data?.data?.accessToken || refreshRes.data?.accessToken || refreshRes.data?.token || refreshRes.data?.data?.token || null;
             
-            const retryRes = await axios.get("https://contest-backend-td3m.onrender.com/api/v1/user/me", { withCredentials: true });
+            const retryRes = await axiosInstance.get('/user/me');
             const userData = retryRes.data?.user || retryRes.data?.data?.user;
 
             if (userData) {

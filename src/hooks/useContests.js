@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
-import axios from "axios";
+import axiosInstance from "../utils/axiosInstance";
 import { useToast } from "../context/ToastContext";
 
 const useContests = () => {
@@ -11,13 +11,8 @@ const useContests = () => {
   const fetchContests = useCallback(async () => {
     setLoading(true);
     setError(null);
-
     try {
-      const res = await axios.get("https://contest-backend-td3m.onrender.com/api/v1/contest/stu-contest", {
-        withCredentials: true
-      });
-
-      // The backend returns { success: true, data: { total: 1, contests: [...] } }
+      const res = await axiosInstance.get("/contest/stu-contest");
       if (res.data && res.data.success) {
         setData(res.data.data);
       } else {
@@ -35,12 +30,8 @@ const useContests = () => {
   const fetchAllContests = useCallback(async () => {
     setLoading(true);
     setError(null);
-
     try {
-      const res = await axios.get("https://contest-backend-td3m.onrender.com/api/v1/contest/all-contests", {
-        withCredentials: true
-      });
-
+      const res = await axiosInstance.get("/contest/all-contests");
       if (res.data && res.data.success) {
         setData(res.data.data);
       } else {
@@ -58,14 +49,8 @@ const useContests = () => {
   const addContest = async (contestData) => {
     setLoading(true);
     setError(null);
-
     try {
-      const res = await axios.post(
-        "https://contest-backend-td3m.onrender.com/api/v1/contest/add-contest",
-        contestData,
-        { withCredentials: true }
-      );
-
+      const res = await axiosInstance.post("/contest/add-contest", contestData);
       if (res.data && res.data.success) {
         return res.data;
       } else {
@@ -84,11 +69,7 @@ const useContests = () => {
 
   const updateContestStatus = async (contestId, status) => {
     try {
-      const res = await axios.patch(
-        `https://contest-backend-td3m.onrender.com/api/v1/contest/update-status/${contestId}`,
-        { status },
-        { withCredentials: true }
-      );
+      const res = await axiosInstance.patch(`/contest/update-status/${contestId}`, { status });
       if (res.data && res.data.success) {
         return { success: true, message: res.data.message };
       } else {
@@ -102,10 +83,7 @@ const useContests = () => {
 
   const deleteContest = async (contestId) => {
     try {
-      const res = await axios.delete(
-        `https://contest-backend-td3m.onrender.com/api/v1/contest/delete-contest/${contestId}`,
-        { withCredentials: true }
-      );
+      const res = await axiosInstance.delete(`/contest/delete-contest/${contestId}`);
       if (res.data && res.data.success) {
         showToast(res.data.message || "Contest deleted successfully", "success");
         return { success: true };

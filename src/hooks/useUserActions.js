@@ -1,5 +1,5 @@
 import { useState } from "react";
-import axios from "axios";
+import axiosInstance from "../utils/axiosInstance";
 
 const useUserActions = () => {
   const [loading, setLoading] = useState(false);
@@ -8,12 +8,8 @@ const useUserActions = () => {
   const deleteUser = async (id) => {
     setLoading(true);
     setError(null);
-
     try {
-      const res = await axios.delete(`https://contest-backend-td3m.onrender.com/api/v1/user/delete-user/${id}`, {
-        withCredentials: true
-      });
-
+      const res = await axiosInstance.delete(`/user/delete-user/${id}`);
       if (res.data && res.data.success) {
         return { success: true, message: res.data.message };
       } else {
@@ -32,12 +28,8 @@ const useUserActions = () => {
   const getUserById = async (id) => {
     setLoading(true);
     setError(null);
-
     try {
-      const res = await axios.get(`https://contest-backend-td3m.onrender.com/api/v1/user/get-user/${id}`, {
-        withCredentials: true
-      });
-
+      const res = await axiosInstance.get(`/user/get-user/${id}`);
       if (res.data && res.data.success) {
         return { success: true, data: res.data.data };
       } else {
@@ -56,14 +48,8 @@ const useUserActions = () => {
   const updateUserRole = async (id, role) => {
     setLoading(true);
     setError(null);
-
     try {
-      const res = await axios.patch(
-        `https://contest-backend-td3m.onrender.com/api/v1/user/update-role/${id}`,
-        { role },
-        { withCredentials: true }
-      );
-
+      const res = await axiosInstance.patch(`/user/update-role/${id}`, { role });
       if (res.data && res.data.success) {
         return { success: true, message: res.data.message };
       } else {
