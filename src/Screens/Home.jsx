@@ -40,18 +40,18 @@ const Home = () => {
         <div className="container mx-auto px-6 relative z-10 text-white">
           <div className="max-w-3xl">
             {/* Badge */}
-            <div className="inline-flex items-center px-4 py-1.5 rounded-full bg-[#fca311] text-black text-xs font-bold uppercase tracking-wider mb-8 shadow-lg">
+            <div className="inline-flex items-center px-4 py-1.5 rounded-full bg-[#fca311] text-black text-xs font-bold uppercase tracking-wider mb-8 shadow-lg transition-all duration-500 animate-fade-in">
               New Contests Live
             </div>
 
             {/* Title */}
-            <h1 className="text-5xl md:text-7xl font-extrabold leading-tight mb-6">
+            <h1 className="text-5xl md:text-7xl font-extrabold leading-tight mb-6 transition-all duration-700 animate-slide-up">
               Master Your Craft.<br />
               <span className="text-[#8cc63f]">Lead the Future.</span>
             </h1>
 
             {/* Subtext */}
-            <p className="text-lg md:text-xl text-gray-100/90 mb-10 max-w-xl leading-relaxed">
+            <p className="text-lg md:text-xl text-gray-100/90 mb-10 max-w-xl leading-relaxed transition-all duration-700 delay-100 animate-slide-up">
               Join elite global challenges in technology, design, and marketing.
               Showcase your skills, win industry recognition, and accelerate your career at Desun Academy.
             </p>
@@ -76,7 +76,8 @@ const Home = () => {
           </div>
         </div>
 
-        {/* Carousel Dots */}
+        {/* Carousel Dots - Kept for aesthetics or removed? 
+            Original code had dots. I'll restore the original dots layout. */}
         <div className="absolute bottom-10 left-1/2 -translate-x-1/2 flex gap-3">
           <div className="w-10 h-1.5 rounded-full bg-[#fca311]"></div>
           <div className="w-10 h-1.5 rounded-full bg-white/30"></div>
