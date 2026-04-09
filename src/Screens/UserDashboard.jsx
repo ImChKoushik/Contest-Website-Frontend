@@ -10,6 +10,17 @@ import useResults from '../hooks/useResults';
 import { useToast } from '../context/ToastContext';
 import Button from '../components/Button';
 
+// Local Category Images
+import mernImg from '../assets/images/Mern.jpg';
+import uiuxImg from '../assets/images/UI-UX.jpg';
+import dmImg from '../assets/images/Digital Marketing.jpg';
+import webImg from '../assets/images/Website Designing.jpg';
+
+// Slider Images
+import bannerSliderImg from '../assets/images/BannerSlider.jpg';
+import mernHomeImg from '../assets/images/mernHome.jpg';
+import learningImg from '../assets/images/learning.jpg';
+
 export default function UserDashboard() {
   const { user: currentUser } = useAuthContext();
   const [currentSlide, setCurrentSlide] = useState(0);
@@ -72,21 +83,21 @@ export default function UserDashboard() {
       titleLine1: "Master Your Craft.",
       titleLine2: "Lead the Future.",
       description: "Build a scalable real-time collaboration tool using MongoDB, Express, React, and Node.js. Focus on performance and architecture.",
-      image: "https://images.unsplash.com/photo-1519389950473-47ba0277781c?q=80&w=2500&auto=format&fit=crop"
+      image: bannerSliderImg
     },
     {
       badge: "UI/UX CONTEST",
       titleLine1: "Design with Empathy.",
       titleLine2: "Shape Experiences.",
       description: "Redesign the educational experience for neurodivergent learners. Focus on accessibility, empathy, and intuitive interaction.",
-      image: "https://images.unsplash.com/photo-1618761714954-0b8cd0026356?q=80&w=2670&auto=format&fit=crop"
+      image: mernHomeImg
     },
     {
       badge: "WEBSITE DESIGNING CONTEST",
       titleLine1: "Build Stunning Web.",
       titleLine2: "Push the Boundaries.",
       description: "Create stunning, responsive, and performant web interfaces. Prove your frontend mastery with modern design architectures.",
-      image: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?q=80&w=2426&auto=format&fit=crop"
+      image: learningImg
     }
   ];
 
@@ -172,13 +183,13 @@ export default function UserDashboard() {
       >
         {/* Deep Green Gradient background & Image Overlay */}
         <div className="absolute inset-0 bg-[#063327]">
-          {/* Faint technical image overlay logic */}
+          {/* Slider Image Overlay */}
           {slides.map((slide, idx) => (
             <img
               key={idx}
               src={slide.image}
               alt={`Slide ${idx + 1}`}
-              className={`absolute inset-0 w-full h-full object-cover object-right transition-opacity duration-1000 ease-in-out ${currentSlide === idx ? "opacity-20 z-10" : "opacity-0 z-0"
+              className={`absolute inset-0 w-full h-full object-cover object-center transition-opacity duration-1000 ease-in-out ${currentSlide === idx ? "opacity-30 z-10" : "opacity-0 z-0"
                 }`}
             />
           ))}
@@ -187,7 +198,7 @@ export default function UserDashboard() {
         </div>
 
         <div className="relative z-20 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-full flex flex-col justify-center pb-12">
-          {/* Glowing Badge */}
+          {/* Badge */}
           <div
             onClick={() => handleHeroBadgeClick(slides[currentSlide].badge)}
             className="bg-[#fcb900] text-gray-900 w-max px-4 py-1.5 rounded-full text-[11px] font-black uppercase tracking-widest shadow-sm mb-8 ring-4 ring-[#fcb900]/20 transition-all duration-300 cursor-pointer hover:scale-105 active:scale-95"
@@ -197,10 +208,10 @@ export default function UserDashboard() {
 
           <h1 className="text-white text-5xl md:text-[64px] font-extrabold leading-[1.05] tracking-tight mb-6 max-w-3xl transition-all duration-300">
             {slides[currentSlide].titleLine1}<br />
-            <span className="text-white/95">{slides[currentSlide].titleLine2}</span>
+            <span className="text-[#8cc63f]">{slides[currentSlide].titleLine2}</span>
           </h1>
 
-          <p className="text-[#a4dfbe] font-medium text-lg md:text-xl max-w-2xl leading-relaxed mb-10 drop-shadow-sm transition-all duration-300 h-20 sm:h-auto">
+          <p className="text-[#a4dfbe] font-medium text-lg md:text-xl max-w-2xl leading-relaxed mb-10 drop-shadow-sm transition-all duration-300 h-24 sm:h-auto">
             {slides[currentSlide].description}
           </p>
 
@@ -216,17 +227,24 @@ export default function UserDashboard() {
             </button>
           </div>
 
-          {/* Slider Indicators */}
-          <div className="absolute bottom-12 left-0 right-0 flex justify-center gap-2 px-6 z-30">
+          {/* Slider Indicators (Green Light Effect) */}
+          <div className="absolute bottom-12 left-0 right-0 flex justify-center gap-4 px-6 z-30">
             {slides.map((_, idx) => (
-              <span
+              <div
                 key={idx}
                 onClick={() => setCurrentSlide(idx)}
-                className={`h-1.5 rounded-full cursor-pointer transition-all duration-300 ${currentSlide === idx
-                    ? "w-8 bg-[#fcb900] shadow-[0_0_8px_rgba(252,185,0,0.6)]"
-                    : "w-4 bg-white/30 hover:bg-white/50"
-                  }`}
-              ></span>
+                className="group cursor-pointer py-4 flex flex-col items-center"
+              >
+                <div 
+                  className={`h-1.5 rounded-full transition-all duration-500 ease-out ${currentSlide === idx
+                      ? "w-12 bg-[#8cc63f] shadow-[0_0_15px_rgba(140,198,63,0.8),0_0_5px_rgba(140,198,63,1)] scale-110"
+                      : "w-6 bg-white/20 group-hover:bg-white/40"
+                    }`}
+                ></div>
+                {currentSlide === idx && (
+                  <div className="absolute -bottom-1 w-6 h-1 bg-[#8cc63f]/50 blur-sm rounded-full animate-pulse"></div>
+                )}
+              </div>
             ))}
           </div>
         </div>
@@ -259,8 +277,8 @@ export default function UserDashboard() {
                     <h3 className="font-extrabold text-gray-900 leading-tight">{result.contest?.contestTitle}</h3>
                   </div>
                   <div className={`w-14 h-14 rounded-[22px] flex flex-col items-center justify-center border-2 ${result.rank === '1st' ? 'bg-yellow-50 border-yellow-200 text-yellow-700' :
-                      result.rank === '2nd' ? 'bg-gray-50 border-gray-200 text-gray-600' :
-                        'bg-purple-50 border-purple-100 text-purple-700'
+                    result.rank === '2nd' ? 'bg-gray-50 border-gray-200 text-gray-600' :
+                      'bg-purple-50 border-purple-100 text-purple-700'
                     }`}>
                     <span className="text-xl font-black leading-none">{result.rank.replace('st', '').replace('nd', '').replace('rd', '')}</span>
                     <span className="text-[10px] font-black uppercase mt-[-2px]">{result.rank.slice(-2)}</span>
@@ -325,8 +343,8 @@ export default function UserDashboard() {
                 <div className="flex items-start justify-between mb-8 relative z-10">
                   <div className="flex flex-col">
                     <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest mb-3 w-max ${team.submissionStatus === 'Submitted'
-                        ? 'bg-[#8cc63f]/10 text-[#8cc63f]'
-                        : 'bg-[#fcb900]/10 text-[#fcb900]'
+                      ? 'bg-[#8cc63f]/10 text-[#8cc63f]'
+                      : 'bg-[#fcb900]/10 text-[#fcb900]'
                       }`}>
                       <span className={`w-1.5 h-1.5 rounded-full ${team.submissionStatus === 'Submitted' ? 'bg-[#8cc63f]' : 'bg-[#fcb900]'}`}></span>
                       {team.submissionStatus || 'Draft In Progress'}
@@ -546,21 +564,29 @@ export default function UserDashboard() {
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
           {[
-            { name: 'MERN', slug: 'mern', icon: 'M', color: 'bg-blue-50 text-blue-600', border: 'border-blue-100' },
-            { name: 'UI/UX DESIGN', slug: 'ui-ux', icon: 'U', color: 'bg-purple-50 text-purple-600', border: 'border-purple-100' },
-            { name: 'DIGITAL MARKETING', slug: 'digital-marketing', icon: 'D', color: 'bg-orange-50 text-orange-600', border: 'border-orange-100' },
-            { name: 'WEBSITE DESIGNING', slug: 'website-designing', icon: 'W', color: 'bg-green-50 text-green-600', border: 'border-green-100' }
+            { name: 'MERN', slug: 'mern', image: mernImg, color: 'from-blue-500 to-indigo-600' },
+            { name: 'UI/UX DESIGN', slug: 'ui-ux', image: uiuxImg, color: 'from-purple-500 to-fuchsia-600' },
+            { name: 'DIGITAL MARKETING', slug: 'digital-marketing', image: dmImg, color: 'from-orange-400 to-red-500' },
+            { name: 'WEBSITE DESIGNING', slug: 'website-designing', image: webImg, color: 'from-green-400 to-emerald-600' }
           ].map((cat) => (
             <div
               key={cat.slug}
               onClick={() => navigate(`/contests/category/${cat.slug}`)}
-              className="bg-white rounded-[32px] p-8 border border-gray-100 shadow-sm hover:border-[#8cc63f] hover:shadow-xl hover:shadow-green-900/5 transition-all cursor-pointer group flex flex-col items-center text-center"
+              className="bg-white rounded-[32px] overflow-hidden border border-gray-100 shadow-sm hover:border-[#8cc63f] hover:shadow-xl hover:shadow-green-900/5 transition-all cursor-pointer group flex flex-col items-center"
             >
-              <div className={`w-14 h-14 ${cat.color} ${cat.border} border-2 rounded-2xl flex items-center justify-center text-xl font-black mb-6 group-hover:scale-110 transition-transform`}>
-                {cat.icon}
+              <div className="w-full h-32 relative overflow-hidden">
+                <img
+                  src={cat.image}
+                  alt={cat.name}
+                  className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
+                />
+                <div className={`absolute inset-0 bg-gradient-to-br ${cat.color} opacity-20 mix-blend-multiply`}></div>
+                <div className="absolute inset-0 bg-gradient-to-t from-white via-transparent to-transparent"></div>
               </div>
-              <h3 className="font-black text-gray-900 mb-1 group-hover:text-[#8cc63f] transition-colors">{cat.name}</h3>
-              <p className="text-[11px] font-bold text-gray-400 uppercase tracking-widest">Browse Quests</p>
+              <div className="p-6 pt-2 text-center">
+                <h3 className="font-black text-gray-900 mb-1 group-hover:text-[#8cc63f] transition-colors uppercase text-sm tracking-tight">{cat.name}</h3>
+                <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Browse Quests</p>
+              </div>
             </div>
           ))}
         </div>

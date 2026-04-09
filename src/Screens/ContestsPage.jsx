@@ -2,6 +2,12 @@ import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Button from '../components/Button';
 
+// Local Category Images
+import mernImg from '../assets/images/Mern.jpg';
+import uiuxImg from '../assets/images/UI-UX.jpg';
+import dmImg from '../assets/images/Digital Marketing.jpg';
+import webImg from '../assets/images/Website Designing.jpg';
+
 // Mock Data for all Contest Categories
 const CONTEST_CATEGORIES = [
   {
@@ -9,13 +15,14 @@ const CONTEST_CATEGORIES = [
     description: "Build robust full-stack applications using MongoDB, Express, React, and Node.js.",
     color: "from-green-500 to-emerald-700",
     shadow: "shadow-emerald-500/20",
+    categoryImage: mernImg,
     contests: [
       {
         id: "mern-1",
         title: "E-Commerce Backend Scaling",
         daysLeft: "3 Days",
         entries: "142 Entries",
-        image: "https://images.unsplash.com/photo-1555066931-4365d14bab8c?q=80&w=2670&auto=format&fit=crop"
+        image: mernImg
       },
       {
         id: "mern-2",
@@ -45,13 +52,14 @@ const CONTEST_CATEGORIES = [
     description: "Create stunning, responsive, and cross-browser compatible frontend web interfaces.",
     color: "from-blue-500 to-indigo-700",
     shadow: "shadow-indigo-500/20",
+    categoryImage: webImg,
     contests: [
       {
         id: "web-1",
         title: "Restaurant Menu Redesign",
         daysLeft: "2 Days",
         entries: "210 Entries",
-        image: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?q=80&w=2426&auto=format&fit=crop"
+        image: webImg
       },
       {
         id: "web-2",
@@ -81,13 +89,14 @@ const CONTEST_CATEGORIES = [
     description: "Design intuitive user flows, accessible interfaces, and gorgeous aesthetics.",
     color: "from-purple-500 to-fuchsia-700",
     shadow: "shadow-purple-500/20",
+    categoryImage: uiuxImg,
     contests: [
       {
         id: "uiux-1",
         title: "Neurodivergent Learning App",
         daysLeft: "1 Day",
         entries: "340 Entries",
-        image: "https://images.unsplash.com/photo-1618761714954-0b8cd0026356?q=80&w=2670&auto=format&fit=crop"
+        image: uiuxImg
       },
       {
         id: "uiux-2",
@@ -117,13 +126,14 @@ const CONTEST_CATEGORIES = [
     description: "Plan campaigns, analyze metrics, and write copy that drives incredible conversion rates.",
     color: "from-[#fcb900] to-orange-600",
     shadow: "shadow-[#fcb900]/20",
+    categoryImage: dmImg,
     contests: [
       {
         id: "dm-1",
         title: "Product Launch Campaign",
         daysLeft: "4 Days",
         entries: "185 Entries",
-        image: "https://images.unsplash.com/photo-1432888498266-38ffec3eaf0a?q=80&w=2674&auto=format&fit=crop"
+        image: dmImg
       },
       {
         id: "dm-2",
@@ -187,22 +197,37 @@ export default function ContestsPage() {
               <div key={category.title} className="relative z-10 animate-in fade-in slide-in-from-bottom-10" style={{ animationDelay: `${catIdx * 150}ms` }}>
                 
                 {/* Category Header */}
-                <div className="flex flex-col md:flex-row md:items-end justify-between mb-12 border-b border-gray-100 pb-8">
-                  <div className="max-w-xl">
-                    <h2 className="text-3xl md:text-4xl font-extrabold text-gray-900 tracking-tight mb-3">
+                <div className="flex flex-col md:flex-row md:items-stretch justify-between mb-12 border-b border-gray-100 pb-12 gap-10">
+                  <div className="flex-1 flex flex-col justify-end">
+                    <div className="mb-6 w-16 h-1 bg-gradient-to-r from-[#8cc63f] to-[#fcb900] rounded-full"></div>
+                    <h2 className="text-4xl md:text-5xl font-black text-gray-900 tracking-tight mb-4 uppercase leading-tight">
                       {category.title}
                     </h2>
-                    <p className="text-gray-500 font-medium">
+                    <p className="text-lg text-gray-400 font-medium max-w-xl leading-relaxed">
                       {category.description}
                     </p>
+                    <div className="mt-10">
+                      <button 
+                        onClick={() => navigate('/dashboard')}
+                        className={`px-10 py-4 rounded-2xl text-white font-black text-xs uppercase tracking-widest bg-gradient-to-r ${category.color} ${category.shadow} shadow-2xl hover:scale-105 active:scale-95 transition-all flex items-center gap-3 w-max`}
+                      >
+                        Explore Category
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={3} stroke="currentColor" className="w-4 h-4">
+                          <path strokeLinecap="round" strokeLinejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" />
+                        </svg>
+                      </button>
+                    </div>
                   </div>
-                  <div className="mt-6 md:mt-0">
-                    <button 
-                      onClick={() => navigate('/dashboard')}
-                      className={`px-6 py-2.5 rounded-full text-white font-bold text-sm tracking-wide bg-gradient-to-r ${category.color} ${category.shadow} shadow-lg hover:scale-105 active:scale-95 transition-all`}
-                    >
-                      View All
-                    </button>
+                  
+                  {/* Category Featured Image */}
+                  <div className="hidden lg:block w-1/3 h-64 relative rounded-[40px] overflow-hidden shadow-2xl group/catimg">
+                    <img 
+                      src={category.categoryImage} 
+                      alt={category.title} 
+                      className="w-full h-full object-cover group-hover/catimg:scale-110 transition-transform duration-1000"
+                    />
+                    <div className={`absolute inset-0 bg-gradient-to-br ${category.color} opacity-40 mix-blend-multiply`}></div>
+                    <div className="absolute inset-0 bg-gradient-to-t from-gray-900/40 via-transparent to-transparent"></div>
                   </div>
                 </div>
 

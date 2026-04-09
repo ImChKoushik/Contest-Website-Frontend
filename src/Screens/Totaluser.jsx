@@ -44,19 +44,9 @@ export default function Totaluser() {
     }
   };
 
-  const handleRoleToggle = async (id, currentRole, name) => {
-    if (id === loggedInUser?._id) return; // Extra safety
-    const newRole = currentRole === 'Admin' ? 'User' : 'Admin';
-    if (window.confirm(`Change ${name}'s role from "${currentRole}" to "${newRole}"?`)) {
-      const result = await updateUserRole(id, newRole);
-      if (result.success) {
-        showToast(result.message || `Role updated to ${newRole}`, "success");
-        refetch();
-      } else {
-        showToast(result.message || "Failed to update role", "error");
-      }
-    }
-  };
+  const allUsers = (searchResults || data)?.users || [];
+  const admins = allUsers.filter(u => u.role === 'Admin');
+  const regularUsers = allUsers.filter(u => u.role !== 'Admin');
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full">
@@ -73,8 +63,8 @@ export default function Totaluser() {
             </svg>
           </button>
           <div>
-            <h1 className="text-3xl font-bold text-gray-900 tracking-tight">Total Users</h1>
-            <p className="text-gray-500 mt-1">View and manage all registered platform users.</p>
+            <h1 className="text-3xl font-bold text-gray-900 tracking-tight">User Management</h1>
+            <p className="text-gray-500 mt-1">Manage administrators and platform participants separately.</p>
           </div>
         </div>
         <div className="mt-4 md:mt-0 flex flex-col sm:flex-row gap-3">
@@ -104,71 +94,138 @@ export default function Totaluser() {
           {error}
         </div>
       ) : (
-        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
-          <div className="p-6 border-b border-gray-50 flex justify-between items-center">
-            <h3 className="font-bold text-lg text-gray-800">
-              {searchResults ? "Search Results" : `Users Database (${data?.total || 0})`}
-            </h3>
+        <div className="space-y-12">
+          {/* Admin Segment */}
+          <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+            <div className="p-6 border-b border-gray-50 bg-gray-50/30 flex justify-between items-center">
+              <div className="flex items-center gap-3">
+                <div className="w-8 h-8 rounded-lg bg-[#fcb900]/10 flex items-center justify-center">
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-[#fcb900]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                  </svg>
+                </div>
+                <h3 className="font-bold text-lg text-gray-800">Administrators ({admins.length})</h3>
+              </div>
+            </div>
+            <div className="overflow-x-auto">
+              <table className="w-full text-left border-collapse">
+                <thead>
+                  <tr className="bg-gray-50/50 text-gray-500 text-[11px] uppercase tracking-widest">
+                    <th className="p-4 font-bold">User ID</th>
+                    <th className="p-4 font-bold">Name</th>
+                    <th className="p-4 font-bold">Email</th>
+                    <th className="p-4 font-bold">Role</th>
+                    <th className="p-4 font-bold">Contact</th>
+                    <th className="p-4 font-bold">Gender</th>
+                    <th className="p-4 font-bold">Verified as Admin</th>
+                    <th className="p-4 font-bold">Joined At</th>
+                  </tr>
+                </thead>
+                <tbody className="text-sm divide-y divide-gray-50">
+                  {admins.map((admin) => (
+                    <tr key={admin._id} className="hover:bg-amber-50/20 transition-colors">
+                      <td className="p-4 font-mono text-[10px] text-gray-400">{admin._id}</td>
+                      <td className="p-4 font-bold text-gray-800">{admin.userName}</td>
+                      <td className="p-4 text-gray-600 font-medium">{admin.email}</td>
+                      <td className="p-4">
+                        <span className="px-2.5 py-1 rounded-full text-[10px] font-black uppercase tracking-tight bg-[#fcb900]/10 text-[#e6a800] border border-[#fcb900]/20">
+                          {admin.role}
+                        </span>
+                      </td>
+                      <td className="p-4 text-gray-500">{admin.contact || 'N/A'}</td>
+                      <td className="p-4 text-gray-500 capitalize">{admin.gender || 'N/A'}</td>
+                      <td className="p-4">
+                        <span className="flex items-center gap-1.5 font-bold text-[#8cc63f]">
+                          <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                            <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                          </svg>
+                          Yes
+                        </span>
+                      </td>
+                      <td className="p-4 text-gray-500 whitespace-nowrap">
+                        {new Date(admin.createdAt).toLocaleDateString()}
+                      </td>
+                    </tr>
+                  ))}
+                  {admins.length === 0 && (
+                    <tr>
+                      <td colSpan="8" className="p-8 text-center text-gray-500 italic">No administrators found.</td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
+            </div>
           </div>
-          <div className="overflow-x-auto">
-            <table className="w-full text-left border-collapse">
-              <thead>
-                <tr className="bg-gray-50 text-gray-500 text-xs uppercase tracking-wider">
-                  <th className="p-4 font-semibold">User ID</th>
-                  <th className="p-4 font-semibold">Name</th>
-                  <th className="p-4 font-semibold">Email</th>
-                  <th className="p-4 font-semibold">Role</th>
-                  <th className="p-4 font-semibold">Contact</th>
-                  <th className="p-4 font-semibold">Gender</th>
-                  <th className="p-4 font-semibold">Verified</th>
-                  <th className="p-4 font-semibold">Joined At</th>
-                  <th className="p-4 font-semibold text-right">Actions</th>
-                </tr>
-              </thead>
-              <tbody className="text-sm divide-y divide-gray-50">
-                {(searchResults || data)?.users?.filter(u => u.role !== 'Admin').map((user) => (
-                  <tr key={user._id} className="hover:bg-gray-50/50 transition-colors">
-                    <td className="p-4 font-mono text-xs text-gray-400">{user._id}</td>
-                    <td className="p-4 font-medium text-gray-800">{user.userName}</td>
-                    <td className="p-4 text-gray-500">{user.email}</td>
-                    <td className="p-4">
-                      <span className={`px-2.5 py-1 rounded-full text-xs font-bold ${user.role === 'Admin' ? 'bg-[#fcb900]/10 text-[#e6a800]' : 'bg-[#8cc63f]/10 text-[#7ab033]'
-                        }`}>
-                        {user.role}
-                      </span>
-                    </td>
-                    <td className="p-4 text-gray-500">{user.contact || 'N/A'}</td>
-                    <td className="p-4 text-gray-500 capitalize">{user.gender || 'N/A'}</td>
-                    <td className="p-4">
-                      {user.isEmailVerified ? (
-                        <span className="text-[#8cc63f]">Yes</span>
-                      ) : (
-                        <span className="text-gray-400">No</span>
-                      )}
-                    </td>
-                    <td className="p-4 text-gray-500 whitespace-nowrap">
-                      {new Date(user.createdAt).toLocaleDateString()}
-                    </td>
-                    <td className="p-4 text-right">
-                      <button
-                        onClick={() => handleDelete(user._id, user.userName)}
-                        disabled={actionLoading}
-                        className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg font-black text-[11px] uppercase tracking-tighter shadow-[0_4px_0_rgb(185,28,28)] active:shadow-none active:translate-y-[2px] transition-all disabled:opacity-50 disabled:shadow-none disabled:translate-y-0"
-                      >
-                        Delete User
-                      </button>
-                    </td>
+
+          {/* Regular Users Segment */}
+          <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+            <div className="p-6 border-b border-gray-50 bg-gray-50/30 flex justify-between items-center">
+              <div className="flex items-center gap-3">
+                <div className="w-8 h-8 rounded-lg bg-[#8cc63f]/10 flex items-center justify-center">
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-[#8cc63f]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+                  </svg>
+                </div>
+                <h3 className="font-bold text-lg text-gray-800">Regular Users List ({regularUsers.length})</h3>
+              </div>
+            </div>
+            <div className="overflow-x-auto">
+              <table className="w-full text-left border-collapse">
+                <thead>
+                  <tr className="bg-gray-50/50 text-gray-500 text-[11px] uppercase tracking-widest">
+                    <th className="p-4 font-bold">User ID</th>
+                    <th className="p-4 font-bold">Name</th>
+                    <th className="p-4 font-bold">Email</th>
+                    <th className="p-4 font-bold">Role</th>
+                    <th className="p-4 font-bold">Contact</th>
+                    <th className="p-4 font-bold">Gender</th>
+                    <th className="p-4 font-bold">Verified Status</th>
+                    <th className="p-4 font-bold">Joined At</th>
+                    <th className="p-4 font-bold text-right">Actions</th>
                   </tr>
-                ))}
-                {(!data?.users || data.users.filter(u => u.role !== 'Admin').length === 0) && (
-                  <tr>
-                    <td colSpan="9" className="p-8 text-center text-gray-500 italic">
-                      No regular users found in the database.
-                    </td>
-                  </tr>
-                )}
-              </tbody>
-            </table>
+                </thead>
+                <tbody className="text-sm divide-y divide-gray-50">
+                  {regularUsers.map((user) => (
+                    <tr key={user._id} className="hover:bg-gray-50/50 transition-colors">
+                      <td className="p-4 font-mono text-[10px] text-gray-400">{user._id}</td>
+                      <td className="p-4 font-medium text-gray-800">{user.userName}</td>
+                      <td className="p-4 text-gray-500">{user.email}</td>
+                      <td className="p-4">
+                        <span className="px-2.5 py-1 rounded-full text-[10px] font-black uppercase tracking-tight bg-[#8cc63f]/10 text-[#7ab033] border border-[#8cc63f]/20">
+                          {user.role}
+                        </span>
+                      </td>
+                      <td className="p-4 text-gray-500">{user.contact || 'N/A'}</td>
+                      <td className="p-4 text-gray-500 capitalize">{user.gender || 'N/A'}</td>
+                      <td className="p-4">
+                        {user.isEmailVerified ? (
+                          <span className="text-[#8cc63f] font-semibold">Yes</span>
+                        ) : (
+                          <span className="text-gray-400">No</span>
+                        )}
+                      </td>
+                      <td className="p-4 text-gray-500 whitespace-nowrap">
+                        {new Date(user.createdAt).toLocaleDateString()}
+                      </td>
+                      <td className="p-4 text-right">
+                        <button
+                          onClick={() => handleDelete(user._id, user.userName)}
+                          disabled={actionLoading}
+                          className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg font-black text-[11px] uppercase tracking-tighter shadow-[0_4px_0_rgb(185,28,28)] active:shadow-none active:translate-y-[2px] transition-all disabled:opacity-50 disabled:shadow-none disabled:translate-y-0"
+                        >
+                          Delete User
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                  {regularUsers.length === 0 && (
+                    <tr>
+                      <td colSpan="9" className="p-8 text-center text-gray-500 italic">No regular users found.</td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
+            </div>
           </div>
         </div>
       )}

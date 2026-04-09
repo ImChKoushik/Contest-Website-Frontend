@@ -1,6 +1,6 @@
-import { useId } from 'react';
+import { useId, forwardRef } from 'react';
 
-export default function Input({ label, icon, ...props }) {
+const Input = forwardRef(({ label, icon, ...props }, ref) => {
   const id = useId();
   return (
     <div className="flex flex-col mb-5 w-full">
@@ -13,10 +13,15 @@ export default function Input({ label, icon, ...props }) {
         )}
         <input
           id={id}
+          ref={ref}
           className="w-full bg-transparent px-4 py-3.5 outline-none text-gray-700 placeholder:text-gray-400 text-sm"
           {...props}
         />
       </div>
     </div>
   );
-}
+});
+
+Input.displayName = 'Input';
+
+export default Input;

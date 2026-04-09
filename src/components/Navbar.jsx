@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate, Link, useLocation } from 'react-router-dom';
 import Button from './Button';
 import { useAuthContext } from '../context/AuthContext';
 import { useLogout } from '../hooks/useLogout';
@@ -8,6 +8,7 @@ import logo from '../assets/images/logo.png';
 
 export default function Navbar() {
   const navigate = useNavigate();
+  const location = useLocation();
   const { user, tokenExpired, login } = useAuthContext();
   const { logout, loading } = useLogout();
   const [refreshing, setRefreshing] = useState(false);
@@ -47,7 +48,7 @@ export default function Navbar() {
 
       const res = await axiosInstance.get('/user/me');
       const userData = res.data?.user || res.data?.data?.user;
-      
+
       if (userData) {
         // Update both user and token in localStorage. 
         // Passing null for newToken (if not found in response) will clear the stale one.
@@ -80,7 +81,7 @@ export default function Navbar() {
     <header className="bg-white/80 backdrop-blur-xl sticky top-0 z-50 py-1.5 border-b border-[#8cc63f]/10 shadow-[0_2px_15px_-3px_rgba(140,198,63,0.07)]">
       {/* Animated Background Layer */}
       <div className="absolute inset-0 bg-gradient-to-r from-white via-[#8cc63f]/5 to-white animate-navbar-gradient -z-10"></div>
-      
+
       {/* Shimmering Bottom Border */}
       <div className="absolute bottom-0 left-0 w-full h-[2px] overflow-hidden">
         <div className="absolute inset-0 w-[40%] h-full bg-gradient-to-r from-transparent via-[#8cc63f]/30 to-transparent animate-border-shimmer"></div>
@@ -92,21 +93,28 @@ export default function Navbar() {
           <Link to="/" onClick={closeMenu} className="flex items-center transition-transform hover:scale-[1.02] active:scale-[0.98]">
             <img src={logo} alt="Desun Academy" className="h-10 md:h-11 w-auto object-contain" />
           </Link>
-          
+
           {/* Navigation Links - Desktop */}
           <nav className="hidden md:flex items-center space-x-9">
-            {navLinks.map((link) => (
-              <Link 
-                key={link.name}
-                to={link.path} 
-                className="text-[13px] font-bold text-gray-500 hover:text-gray-900 transition-all relative group py-1 tracking-wide"
-              >
-                {link.name}
-                <span className="absolute bottom-0 left-1/2 -translate-x-1/2 w-0 h-[3px] bg-[#8cc63f] rounded-full transition-all duration-300 group-hover:w-full"></span>
-              </Link>
-            ))}
+            {navLinks.map((link) => {
+              const isActive = location.pathname === link.path;
+              return (
+                <Link 
+                  key={link.name}
+                  to={link.path} 
+                  className={`text-[13px] font-bold transition-all relative group py-1 tracking-wide ${
+                    isActive ? 'nav-link-active' : 'text-gray-500 nav-link-green-light'
+                  }`}
+                >
+                  {link.name}
+                  <span className={`absolute bottom-0 left-1/2 -translate-x-1/2 h-[3px] bg-[#8cc63f] rounded-full transition-all duration-300 shadow-[0_0_10px_rgba(140,198,63,0.8)] ${
+                    isActive ? 'w-full opacity-100' : 'w-0 opacity-0 group-hover:w-full group-hover:opacity-100'
+                  }`}></span>
+                </Link>
+              );
+            })}
           </nav>
-          
+
           {/* Auth/Profile & Hamburger Section */}
           <div className="flex items-center space-x-4">
             {/* Desktop Auth */}
@@ -135,7 +143,7 @@ export default function Navbar() {
                       <span className="font-extrabold text-gray-800 text-[13px] leading-none tracking-tight">{displayName}</span>
                     </div>
                   </div>
-                  <button 
+                  <button
                     onClick={handleLogout}
                     disabled={loading}
                     className="px-5 h-10 rounded-full bg-white border-2 border-red-500/10 hover:border-red-500 hover:bg-red-500 text-red-500 hover:text-white transition-all duration-300 shadow-sm text-[13px] font-black uppercase tracking-wider"
@@ -152,7 +160,7 @@ export default function Navbar() {
             </div>
 
             {/* Mobile Hamburger Button */}
-            <button 
+            <button
               onClick={toggleMenu}
               className={`md:hidden p-2.5 rounded-xl border border-[#8cc63f]/20 bg-white/50 backdrop-blur-sm transition-all duration-300 ${isMenuOpen ? 'bg-[#8cc63f]/10 border-[#8cc63f] rotate-180' : 'hover:bg-white'}`}
               aria-label="Toggle menu"
@@ -166,25 +174,32 @@ export default function Navbar() {
       </div>
 
       {/* Mobile Navigation Overlay */}
-      <div 
+      <div
         className={`fixed inset-x-0 top-[70px] bg-white/95 backdrop-blur-2xl border-b border-[#8cc63f]/20 transition-all duration-500 ease-in-out z-40 md:hidden overflow-hidden ${isMenuOpen ? 'max-h-[500px] opacity-100' : 'max-h-0 opacity-0'}`}
       >
         <div className="px-6 py-8 space-y-6">
           <nav className="flex flex-col space-y-4">
-            {navLinks.map((link, idx) => (
-              <Link 
-                key={link.name}
-                to={link.path} 
-                onClick={closeMenu}
-                className="text-[17px] font-extrabold text-gray-800 hover:text-[#8cc63f] transition-all flex items-center justify-between group"
-                style={{ transitionDelay: `${idx * 50}ms` }}
-              >
-                {link.name}
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-5 h-5 text-[#8cc63f] opacity-0 group-hover:opacity-100 transition-all -translate-x-2 group-hover:translate-x-0">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
-                </svg>
-              </Link>
-            ))}
+            {navLinks.map((link, idx) => {
+              const isActive = location.pathname === link.path;
+              return (
+                <Link 
+                  key={link.name}
+                  to={link.path} 
+                  onClick={closeMenu}
+                  className={`text-[17px] font-extrabold transition-all flex items-center justify-between group ${
+                    isActive ? 'nav-link-active' : 'text-gray-800 nav-link-green-light'
+                  }`}
+                  style={{ transitionDelay: `${idx * 50}ms` }}
+                >
+                  {link.name}
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className={`w-5 h-5 text-[#8cc63f] transition-all drop-shadow-[0_0_8px_rgba(140,198,63,0.6)] ${
+                    isActive ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0'
+                  }`}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
+                  </svg>
+                </Link>
+              );
+            })}
           </nav>
 
           <div className="pt-6 border-t border-gray-100 flex flex-col gap-4">
@@ -206,7 +221,7 @@ export default function Navbar() {
                     <span className="font-extrabold text-gray-900 text-base">{displayName}</span>
                   </div>
                 </div>
-                <button 
+                <button
                   onClick={handleLogout}
                   className="w-full py-4 text-[14px] font-black bg-red-50 text-red-600 rounded-2xl border-2 border-red-100 hover:bg-red-500 hover:text-white transition-all uppercase tracking-wider"
                 >
@@ -215,13 +230,13 @@ export default function Navbar() {
               </div>
             ) : (
               <div className="flex flex-col gap-3">
-                <button 
+                <button
                   onClick={() => { navigate('/signin'); closeMenu(); }}
                   className="w-full py-4 text-[14px] font-bold text-gray-600 bg-gray-50 rounded-2xl transition-all"
                 >
                   Sign In
                 </button>
-                <button 
+                <button
                   onClick={() => { navigate('/signup'); closeMenu(); }}
                   className="w-full py-4 text-[14px] font-black bg-[#8cc63f] text-white rounded-2xl shadow-[0_8px_20px_rgba(140,198,63,0.3)] uppercase tracking-wider"
                 >

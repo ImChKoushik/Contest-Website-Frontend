@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import Input from '../components/Input';
 import Button from '../components/Button';
 import Form from '../components/Form';
@@ -8,6 +8,7 @@ import { useNavigate } from 'react-router-dom';
 import { useToast } from '../context/ToastContext';
 
 export default function SignInForm() {
+  const emailRef = useRef(null);
   const [formData, setFormData] = useState({
     email: '',
     password: ''
@@ -18,6 +19,14 @@ export default function SignInForm() {
   const { login, user } = useAuthContext();
   const { showToast } = useToast();
   const navigate = useNavigate();
+
+  useEffect(() => {
+    // Auto-focus and scroll to the email input when the component mounts
+    if (emailRef.current) {
+      emailRef.current.focus();
+      emailRef.current.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+  }, []);
 
   useEffect(() => {
     if (user) {
@@ -123,6 +132,7 @@ export default function SignInForm() {
           <Form onSubmit={handleSubmit} className="!p-0 !shadow-none !rounded-none !max-w-none w-full !bg-transparent">
             
             <Input 
+              ref={emailRef}
               label="Email Address" 
               type="email" 
               name="email"

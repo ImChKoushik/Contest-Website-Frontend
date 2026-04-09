@@ -1,17 +1,60 @@
-import React from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuthContext } from '../context/AuthContext';
 import heroImg from '../resources/hero.png';
 
+// Local Category Images
+import mernImg from '../assets/images/Mern.jpg';
+import uiuxImg from '../assets/images/UI-UX.jpg';
+import dmImg from '../assets/images/Digital Marketing.jpg';
+import webImg from '../assets/images/Website Designing.jpg';
+
+// Slider Images
+import bannerSliderImg from '../assets/images/BannerSlider.jpg';
+import mernHomeImg from '../assets/images/mernHome.jpg';
+import learningImg from '../assets/images/learning.jpg';
+
 const Home = () => {
   const navigate = useNavigate();
   const { user } = useAuthContext();
+  const [currentSlide, setCurrentSlide] = useState(0);
+
+  const slides = [
+    {
+      badge: "MERN CONTEST",
+      titleLine1: "Master Your Craft.",
+      titleLine2: "Lead the Future.",
+      description: "Build a scalable real-time collaboration tool using MongoDB, Express, React, and Node.js. Focus on performance and architecture.",
+      image: bannerSliderImg
+    },
+    {
+      badge: "UI/UX CONTEST",
+      titleLine1: "Design with Empathy.",
+      titleLine2: "Shape Experiences.",
+      description: "Redesign the educational experience for neurodivergent learners. Focus on accessibility, empathy, and intuitive interaction.",
+      image: mernHomeImg
+    },
+    {
+      badge: "WEBSITE DESIGNING CONTEST",
+      titleLine1: "Build Stunning Web.",
+      titleLine2: "Push the Boundaries.",
+      description: "Create stunning, responsive, and performant web interfaces. Prove your frontend mastery with modern design architectures.",
+      image: learningImg
+    }
+  ];
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCurrentSlide((prev) => (prev + 1) % slides.length);
+    }, 5000);
+    return () => clearInterval(timer);
+  }, []);
 
   const categories = [
-    { name: 'MERN', slug: 'mern', icon: 'M', color: 'bg-blue-50 text-blue-600', border: 'border-blue-100', image: 'https://images.unsplash.com/photo-1555066931-4365d14bab8c?q=80&w=2670&auto=format&fit=crop' },
-    { name: 'UI/UX DESIGN', slug: 'ui-ux', icon: 'U', color: 'bg-purple-50 text-purple-600', border: 'border-purple-100', image: 'https://images.unsplash.com/photo-1618761714954-0b8cd0026356?q=80&w=2670&auto=format&fit=crop' },
-    { name: 'DIGITAL MARKETING', slug: 'digital-marketing', icon: 'D', color: 'bg-orange-50 text-orange-600', border: 'border-orange-100', image: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?q=80&w=2426&auto=format&fit=crop' },
-    { name: 'WEBSITE DESIGNING', slug: 'website-designing', icon: 'W', color: 'bg-green-50 text-green-600', border: 'border-green-100', image: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?q=80&w=2426&auto=format&fit=crop' }
+    { name: 'MERN', slug: 'mern', image: mernImg, color: 'from-blue-500 to-indigo-600' },
+    { name: 'UI/UX DESIGN', slug: 'ui-ux', image: uiuxImg, color: 'from-purple-500 to-fuchsia-600' },
+    { name: 'DIGITAL MARKETING', slug: 'digital-marketing', image: dmImg, color: 'from-orange-400 to-red-500' },
+    { name: 'WEBSITE DESIGNING', slug: 'website-designing', image: webImg, color: 'from-green-400 to-emerald-600' }
   ];
 
   const handleCategoryClick = (slug) => {
@@ -22,38 +65,90 @@ const Home = () => {
     }
   };
 
+  // Interaction handlers (Touch/Wheel)
+  const [touchStart, setTouchStart] = useState(null);
+  const [touchEnd, setTouchEnd] = useState(null);
+  const wheelTimeout = useRef(null);
+
+  const onTouchStart = (e) => {
+    setTouchEnd(null);
+    setTouchStart(e.targetTouches[0].clientX);
+  };
+  const onTouchMove = (e) => setTouchEnd(e.targetTouches[0].clientX);
+  const onTouchEnd = () => {
+    if (!touchStart || !touchEnd) return;
+    const distance = touchStart - touchEnd;
+    if (distance > 50) setCurrentSlide((prev) => (prev + 1) % slides.length);
+    else if (distance < -50) setCurrentSlide((prev) => (prev === 0 ? slides.length - 1 : prev - 1));
+  };
+
+  const handleWheel = (e) => {
+    if (Math.abs(e.deltaX) > 20 && Math.abs(e.deltaX) > Math.abs(e.deltaY)) {
+      if (!wheelTimeout.current) {
+        if (e.deltaX > 0) setCurrentSlide((prev) => (prev + 1) % slides.length);
+        else setCurrentSlide((prev) => (prev === 0 ? slides.length - 1 : prev - 1));
+        wheelTimeout.current = setTimeout(() => { wheelTimeout.current = null; }, 800);
+      }
+    }
+  };
+
   return (
     <div className="flex flex-col min-h-screen bg-white">
       {/* Hero Section */}
-      <section className="relative h-[85vh] flex items-center overflow-hidden">
+      <section 
+        className="relative h-[85vh] flex items-center overflow-hidden"
+        onTouchStart={onTouchStart}
+        onTouchMove={onTouchMove}
+        onTouchEnd={onTouchEnd}
+        onWheel={handleWheel}
+      >
         {/* Background Image with Overlay */}
-        <div className="absolute inset-0 z-0">
-          <img
-            src={heroImg}
-            alt="Hero Background"
-            className="w-full h-full object-cover"
-          />
-          <div className="absolute inset-0 bg-black/40 backdrop-blur-[2px]"></div>
-          <div className="absolute inset-0 bg-gradient-to-r from-green-900/40 via-transparent to-transparent"></div>
+        <div className="absolute inset-0 z-0 bg-[#063327]">
+          {/* Slider Image Overlay */}
+          {slides.map((slide, idx) => (
+            <img
+              key={idx}
+              src={slide.image}
+              alt={`Slide ${idx + 1}`}
+              className={`absolute inset-0 w-full h-full object-cover object-center transition-opacity duration-1000 ease-in-out ${currentSlide === idx ? "opacity-30 z-10" : "opacity-0 z-0"
+                }`}
+            />
+          ))}
+          <div className="absolute inset-0 bg-gradient-to-r from-[#173a20]/95 via-[#0c402b]/80 to-[#107044]/60 mix-blend-multiply z-10"></div>
+          <div className="absolute inset-0 bg-gradient-to-t from-[#fbfcfb]/10 via-transparent to-transparent z-10"></div> {/* Bottom soft fade */}
         </div>
 
         <div className="container mx-auto px-6 relative z-10 text-white">
           <div className="max-w-3xl">
+            {/* Magical Live Status (All Slides) */}
+            <div className="flex items-center gap-3 mb-6 animate-fade-in">
+              <div className="relative flex h-3 w-3">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#8cc63f] opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-3 w-3 bg-[#8cc63f]"></span>
+              </div>
+              <div className="px-4 py-1 rounded-full bg-white/10 backdrop-blur-xl border border-white/20 shadow-[0_0_20px_rgba(140,198,63,0.3)] flex items-center gap-2 group cursor-pointer hover:bg-white/20 transition-all active:scale-95" onClick={() => navigate(user ? '/contests' : '/signin')}>
+                <span className="text-[10px] font-black uppercase tracking-[0.2em] text-[#8cc63f] animate-pulse">
+                  Contests are Live
+                </span>
+                <div className="w-1 h-1 bg-white/40 rounded-full"></div>
+                <span className="text-[10px] font-bold text-white/60 group-hover:text-white transition-colors">Apply Now</span>
+              </div>
+            </div>
+
             {/* Badge */}
-            <div className="inline-flex items-center px-4 py-1.5 rounded-full bg-[#fca311] text-black text-xs font-bold uppercase tracking-wider mb-8 shadow-lg transition-all duration-500 animate-fade-in">
-              New Contests Live
+            <div className="inline-flex items-center px-4 py-1.5 rounded-full bg-[#fca311] text-black text-xs font-bold uppercase tracking-wider mb-8 shadow-lg transition-all duration-300">
+              {slides[currentSlide].badge}
             </div>
 
             {/* Title */}
-            <h1 className="text-5xl md:text-7xl font-extrabold leading-tight mb-6 transition-all duration-700 animate-slide-up">
-              Master Your Craft.<br />
-              <span className="text-[#8cc63f]">Lead the Future.</span>
+            <h1 className="text-5xl md:text-7xl font-extrabold leading-tight mb-6 transition-all duration-300">
+              {slides[currentSlide].titleLine1}<br />
+              <span className="text-[#8cc63f]">{slides[currentSlide].titleLine2}</span>
             </h1>
 
             {/* Subtext */}
-            <p className="text-lg md:text-xl text-gray-100/90 mb-10 max-w-xl leading-relaxed transition-all duration-700 delay-100 animate-slide-up">
-              Join elite global challenges in technology, design, and marketing.
-              Showcase your skills, win industry recognition, and accelerate your career at Desun Academy.
+            <p className="text-lg md:text-xl text-gray-100/90 mb-10 max-w-xl leading-relaxed transition-all duration-300">
+              {slides[currentSlide].description}
             </p>
 
             {/* Buttons */}
@@ -76,12 +171,25 @@ const Home = () => {
           </div>
         </div>
 
-        {/* Carousel Dots - Kept for aesthetics or removed? 
-            Original code had dots. I'll restore the original dots layout. */}
-        <div className="absolute bottom-10 left-1/2 -translate-x-1/2 flex gap-3">
-          <div className="w-10 h-1.5 rounded-full bg-[#fca311]"></div>
-          <div className="w-10 h-1.5 rounded-full bg-white/30"></div>
-          <div className="w-10 h-1.5 rounded-full bg-white/30"></div>
+        {/* Carousel Indicators (Green Light Effect) */}
+        <div className="absolute bottom-10 left-1/2 -translate-x-1/2 flex gap-4 z-30">
+          {slides.map((_, idx) => (
+            <div
+              key={idx}
+              onClick={() => setCurrentSlide(idx)}
+              className="group cursor-pointer py-4 flex flex-col items-center"
+            >
+              <div 
+                className={`h-1.5 rounded-full transition-all duration-500 ease-out ${currentSlide === idx
+                    ? "w-12 bg-[#8cc63f] shadow-[0_0_15px_rgba(140,198,63,0.8),0_0_5px_rgba(140,198,63,1)] scale-110"
+                    : "w-6 bg-white/20 group-hover:bg-white/40"
+                  }`}
+              ></div>
+              {currentSlide === idx && (
+                <div className="absolute -bottom-1 w-6 h-1 bg-[#8cc63f]/50 blur-sm rounded-full animate-pulse"></div>
+              )}
+            </div>
+          ))}
         </div>
       </section>
 
@@ -102,18 +210,28 @@ const Home = () => {
                 onClick={() => handleCategoryClick(cat.slug)}
                 className="group cursor-pointer"
               >
-                <div className="bg-white rounded-[40px] p-8 border-2 border-gray-50 shadow-sm transition-all duration-500 hover:border-[#8cc63f] hover:shadow-2xl hover:shadow-green-900/5 hover:-translate-y-2 relative overflow-hidden flex flex-col items-center">
-                   <div className={`w-16 h-16 ${cat.color} ${cat.border} border-2 rounded-[24px] flex items-center justify-center text-2xl font-black mb-6 group-hover:scale-110 transition-transform duration-500`}>
-                      {cat.icon}
+                <div className="bg-white rounded-[40px] overflow-hidden border-2 border-gray-50 shadow-sm transition-all duration-500 hover:border-[#8cc63f] hover:shadow-2xl hover:shadow-green-900/5 hover:-translate-y-2 relative flex flex-col h-full">
+                   {/* Card Image Header */}
+                   <div className="h-48 w-full relative overflow-hidden">
+                      <img 
+                        src={cat.image} 
+                        alt={cat.name} 
+                        className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 ease-in-out" 
+                      />
+                      <div className={`absolute inset-0 bg-gradient-to-br ${cat.color} opacity-20 mix-blend-multiply`}></div>
+                      <div className="absolute inset-0 bg-gradient-to-t from-white via-transparent to-transparent"></div>
                    </div>
-                   <h3 className="text-xl font-black text-gray-900 mb-2 tracking-tight group-hover:text-[#8cc63f] transition-colors">{cat.name}</h3>
-                   <p className="text-gray-400 text-sm font-medium mb-8">Click to view all {cat.name} contests.</p>
-                   
-                   <div className="flex items-center gap-2 text-[#8cc63f] font-black uppercase tracking-widest text-[10px] opacity-0 group-hover:opacity-100 transition-all duration-500">
-                      Explore Now
-                      <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M14 5l7 7m0 0l-7 7m7-7H3" />
-                      </svg>
+
+                   <div className="p-8 pt-4 flex flex-col items-center text-center">
+                      <h3 className="text-xl font-black text-gray-900 mb-2 tracking-tight group-hover:text-[#8cc63f] transition-colors uppercase">{cat.name}</h3>
+                      <p className="text-gray-400 text-sm font-medium mb-8">Click to view all {cat.name} contests.</p>
+                      
+                      <div className="flex items-center gap-2 text-[#8cc63f] font-black uppercase tracking-widest text-[10px] transform group-hover:translate-x-1 transition-all duration-500">
+                         Explore Now
+                         <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                         </svg>
+                      </div>
                    </div>
                    
                    {/* Abstract decoration */}
