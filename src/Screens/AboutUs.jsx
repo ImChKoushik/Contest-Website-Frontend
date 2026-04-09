@@ -1,4 +1,7 @@
 import React from 'react';
+import desunAwardImg from '../assets/images/desun-award.jpg';
+import tv9Img from '../assets/images/tv9.jpg';
+import zeeGhantaImg from '../assets/images/24ghanta.jpg';
 
 export default function AboutUs() {
   return (
@@ -48,12 +51,12 @@ export default function AboutUs() {
         {/* Note: User must supply this image at this path or it will fallback to a visual placeholder */}
         <section className="rounded-3xl overflow-hidden shadow-xl aspect-video bg-gray-100 border border-gray-200 relative group">
           <img 
-            src="/src/assets/images/desun award.jpg" 
+            src={desunAwardImg} 
             alt="DESUN Academy Award Ceremony" 
             className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
             onError={(e) => {
               e.target.onerror = null; 
-              e.target.src = "https://placehold.co/1200x675/e2e8f0/64748b?text=Please+save+your+image+as+src/assets/images/desun+award.jpg";
+              e.target.src = "https://placehold.co/1200x675/e2e8f0/64748b?text=Award+Ceremony";
             }}
           />
         </section>
@@ -70,7 +73,7 @@ export default function AboutUs() {
               <li className="flex flex-col sm:flex-row items-start sm:items-center gap-6 group">
                 <div className="flex-shrink-0 w-24 h-16 bg-white border border-gray-100 rounded-xl flex items-center justify-center p-2 shadow-sm group-hover:border-[#8cc63f]/30 transition-colors overflow-hidden">
                   <img 
-                    src="/src/assets/images/tv9.jpg" 
+                    src={tv9Img} 
                     alt="TV9 Bangla Logo" 
                     className="w-full h-full object-contain"
                     onError={(e) => { e.target.style.display = 'none'; }}
@@ -81,7 +84,7 @@ export default function AboutUs() {
               <li className="flex flex-col sm:flex-row items-start sm:items-center gap-6 group">
                 <div className="flex-shrink-0 w-24 h-16 bg-white border border-gray-100 rounded-xl flex items-center justify-center p-2 shadow-sm group-hover:border-[#8cc63f]/30 transition-colors overflow-hidden">
                   <img 
-                    src="/src/assets/images/24ghanta.jpg" 
+                    src={zeeGhantaImg} 
                     alt="Zee 24 Ghanta Logo" 
                     className="w-full h-full object-contain"
                     onError={(e) => { e.target.style.display = 'none'; }}

@@ -5,8 +5,8 @@ import Button from '../components/Button';
 // Local Category Images
 import mernImg from '../assets/images/Mern.jpg';
 import uiuxImg from '../assets/images/UI-UX.jpg';
-import dmImg from '../assets/images/Digital Marketing.jpg';
-import webImg from '../assets/images/Website Designing.jpg';
+import dmImg from '../assets/images/Digital-Marketing.jpg';
+import webImg from '../assets/images/Website-Designing.jpg';
 
 // Mock Data for all Contest Categories
 const CONTEST_CATEGORIES = [

@@ -6,8 +6,8 @@ import heroImg from '../resources/hero.png';
 // Local Category Images
 import mernImg from '../assets/images/Mern.jpg';
 import uiuxImg from '../assets/images/UI-UX.jpg';
-import dmImg from '../assets/images/Digital Marketing.jpg';
-import webImg from '../assets/images/Website Designing.jpg';
+import dmImg from '../assets/images/Digital-Marketing.jpg';
+import webImg from '../assets/images/Website-Designing.jpg';
 
 // Slider Images
 import bannerSliderImg from '../assets/images/BannerSlider.jpg';
@@ -216,6 +216,7 @@ const Home = () => {
                       <img 
                         src={cat.image} 
                         alt={cat.name} 
+                        loading="lazy"
                         className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 ease-in-out" 
                       />
                       <div className={`absolute inset-0 bg-gradient-to-br ${cat.color} opacity-20 mix-blend-multiply`}></div>

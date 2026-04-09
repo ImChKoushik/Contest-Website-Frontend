@@ -63,6 +63,7 @@ export default function ContestCard({
         <img
           src={image}
           alt={title}
+          loading="lazy"
           className="w-full h-full object-cover rounded-[16px]"
         />
         {/* Category Pill Tag */}

@@ -70,12 +70,22 @@ export default function Navbar() {
 
   const displayName = user?.userName || user?.name || user?.email?.split('@')[0] || 'User';
 
-  const navLinks = [
+  const baseLinks = [
     { name: 'Home', path: '/' },
     { name: 'Contests', path: '/contests' },
     { name: 'About Us', path: '/about' },
     { name: 'Contact', path: '/contact' },
   ];
+
+  // Dynamically add Portal link if user is logged in
+  const navLinks = [...baseLinks];
+  if (user) {
+    if (user.role === 'Admin') {
+      navLinks.push({ name: 'Admin Portal', path: '/admin-dashboard' });
+    } else {
+      navLinks.push({ name: 'Candidate Portal', path: '/dashboard' });
+    }
+  }
 
   return (
     <header className="bg-white/80 backdrop-blur-xl sticky top-0 z-50 py-1.5 border-b border-[#8cc63f]/10 shadow-[0_2px_15px_-3px_rgba(140,198,63,0.07)]">
@@ -95,14 +105,14 @@ export default function Navbar() {
           </Link>
 
           {/* Navigation Links - Desktop */}
-          <nav className="hidden md:flex items-center space-x-9">
+          <nav className="hidden lg:flex items-center space-x-6 xl:space-x-9">
             {navLinks.map((link) => {
               const isActive = location.pathname === link.path;
               return (
                 <Link 
                   key={link.name}
                   to={link.path} 
-                  className={`text-[13px] font-bold transition-all relative group py-1 tracking-wide ${
+                  className={`text-[12px] xl:text-[13px] font-bold transition-all relative group py-1 tracking-wide whitespace-nowrap ${
                     isActive ? 'nav-link-active' : 'text-gray-500 nav-link-green-light'
                   }`}
                 >
@@ -162,7 +172,7 @@ export default function Navbar() {
             {/* Mobile Hamburger Button */}
             <button
               onClick={toggleMenu}
-              className={`md:hidden p-2.5 rounded-xl border border-[#8cc63f]/20 bg-white/50 backdrop-blur-sm transition-all duration-300 ${isMenuOpen ? 'bg-[#8cc63f]/10 border-[#8cc63f] rotate-180' : 'hover:bg-white'}`}
+              className={`lg:hidden p-2.5 rounded-xl border border-[#8cc63f]/20 bg-white/50 backdrop-blur-sm transition-all duration-300 ${isMenuOpen ? 'bg-[#8cc63f]/10 border-[#8cc63f] rotate-180' : 'hover:bg-white'}`}
               aria-label="Toggle menu"
             >
               <div className={`hamburger-box ${isMenuOpen ? 'hamburger-open' : ''}`}>
@@ -175,7 +185,7 @@ export default function Navbar() {
 
       {/* Mobile Navigation Overlay */}
       <div
-        className={`fixed inset-x-0 top-[70px] bg-white/95 backdrop-blur-2xl border-b border-[#8cc63f]/20 transition-all duration-500 ease-in-out z-40 md:hidden overflow-hidden ${isMenuOpen ? 'max-h-[500px] opacity-100' : 'max-h-0 opacity-0'}`}
+        className={`fixed inset-x-0 top-[70px] bg-white/95 backdrop-blur-2xl border-b border-[#8cc63f]/20 transition-all duration-500 ease-in-out z-40 lg:hidden overflow-hidden ${isMenuOpen ? 'max-h-[500px] opacity-100' : 'max-h-0 opacity-0'}`}
       >
         <div className="px-6 py-8 space-y-6">
           <nav className="flex flex-col space-y-4">
@@ -201,6 +211,7 @@ export default function Navbar() {
               );
             })}
           </nav>
+
 
           <div className="pt-6 border-t border-gray-100 flex flex-col gap-4">
             {tokenExpired ? (
