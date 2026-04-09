@@ -116,7 +116,7 @@ export default function SignUpForm() {
     const result = await sendRequest("https://contest-backend-td3m.onrender.com/api/v1/user/register-user", payload);
     
     if (result) {
-      showToast("User Registered Successfully! You can now sign in.", "success");
+      showToast("User Registered Successfully! Please check your email to verify your account.", "success");
       navigate("/signin");
     }
   };

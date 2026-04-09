@@ -566,26 +566,40 @@ export default function UserDashboard() {
             { name: 'DIGITAL MARKETING', slug: 'digital-marketing', image: dmImg, color: 'from-orange-400 to-red-500' },
             { name: 'WEBSITE DESIGNING', slug: 'website-designing', image: webImg, color: 'from-green-400 to-emerald-600' }
           ].map((cat) => (
-            <div
-              key={cat.slug}
-              onClick={() => navigate(`/contests/category/${cat.slug}`)}
-              className="bg-white rounded-[32px] overflow-hidden border border-gray-100 shadow-sm hover:border-[#8cc63f] hover:shadow-xl hover:shadow-green-900/5 transition-all cursor-pointer group flex flex-col items-center"
-            >
-              <div className="w-full h-32 relative overflow-hidden">
-                <img
-                  src={cat.image}
-                  alt={cat.name}
-                  loading="lazy"
-                  className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
-                />
-                <div className={`absolute inset-0 bg-gradient-to-br ${cat.color} opacity-20 mix-blend-multiply`}></div>
-                <div className="absolute inset-0 bg-gradient-to-t from-white via-transparent to-transparent"></div>
+              <div
+                key={cat.slug}
+                onClick={() => navigate(`/contests/category/${cat.slug}`)}
+                className="group cursor-pointer"
+              >
+                <div className="bg-white rounded-[40px] overflow-hidden border-2 border-gray-50 shadow-sm transition-all duration-500 hover:border-[#8cc63f] hover:shadow-2xl hover:shadow-green-900/5 hover:-translate-y-2 relative flex flex-col h-full">
+                  {/* Card Image Header */}
+                  <div className="h-48 w-full relative overflow-hidden">
+                    <img
+                      src={cat.image}
+                      alt={cat.name}
+                      loading="lazy"
+                      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 ease-in-out"
+                    />
+                    <div className={`absolute inset-0 bg-gradient-to-br ${cat.color} opacity-20 mix-blend-multiply`}></div>
+                    <div className="absolute inset-0 bg-gradient-to-t from-white via-transparent to-transparent"></div>
+                  </div>
+
+                  <div className="p-8 pt-4 flex flex-col items-center text-center">
+                    <h3 className="text-xl font-black text-gray-900 mb-2 tracking-tight group-hover:text-[#8cc63f] transition-colors uppercase">{cat.name}</h3>
+                    <p className="text-gray-400 text-sm font-medium mb-8">Click to view all {cat.name} contests.</p>
+
+                    <div className="flex items-center gap-2 text-[#8cc63f] font-black uppercase tracking-widest text-[10px] transform group-hover:translate-x-1 transition-all duration-500">
+                      Explore Now
+                      <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                      </svg>
+                    </div>
+                  </div>
+
+                  {/* Abstract decoration */}
+                  <div className="absolute -bottom-10 -right-10 w-32 h-32 bg-gray-50 rounded-full z-0 group-hover:scale-125 transition-transform duration-700 opacity-50"></div>
+                </div>
               </div>
-              <div className="p-6 pt-2 text-center">
-                <h3 className="font-black text-gray-900 mb-1 group-hover:text-[#8cc63f] transition-colors uppercase text-sm tracking-tight">{cat.name}</h3>
-                <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Browse Quests</p>
-              </div>
-            </div>
           ))}
         </div>
       </section>

@@ -14,6 +14,7 @@ const ContestDetails = lazy(() => import('./Screens/ContestDetails'))
 const CategoryContestPage = lazy(() => import('./Screens/CategoryContestPage'))
 const SignUpForm = lazy(() => import('./Screens/SignUpForm'))
 const SignInForm = lazy(() => import('./Screens/SignInForm'))
+const ForgotPassword = lazy(() => import('./Screens/ForgotPassword'))
 const ContactUs = lazy(() => import('./Screens/ContactUs'))
 const AdminDashboard = lazy(() => import('./Screens/AdminDashboard'))
 const Totaluser = lazy(() => import('./Screens/Totaluser'))
@@ -60,6 +61,7 @@ function App() {
             <Route path="/contests/category/:categorySlug" element={<CategoryContestPage />} />
             <Route path="/signup" element={<SignUpForm />} />
             <Route path="/signin" element={<SignInForm />} />
+            <Route path="/forgot-password" element={<ForgotPassword />} />
             <Route path="/contact" element={<ContactUs />} />
             <Route path="/why-desun" element={<WhyDesun />} />
 

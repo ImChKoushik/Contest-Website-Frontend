@@ -145,7 +145,7 @@ export default function SignInForm() {
             <div className="relative mb-2">
               <div className="flex justify-between items-center mb-2">
                 <label className="text-sm font-semibold text-gray-800">Password</label>
-                <a href="#" className="text-xs font-semibold text-[#8cc63f] hover:underline">Forgot Password?</a>
+                <a href="#" onClick={(e) => { e.preventDefault(); navigate('/forgot-password'); }} className="text-xs font-semibold text-[#8cc63f] hover:underline">Forgot Password?</a>
               </div>
               <div className="relative group">
                 <Input 

@@ -2,15 +2,21 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuthContext } from '../context/AuthContext';
 
+// Local Category Images
+import mernImg from '../assets/images/Mern.jpg';
+import uiuxImg from '../assets/images/UI-UX.jpg';
+import dmImg from '../assets/images/Digital-Marketing.jpg';
+import webImg from '../assets/images/Website-Designing.jpg';
+
 export default function Contests() {
   const navigate = useNavigate();
   const { user } = useAuthContext();
 
   const categories = [
-    { name: 'MERN', slug: 'mern', icon: 'M', color: 'bg-blue-50 text-blue-600', border: 'border-blue-100' },
-    { name: 'UI/UX DESIGN', slug: 'ui-ux', icon: 'U', color: 'bg-purple-50 text-purple-600', border: 'border-purple-100' },
-    { name: 'DIGITAL MARKETING', slug: 'digital-marketing', icon: 'D', color: 'bg-orange-50 text-orange-600', border: 'border-orange-100' },
-    { name: 'WEBSITE DESIGNING', slug: 'website-designing', icon: 'W', color: 'bg-green-50 text-green-600', border: 'border-green-100' }
+    { name: 'MERN', slug: 'mern', image: mernImg, color: 'from-blue-500 to-indigo-600' },
+    { name: 'UI/UX DESIGN', slug: 'ui-ux', image: uiuxImg, color: 'from-purple-500 to-fuchsia-600' },
+    { name: 'DIGITAL MARKETING', slug: 'digital-marketing', image: dmImg, color: 'from-orange-400 to-red-500' },
+    { name: 'WEBSITE DESIGNING', slug: 'website-designing', image: webImg, color: 'from-green-400 to-emerald-600' }
   ];
 
   const handleCategoryClick = (slug) => {
@@ -38,17 +44,40 @@ export default function Contests() {
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-12 relative z-20">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
           {categories.map((cat) => (
-             <div 
-               key={cat.slug}
-               onClick={() => handleCategoryClick(cat.slug)}
-               className="bg-white rounded-[32px] p-8 border border-gray-100 shadow-sm hover:border-[#8cc63f] hover:shadow-xl hover:shadow-green-900/5 transition-all cursor-pointer group flex flex-col items-center text-center"
-             >
-                <div className={`w-14 h-14 ${cat.color} ${cat.border} border-2 rounded-2xl flex items-center justify-center text-xl font-black mb-6 group-hover:scale-110 transition-transform`}>
-                   {cat.icon}
+              <div
+                key={cat.slug}
+                onClick={() => handleCategoryClick(cat.slug)}
+                className="group cursor-pointer"
+              >
+                <div className="bg-white rounded-[40px] overflow-hidden border-2 border-gray-50 shadow-sm transition-all duration-500 hover:border-[#8cc63f] hover:shadow-2xl hover:shadow-green-900/5 hover:-translate-y-2 relative flex flex-col h-full">
+                  {/* Card Image Header */}
+                  <div className="h-48 w-full relative overflow-hidden">
+                    <img
+                      src={cat.image}
+                      alt={cat.name}
+                      loading="lazy"
+                      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 ease-in-out"
+                    />
+                    <div className={`absolute inset-0 bg-gradient-to-br ${cat.color} opacity-20 mix-blend-multiply`}></div>
+                    <div className="absolute inset-0 bg-gradient-to-t from-white via-transparent to-transparent"></div>
+                  </div>
+
+                  <div className="p-8 pt-4 flex flex-col items-center text-center">
+                    <h3 className="text-xl font-black text-gray-900 mb-2 tracking-tight group-hover:text-[#8cc63f] transition-colors uppercase">{cat.name}</h3>
+                    <p className="text-gray-400 text-sm font-medium mb-8">Click to view all {cat.name} contests.</p>
+
+                    <div className="flex items-center gap-2 text-[#8cc63f] font-black uppercase tracking-widest text-[10px] transform group-hover:translate-x-1 transition-all duration-500">
+                      Explore Now
+                      <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                      </svg>
+                    </div>
+                  </div>
+
+                  {/* Abstract decoration */}
+                  <div className="absolute -bottom-10 -right-10 w-32 h-32 bg-gray-50 rounded-full z-0 group-hover:scale-125 transition-transform duration-700 opacity-50"></div>
                 </div>
-                <h3 className="font-black text-gray-900 mb-1 group-hover:text-[#8cc63f] transition-colors">{cat.name}</h3>
-                <p className="text-[11px] font-bold text-gray-400 uppercase tracking-widest">Browse Quests</p>
-             </div>
+              </div>
           ))}
         </div>
       </section>
