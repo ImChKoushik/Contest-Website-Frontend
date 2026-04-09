@@ -125,6 +125,13 @@ export default function Navbar() {
             })}
           </nav>
 
+          <Link to="/why-desun" className="hidden lg:flex px-4 py-2 rounded-full border-2 border-[#8cc63f]/50 text-[#8cc63f] hover:bg-[#8cc63f] hover:border-[#8cc63f] hover:text-white text-[12px] font-black uppercase tracking-wider transition-all shadow-sm items-center gap-2 mr-2">
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+              <path fillRule="evenodd" d="M11.3 1.046A1 1 0 0112 2v5h4a1 1 0 01.82 1.573l-7 10A1 1 0 018 18v-5H4a1 1 0 01-.82-1.573l7-10a1 1 0 011.12-.38z" clipRule="evenodd" />
+            </svg>
+            Our Success Story
+          </Link>
+
           {/* Auth/Profile & Hamburger Section */}
           <div className="flex items-center space-x-4">
             {/* Desktop Auth */}
@@ -212,6 +219,12 @@ export default function Navbar() {
             })}
           </nav>
 
+          <Link to="/why-desun" onClick={closeMenu} className="flex mt-6 justify-center items-center w-full py-3.5 text-[14px] font-black bg-gradient-to-r from-[#8cc63f]/10 to-[#8cc63f]/5 text-[#8cc63f] border border-[#8cc63f]/30 rounded-2xl transition-all uppercase tracking-wider gap-2">
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+              <path fillRule="evenodd" d="M11.3 1.046A1 1 0 0112 2v5h4a1 1 0 01.82 1.573l-7 10A1 1 0 018 18v-5H4a1 1 0 01-.82-1.573l7-10a1 1 0 011.12-.38z" clipRule="evenodd" />
+            </svg>
+            Our Success Story
+          </Link>
 
           <div className="pt-6 border-t border-gray-100 flex flex-col gap-4">
             {tokenExpired ? (

@@ -216,14 +216,11 @@ export default function UserDashboard() {
           </p>
 
           <div className="flex flex-col sm:flex-row gap-4 mb-20">
-            <button onClick={() => navigate('/contests')} className="bg-[#8cc63f] hover:bg-[#7eb830] transition-colors text-white font-bold py-3.5 px-8 rounded-full shadow-[0_4px_14px_rgba(140,198,63,0.39)] flex items-center justify-center gap-2 group tracking-wide">
+            <button onClick={() => navigate('/contests')} className="bg-[#8cc63f] hover:bg-[#7eb830] transition-colors text-white font-bold py-3.5 px-8 rounded-full shadow-[0_4px_14px_rgba(140,198,63,0.39)] flex items-center justify-center gap-2 group tracking-wide cursor-pointer relative z-50">
               Explore Contests
               <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-4 h-4 group-hover:translate-x-1 transition-transform">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />
               </svg>
-            </button>
-            <button className="bg-white/10 hover:bg-white/20 border border-white/20 backdrop-blur-md transition-all text-white font-bold py-3.5 px-8 rounded-full tracking-wide">
-              Our Success Stories
             </button>
           </div>
 
@@ -235,10 +232,10 @@ export default function UserDashboard() {
                 onClick={() => setCurrentSlide(idx)}
                 className="group cursor-pointer py-4 flex flex-col items-center"
               >
-                <div 
+                <div
                   className={`h-1.5 rounded-full transition-all duration-500 ease-out ${currentSlide === idx
-                      ? "w-12 bg-[#8cc63f] shadow-[0_0_15px_rgba(140,198,63,0.8),0_0_5px_rgba(140,198,63,1)] scale-110"
-                      : "w-6 bg-white/20 group-hover:bg-white/40"
+                    ? "w-12 bg-[#8cc63f] shadow-[0_0_15px_rgba(140,198,63,0.8),0_0_5px_rgba(140,198,63,1)] scale-110"
+                    : "w-6 bg-white/20 group-hover:bg-white/40"
                     }`}
                 ></div>
                 {currentSlide === idx && (

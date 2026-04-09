@@ -23,6 +23,7 @@ const TotalTeams = lazy(() => import('./Screens/TotalTeams'))
 const TotalResults = lazy(() => import('./Screens/TotalResults'))
 const UserDashboard = lazy(() => import('./Screens/UserDashboard'))
 const SubmitProject = lazy(() => import('./Screens/SubmitProject'))
+const WhyDesun = lazy(() => import('./Screens/WhyDesun'))
 
 // Premium Loading Fallback
 const ScreenLoader = () => (
@@ -60,7 +61,8 @@ function App() {
             <Route path="/signup" element={<SignUpForm />} />
             <Route path="/signin" element={<SignInForm />} />
             <Route path="/contact" element={<ContactUs />} />
-            
+            <Route path="/why-desun" element={<WhyDesun />} />
+
             {/* Admin Routes */}
             <Route element={<ProtectedRoute allowedRoles={['Admin']} />}>
               <Route path="/admin-dashboard" element={<AdminDashboard />} />

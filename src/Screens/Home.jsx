@@ -95,7 +95,7 @@ const Home = () => {
   return (
     <div className="flex flex-col min-h-screen bg-white">
       {/* Hero Section */}
-      <section 
+      <section
         className="relative h-[85vh] flex items-center overflow-hidden"
         onTouchStart={onTouchStart}
         onTouchMove={onTouchMove}
@@ -155,17 +155,12 @@ const Home = () => {
             <div className="flex flex-wrap gap-4">
               <button
                 onClick={() => navigate('/contests')}
-                className="bg-[#8cc63f] hover:bg-[#7ab033] text-white px-8 py-4 rounded-xl font-bold text-lg flex items-center gap-2 transition-all shadow-[0_10px_20px_-5px_rgba(140,198,63,0.4)] hover:-translate-y-1"
+                className="bg-[#8cc63f] hover:bg-[#7ab033] text-white px-8 py-4 rounded-xl font-bold text-lg flex items-center gap-2 transition-all shadow-[0_10px_20px_-5px_rgba(140,198,63,0.4)] hover:-translate-y-1 cursor-pointer relative z-50"
               >
                 Explore Contests
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
                   <path fillRule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clipRule="evenodd" />
                 </svg>
-              </button>
-              <button
-                className="bg-white/10 hover:bg-white/20 backdrop-blur-md border border-white/30 text-white px-8 py-4 rounded-xl font-bold text-lg transition-all"
-              >
-                Our Success Stories
               </button>
             </div>
           </div>
@@ -179,10 +174,10 @@ const Home = () => {
               onClick={() => setCurrentSlide(idx)}
               className="group cursor-pointer py-4 flex flex-col items-center"
             >
-              <div 
+              <div
                 className={`h-1.5 rounded-full transition-all duration-500 ease-out ${currentSlide === idx
-                    ? "w-12 bg-[#8cc63f] shadow-[0_0_15px_rgba(140,198,63,0.8),0_0_5px_rgba(140,198,63,1)] scale-110"
-                    : "w-6 bg-white/20 group-hover:bg-white/40"
+                  ? "w-12 bg-[#8cc63f] shadow-[0_0_15px_rgba(140,198,63,0.8),0_0_5px_rgba(140,198,63,1)] scale-110"
+                  : "w-6 bg-white/20 group-hover:bg-white/40"
                   }`}
               ></div>
               {currentSlide === idx && (
@@ -202,41 +197,41 @@ const Home = () => {
               Filter challenges by your expertise. Deep dive into specialized contests and showcase your mastery in specific domains.
             </p>
           </div>
-          
+
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
             {categories.map((cat) => (
-              <div 
+              <div
                 key={cat.slug}
                 onClick={() => handleCategoryClick(cat.slug)}
                 className="group cursor-pointer"
               >
                 <div className="bg-white rounded-[40px] overflow-hidden border-2 border-gray-50 shadow-sm transition-all duration-500 hover:border-[#8cc63f] hover:shadow-2xl hover:shadow-green-900/5 hover:-translate-y-2 relative flex flex-col h-full">
-                   {/* Card Image Header */}
-                   <div className="h-48 w-full relative overflow-hidden">
-                      <img 
-                        src={cat.image} 
-                        alt={cat.name} 
-                        loading="lazy"
-                        className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 ease-in-out" 
-                      />
-                      <div className={`absolute inset-0 bg-gradient-to-br ${cat.color} opacity-20 mix-blend-multiply`}></div>
-                      <div className="absolute inset-0 bg-gradient-to-t from-white via-transparent to-transparent"></div>
-                   </div>
+                  {/* Card Image Header */}
+                  <div className="h-48 w-full relative overflow-hidden">
+                    <img
+                      src={cat.image}
+                      alt={cat.name}
+                      loading="lazy"
+                      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 ease-in-out"
+                    />
+                    <div className={`absolute inset-0 bg-gradient-to-br ${cat.color} opacity-20 mix-blend-multiply`}></div>
+                    <div className="absolute inset-0 bg-gradient-to-t from-white via-transparent to-transparent"></div>
+                  </div>
 
-                   <div className="p-8 pt-4 flex flex-col items-center text-center">
-                      <h3 className="text-xl font-black text-gray-900 mb-2 tracking-tight group-hover:text-[#8cc63f] transition-colors uppercase">{cat.name}</h3>
-                      <p className="text-gray-400 text-sm font-medium mb-8">Click to view all {cat.name} contests.</p>
-                      
-                      <div className="flex items-center gap-2 text-[#8cc63f] font-black uppercase tracking-widest text-[10px] transform group-hover:translate-x-1 transition-all duration-500">
-                         Explore Now
-                         <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M14 5l7 7m0 0l-7 7m7-7H3" />
-                         </svg>
-                      </div>
-                   </div>
-                   
-                   {/* Abstract decoration */}
-                   <div className="absolute -bottom-10 -right-10 w-32 h-32 bg-gray-50 rounded-full z-0 group-hover:scale-125 transition-transform duration-700 opacity-50"></div>
+                  <div className="p-8 pt-4 flex flex-col items-center text-center">
+                    <h3 className="text-xl font-black text-gray-900 mb-2 tracking-tight group-hover:text-[#8cc63f] transition-colors uppercase">{cat.name}</h3>
+                    <p className="text-gray-400 text-sm font-medium mb-8">Click to view all {cat.name} contests.</p>
+
+                    <div className="flex items-center gap-2 text-[#8cc63f] font-black uppercase tracking-widest text-[10px] transform group-hover:translate-x-1 transition-all duration-500">
+                      Explore Now
+                      <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                      </svg>
+                    </div>
+                  </div>
+
+                  {/* Abstract decoration */}
+                  <div className="absolute -bottom-10 -right-10 w-32 h-32 bg-gray-50 rounded-full z-0 group-hover:scale-125 transition-transform duration-700 opacity-50"></div>
                 </div>
               </div>
             ))}
