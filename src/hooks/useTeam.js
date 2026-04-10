@@ -213,11 +213,42 @@ const useTeam = () => {
     }
   }, []);
 
+  const updateTeamApproval = async (teamId, status) => {
+    setLoading(true);
+    try {
+      const res = await axiosInstance.patch(`/team/approve-team/${teamId}`, { status });
+      showToast(res.data.message || `Team ${status}`, "success");
+      return { success: true, data: res.data.data };
+    } catch (err) {
+      const msg = err.response?.data?.message || "Failed to update team approval status";
+      showToast(msg, "error");
+      return { success: false, message: msg };
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const deleteTeamByUser = async (teamId) => {
+    setLoading(true);
+    try {
+      const res = await axiosInstance.delete(`/team/delete/${teamId}`);
+      showToast(res.data.message || "Team deleted successfully", "success");
+      return { success: true, message: res.data.message };
+    } catch (err) {
+      const msg = err.response?.data?.message || "Failed to delete team";
+      showToast(msg, "error");
+      return { success: false, message: msg };
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return {
     createTeam, inviteUser, acceptInvite, rejectInvite, requestJoin,
     acceptRequest, rejectRequest, getMyTeam, getTeamDetails,
     viewAllTeams, deleteTeam, addSubmission,
     updateSubmissionStatus, getTeamSubmissions,
+    updateTeamApproval, deleteTeamByUser,
     loading, error
   };
 };

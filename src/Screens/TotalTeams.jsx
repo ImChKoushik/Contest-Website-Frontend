@@ -6,7 +6,7 @@ import Button from '../components/Button';
 import { useToast } from '../context/ToastContext';
 
 export default function TotalTeams() {
-  const { viewAllTeams, deleteTeam, updateSubmissionStatus, loading, error } = useTeam();
+  const { viewAllTeams, deleteTeam, updateSubmissionStatus, updateTeamApproval, loading, error } = useTeam();
   const { uploadResult, loading: resultLoading } = useResults();
   const { showToast } = useToast();
   const navigate = useNavigate();
@@ -86,6 +86,16 @@ export default function TotalTeams() {
     }
   };
 
+  const handleApprovalChange = async (teamId, status) => {
+    const { success } = await updateTeamApproval(teamId, status);
+    if (success) {
+      if (selectedTeam && selectedTeam._id === teamId) {
+        setSelectedTeam({...selectedTeam, approvalStatus: status});
+      }
+      fetchTeams();
+    }
+  };
+
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full">
       {/* Header Section */}
@@ -161,11 +171,20 @@ export default function TotalTeams() {
                     </td>
                     <td className="p-4 font-medium text-gray-700">{team.contest?.contestTitle || 'N/A'}</td>
                     <td className="p-4">
-                      <span className={`px-2.5 py-1 rounded-full text-xs font-bold ${
-                        team.submissionStatus === 'Submitted' ? 'bg-green-100 text-green-600' : 'bg-gray-100 text-gray-400'
-                      }`}>
-                        {team.submissionStatus || 'Draft'}
-                      </span>
+                      <div className="flex flex-col gap-1.5 justify-center">
+                        <span className={`w-max px-2.5 py-1 rounded-full text-[10px] font-bold tracking-wider uppercase ${
+                          team.approvalStatus === 'Approved' ? 'bg-green-100 text-green-700 border border-green-200' :
+                          team.approvalStatus === 'Rejected' ? 'bg-red-100 text-red-700 border border-red-200' :
+                          'bg-[#fcb900]/10 text-[#e6a800] border border-[#fcb900]/20'
+                        }`}>
+                           App: {team.approvalStatus || 'Pending'}
+                        </span>
+                        <span className={`w-max px-2.5 py-1 rounded-full text-[10px] font-bold tracking-wider uppercase ${
+                          team.submissionStatus === 'Submitted' ? 'bg-blue-100 text-blue-700 border border-blue-200' : 'bg-gray-100 text-gray-500 border border-gray-200'
+                        }`}>
+                          Sub: {team.submissionStatus || 'Draft'}
+                        </span>
+                      </div>
                     </td>
                     <td className="p-4 text-right flex justify-end gap-2">
                       <Button 
@@ -270,6 +289,49 @@ export default function TotalTeams() {
                     </div>
                   </div>
                 </div>
+              </section>
+
+              {/* Approval Section */}
+              <section>
+                 <div className="flex items-center gap-2 mb-4">
+                    <div className="w-8 h-8 rounded-lg bg-teal-500/10 flex items-center justify-center text-teal-600 font-bold text-lg">A</div>
+                    <h3 className="font-bold text-gray-800">Admin Approval</h3>
+                 </div>
+                 <div className="bg-gray-50/50 p-6 rounded-2xl border border-gray-100 flex flex-col md:flex-row md:items-center justify-between gap-4">
+                    <div>
+                        <p className="text-[10px] uppercase font-black text-gray-400 tracking-widest mb-1">Current Status</p>
+                        <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-black uppercase tracking-widest ${
+                          selectedTeam.approvalStatus === 'Approved' ? 'bg-green-100 text-green-700' :
+                          selectedTeam.approvalStatus === 'Rejected' ? 'bg-red-100 text-red-700' : 'bg-[#fcb900]/10 text-[#fcb900]'
+                        }`}>
+                          {selectedTeam.approvalStatus || 'Pending'}
+                        </span>
+                    </div>
+                    <div className="flex gap-2.5 items-center">
+                        <button 
+                          onClick={() => handleApprovalChange(selectedTeam._id, 'Approved')}
+                          disabled={selectedTeam.approvalStatus === 'Approved'}
+                          className={`px-4 py-2 text-xs font-black uppercase tracking-wider rounded-xl transition-all ${
+                            selectedTeam.approvalStatus === 'Approved' 
+                            ? 'bg-gray-100 text-gray-400 cursor-not-allowed border border-gray-200' 
+                            : 'bg-green-500 hover:bg-green-600 text-white shadow-lg shadow-green-500/20 active:scale-95'
+                          }`}
+                        >
+                          Approve Team
+                        </button>
+                        <button 
+                          onClick={() => handleApprovalChange(selectedTeam._id, 'Rejected')}
+                          disabled={selectedTeam.approvalStatus === 'Rejected'}
+                          className={`px-4 py-2 text-xs font-black uppercase tracking-wider rounded-xl transition-all ${
+                            selectedTeam.approvalStatus === 'Rejected' 
+                            ? 'bg-gray-100 text-gray-400 cursor-not-allowed border border-gray-200' 
+                            : 'bg-white border-2 border-red-100 text-red-500 hover:bg-red-50 hover:border-red-200 active:scale-95'
+                          }`}
+                        >
+                          Reject Team
+                        </button>
+                    </div>
+                 </div>
               </section>
 
               {/* Submission Section */}

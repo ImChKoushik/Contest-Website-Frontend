@@ -29,6 +29,7 @@ export default function UserDashboard() {
   const {
     viewAllTeams, getTeamDetails, getMyTeam,
     acceptInvite, rejectInvite, acceptRequest, rejectRequest,
+    deleteTeamByUser,
     loading: teamLoading
   } = useTeam();
   const { fetchMyResults, myResults, loading: resultsLoading } = useResults();
@@ -336,16 +337,29 @@ export default function UserDashboard() {
             {myTeams.map((team) => (
               <div key={team._id} className="bg-white rounded-[44px] p-8 shadow-[0_8px_30px_rgb(0,0,0,0.02)] border border-gray-50 hover:border-[#8cc63f]/20 hover:shadow-[0_20px_50px_rgba(140,198,63,0.08)] transition-all duration-500 group relative overflow-hidden flex flex-col">
 
-                {/* Status Badge */}
                 <div className="flex items-start justify-between mb-8 relative z-10">
                   <div className="flex flex-col">
-                    <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest mb-3 w-max ${team.submissionStatus === 'Submitted'
-                      ? 'bg-[#8cc63f]/10 text-[#8cc63f]'
-                      : 'bg-[#fcb900]/10 text-[#fcb900]'
-                      }`}>
-                      <span className={`w-1.5 h-1.5 rounded-full ${team.submissionStatus === 'Submitted' ? 'bg-[#8cc63f]' : 'bg-[#fcb900]'}`}></span>
-                      {team.submissionStatus || 'Draft In Progress'}
-                    </span>
+                    <div className="flex flex-wrap gap-2 mb-3">
+                        <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest w-max ${
+                          team.approvalStatus === 'Approved' ? 'bg-green-100 text-green-700' :
+                          team.approvalStatus === 'Rejected' ? 'bg-red-100 text-red-700' :
+                          'bg-[#fcb900]/10 text-[#e6a800]'
+                        }`}>
+                          <span className={`w-1.5 h-1.5 rounded-full ${
+                            team.approvalStatus === 'Approved' ? 'bg-green-500' :
+                            team.approvalStatus === 'Rejected' ? 'bg-red-500' : 'bg-[#fcb900]'
+                          }`}></span>
+                          Approval: {team.approvalStatus || 'Pending'}
+                        </span>
+                        
+                        {team.approvalStatus === 'Approved' && (
+                          <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest w-max ${
+                            team.submissionStatus === 'Submitted' ? 'bg-blue-100 text-blue-700' : 'bg-gray-100 text-gray-500'
+                          }`}>
+                            {team.submissionStatus || 'Draft'}
+                          </span>
+                        )}
+                    </div>
                     <h3 className="text-2xl font-black text-gray-900 leading-tight group-hover:text-[#8cc63f] transition-colors line-clamp-1">{team.teamName}</h3>
                   </div>
                   <div className="w-12 h-12 rounded-2xl bg-gray-50 flex items-center justify-center text-gray-300 group-hover:bg-[#8cc63f]/10 group-hover:text-[#8cc63f] transition-all">
@@ -479,15 +493,45 @@ export default function UserDashboard() {
                 <div className="mt-10 relative z-10 pt-6 border-t border-gray-50">
                   {/* Action Button */}
                   {team.members?.some(m => m._id === currentUser?._id || m === currentUser?._id) ? (
-                    <button
-                      onClick={() => navigate(`/dashboard/submit-project/${team.contest?._id}`, { state: { contest: team.contest, team: team } })}
-                      className="w-full py-5 rounded-[22px] bg-gray-900 border-2 border-gray-900 text-white font-black text-[13px] transition-all flex items-center justify-center gap-3 tracking-[0.1em] uppercase hover:bg-white hover:text-gray-900 active:scale-[0.98] shadow-2xl shadow-gray-200 group/btn"
-                    >
-                      <span>{team.submissionStatus === 'Submitted' ? 'Update Submission' : 'Launch Project'}</span>
-                      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={3} stroke="currentColor" className="w-4 h-4 transition-transform group-hover/btn:translate-x-1">
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
-                      </svg>
-                    </button>
+                    <div className="flex flex-col gap-3">
+                      {team.approvalStatus === 'Approved' ? (
+                        <button
+                          onClick={() => navigate(`/dashboard/submit-project/${team.contest?._id}`, { state: { contest: team.contest, team: team } })}
+                          className="w-full py-5 rounded-[22px] bg-gray-900 border-2 border-gray-900 text-white font-black text-[13px] transition-all flex items-center justify-center gap-3 tracking-[0.1em] uppercase hover:bg-white hover:text-gray-900 active:scale-[0.98] shadow-2xl shadow-gray-200 group/btn"
+                        >
+                          <span>{team.submissionStatus === 'Submitted' ? 'Update Submission' : 'Launch Project'}</span>
+                          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={3} stroke="currentColor" className="w-4 h-4 transition-transform group-hover/btn:translate-x-1">
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
+                          </svg>
+                        </button>
+                      ) : team.approvalStatus === 'Rejected' ? (
+                        <div className="w-full py-4 text-center rounded-[22px] bg-red-50 text-red-600 font-bold text-xs uppercase tracking-widest border border-red-100">
+                          Squad Rejected By Admin
+                        </div>
+                      ) : (
+                        <div className="w-full py-4 text-center rounded-[22px] bg-yellow-50 text-yellow-600 font-bold text-xs uppercase tracking-widest border border-yellow-100">
+                          Awaiting Admin Approval
+                        </div>
+                      )}
+
+                      {/* Explicitly show Delete Squad for Leader if Pending or Rejected */}
+                      {String(team.leader?._id || team.leader) === String(currentUser?._id || currentUser?.id) && team.approvalStatus !== 'Approved' && (
+                        <button
+                          onClick={async () => {
+                            if (window.confirm("Are you sure you want to delete this squad? This is irreversible!")) {
+                              const { success } = await deleteTeamByUser(team._id);
+                              if (success) fetchUserTeams();
+                            }
+                          }}
+                          className="w-full py-4 rounded-[22px] bg-white border border-red-200 text-red-500 font-bold text-[12px] uppercase tracking-wider hover:bg-red-50 transition-all active:scale-[0.98] flex items-center justify-center gap-2"
+                        >
+                          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-4 h-4">
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" />
+                          </svg>
+                          Delete Squad
+                        </button>
+                      )}
+                    </div>
                   ) : (
                     <div className="flex flex-col gap-3">
                       <button
