@@ -53,11 +53,39 @@ export default function SignUpForm() {
     password: '',
     confirmPassword: ''
   });
+  const [profileImage, setProfileImage] = useState(null);
+  const [imagePreview, setImagePreview] = useState(null);
   const [termsAccepted, setTermsAccepted] = useState(false);
   const { sendRequest, loading, error } = useAuth();
   const { user } = useAuthContext();
   const { showToast } = useToast();
   const navigate = useNavigate();
+
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setProfileImage(file);
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setImagePreview(reader.result);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const getPasswordStrength = (password) => {
+    if (!password) return null;
+    let score = 0;
+    if (password.length >= 8) score++;
+    if (/^[A-Z]/.test(password)) score++;
+    if (/[!@#$%^&*(),.?":{}|<>]/.test(password)) score++;
+
+    if (score === 3) return { label: 'Strong', color: 'bg-[#8cc63f]', text: 'text-[#8cc63f]' };
+    if (score === 2) return { label: 'Weak', color: 'bg-yellow-500', text: 'text-yellow-600' };
+    return { label: 'Poor', color: 'bg-red-500', text: 'text-red-500' };
+  };
+
+  const strength = getPasswordStrength(formData.password);
 
   useEffect(() => {
     if (user) {
@@ -83,6 +111,14 @@ export default function SignUpForm() {
       showToast("Password must be at least 8 characters long", "warning");
       return;
     }
+    if (!/^[A-Z]/.test(formData.password)) {
+      showToast("Password must start with a capital letter", "warning");
+      return;
+    }
+    if (!/[!@#$%^&*(),.?":{}|<>]/.test(formData.password)) {
+      showToast("Password must contain at least one special character", "warning");
+      return;
+    }
     if (formData.password !== formData.confirmPassword) {
       showToast("Passwords do not match", "warning");
       return;
@@ -105,15 +141,18 @@ export default function SignUpForm() {
       return;
     }
 
-    const payload = {
-      userName: formData.userName,
-      email: formData.email,
-      contact: formData.contact,
-      gender: formattedGender,
-      password: formData.password
-    };
+    const submissionData = new FormData();
+    submissionData.append('userName', formData.userName);
+    submissionData.append('email', formData.email);
+    submissionData.append('contact', formData.contact);
+    submissionData.append('gender', formattedGender);
+    submissionData.append('password', formData.password);
+    
+    if (profileImage) {
+      submissionData.append('profileImage', profileImage);
+    }
 
-    const result = await sendRequest("https://contest-backend-td3m.onrender.com/api/v1/user/register-user", payload);
+    const result = await sendRequest("https://contest-backend-td3m.onrender.com/api/v1/user/register-user", submissionData);
     
     if (result) {
       showToast("User Registered Successfully! Please check your email to verify your account.", "success");
@@ -190,6 +229,33 @@ export default function SignUpForm() {
               <p className="text-gray-500 text-[15px]">Start your journey at Desun Academy today.</p>
             </div>
             
+            {/* Image Upload Area */}
+            <div className="flex flex-col items-center justify-center mb-8">
+              <label htmlFor="profileImage" className="relative cursor-pointer group">
+                <div className="w-[100px] h-[100px] rounded-full border-[3px] border-dashed border-[#8cc63f] overflow-hidden bg-[#f7f7f7] flex items-center justify-center group-hover:bg-gray-100 transition-colors shadow-sm">
+                  {imagePreview ? (
+                    <img src={imagePreview} alt="Profile Preview" className="w-full h-full object-cover" />
+                  ) : (
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.2} stroke="currentColor" className="w-9 h-9 text-gray-400">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M6.827 6.175A2.31 2.31 0 015.186 7.23c-.38.054-.757.112-1.134.175C2.999 7.58 2.25 8.507 2.25 9.574V18a2.25 2.25 0 002.25 2.25h15A2.25 2.25 0 0021.75 18V9.574c0-1.067-.75-1.994-1.802-2.169a47.865 47.865 0 00-1.134-.175 2.31 2.31 0 01-1.64-1.055l-.822-1.316a2.192 2.192 0 00-1.736-1.039 48.774 48.774 0 00-5.232 0 2.192 2.192 0 00-1.736 1.039l-.821 1.316z" />
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M16.5 12.75a4.5 4.5 0 11-9 0 4.5 4.5 0 019 0zM18.75 10.5h.008v.008h-.008V10.5z" />
+                    </svg>
+                  )}
+                </div>
+                <div className="absolute inset-0 bg-black/40 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                  <span className="text-white text-xs font-semibold">Upload</span>
+                </div>
+                <input 
+                  id="profileImage" 
+                  type="file" 
+                  accept="image/*" 
+                  className="hidden" 
+                  onChange={handleImageChange} 
+                />
+              </label>
+              <span className="text-sm text-gray-500 mt-3 font-medium">Profile Image (Optional)</span>
+            </div>
+
             {error && <div className="mb-4 p-3 bg-red-50 text-red-600 rounded-lg text-sm">{error}</div>}
 
             <Input 
@@ -256,6 +322,16 @@ export default function SignUpForm() {
                   icon={<LockIcon />} 
                   required
                 />
+                {strength && (
+                  <div className="flex items-center justify-between text-xs mt-[-10px] mb-3 px-1">
+                    <span className={`font-semibold ${strength.text}`}>{strength.label} Password</span>
+                    <div className="flex gap-1.5">
+                      <div className={`h-1.5 w-6 rounded-full ${strength.color}`}></div>
+                      <div className={`h-1.5 w-6 rounded-full ${strength.label === 'Poor' ? 'bg-gray-200' : strength.color}`}></div>
+                      <div className={`h-1.5 w-6 rounded-full ${strength.label === 'Strong' ? strength.color : 'bg-gray-200'}`}></div>
+                    </div>
+                  </div>
+                )}
               </div>
               <div className="flex-1">
                 <Input 

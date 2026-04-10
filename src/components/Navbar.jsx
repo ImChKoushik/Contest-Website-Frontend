@@ -5,6 +5,8 @@ import { useAuthContext } from '../context/AuthContext';
 import { useLogout } from '../hooks/useLogout';
 import axiosInstance from '../utils/axiosInstance';
 import logo from '../assets/images/logo.png';
+import DefaultProfile from '../assets/images/DefaultProfile.png';
+import UpdateProfileModal from './UpdateProfileModal';
 
 export default function Navbar() {
   const navigate = useNavigate();
@@ -13,6 +15,7 @@ export default function Navbar() {
   const { logout, loading } = useLogout();
   const [refreshing, setRefreshing] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
 
   const handleLogout = () => {
     logout();
@@ -100,8 +103,16 @@ export default function Navbar() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         <div className="flex justify-between items-center h-16">
           {/* Logo Section */}
-          <Link to="/" onClick={closeMenu} className="flex items-center transition-transform hover:scale-[1.02] active:scale-[0.98]">
-            <img src={logo} alt="Desun Academy" className="h-10 md:h-11 w-auto object-contain" />
+          <Link to="/" onClick={closeMenu} className="flex flex-col items-center justify-center transition-transform hover:scale-[1.02] active:scale-[0.98]">
+            <img src={logo} alt="Desun Academy" className="h-[30px] md:h-[34px] w-auto object-contain" />
+            <div className="flex items-center gap-1 mt-[-2px]">
+              <span className="text-[11px] md:text-[12px] font-black bg-gradient-to-r from-[#8cc63f] to-[#5a8624] bg-clip-text text-transparent tracking-tighter drop-shadow-sm">
+                Desun's LearnAndEarn
+              </span>
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-[14px] h-[14px] text-[#fcb900] drop-shadow-sm mb-[2px]">
+                <path fillRule="evenodd" d="M5.166 2.621v.92h13.668v-.92c0-.218-.02-.43-.053-.639C18.666 1.053 17.842 0 16.984 0H7.016C6.158 0 5.334 1.053 5.219 1.982a3.97 3.97 0 0 0-.053.639Zm14.165 2.67H4.669a2.25 2.25 0 0 0-2.25 2.25v2.625a6.002 6.002 0 0 0 5.438 5.972l.4 5.8H6.5a.75.75 0 0 0 0 1.5h11a.75.75 0 0 0 0-1.5h-1.772l.4-5.8a6.002 6.002 0 0 0 5.438-5.972V6.79a2.25 2.25 0 0 0-2.25-2.25Zm-1.5 2.25v2.625a4.5 4.5 0 0 1-3.69 4.426l-.37 5.37H10.24l-.37-5.37a4.5 4.5 0 0 1-3.69-4.426V6.79h11.281Z" clipRule="evenodd" />
+              </svg>
+            </div>
           </Link>
 
           {/* Navigation Links - Desktop */}
@@ -125,12 +136,14 @@ export default function Navbar() {
             })}
           </nav>
 
-          <Link to="/why-desun" className="hidden lg:flex px-4 py-2 rounded-full border-2 border-[#8cc63f]/50 text-[#8cc63f] hover:bg-[#8cc63f] hover:border-[#8cc63f] hover:text-white text-[12px] font-black uppercase tracking-wider transition-all shadow-sm items-center gap-2 mr-2">
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
-              <path fillRule="evenodd" d="M11.3 1.046A1 1 0 0112 2v5h4a1 1 0 01.82 1.573l-7 10A1 1 0 018 18v-5H4a1 1 0 01-.82-1.573l7-10a1 1 0 011.12-.38z" clipRule="evenodd" />
-            </svg>
-            Our Success Story
-          </Link>
+          {!user && (
+            <Link to="/why-desun" className="hidden lg:flex px-4 py-2 rounded-full border-2 border-[#8cc63f]/50 text-[#8cc63f] hover:bg-[#8cc63f] hover:border-[#8cc63f] hover:text-white text-[12px] font-black uppercase tracking-wider transition-all shadow-sm items-center gap-2 mr-2">
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                <path fillRule="evenodd" d="M11.3 1.046A1 1 0 0112 2v5h4a1 1 0 01.82 1.573l-7 10A1 1 0 018 18v-5H4a1 1 0 01-.82-1.573l7-10a1 1 0 011.12-.38z" clipRule="evenodd" />
+              </svg>
+              Our Success Story
+            </Link>
+          )}
 
           {/* Auth/Profile & Hamburger Section */}
           <div className="flex items-center space-x-4">
@@ -151,14 +164,28 @@ export default function Navbar() {
                 </div>
               ) : user ? (
                 <div className="flex items-center gap-3">
-                  <div className="flex items-center gap-2.5 bg-gray-50/80 hover:bg-white pl-1.5 pr-4 py-1.5 rounded-full border border-gray-100 shadow-sm transition-all cursor-default group">
-                    <div className="w-8 h-8 rounded-full bg-gradient-to-br from-[#8cc63f] to-[#7ab033] text-white flex items-center justify-center font-black text-[13px] shadow-sm transform group-hover:rotate-12 transition-transform">
-                      {displayName.charAt(0).toUpperCase()}
+                  <div className="flex items-center pr-1.5 pl-1.5 py-1.5 bg-gray-50/80 hover:bg-white rounded-full border border-gray-100 shadow-sm transition-all cursor-default group">
+                    <div className="w-8 h-8 rounded-full overflow-hidden shadow-sm transform group-hover:rotate-12 transition-transform border border-[#8cc63f]/30">
+                      <img 
+                        src={user?.profileImage?.url || DefaultProfile} 
+                        alt={displayName} 
+                        className="w-full h-full object-cover" 
+                        onError={(e) => { e.target.src = DefaultProfile; }}
+                      />
                     </div>
-                    <div className="flex flex-col">
+                    <div className="flex flex-col ml-2.5 pr-1">
                       <span className="text-[10px] font-bold text-[#8cc63f] uppercase tracking-widest leading-none mb-0.5">Welcome</span>
                       <span className="font-extrabold text-gray-800 text-[13px] leading-none tracking-tight">{displayName}</span>
                     </div>
+                    <button 
+                      onClick={() => setIsProfileModalOpen(true)}
+                      title="Edit Profile"
+                      className="w-6 h-6 rounded-full bg-gray-100/80 group-hover:bg-[#8cc63f] text-gray-400 group-hover:text-white flex items-center justify-center transition-colors shadow-sm ml-1"
+                    >
+                      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={3} stroke="currentColor" className="w-3 h-3">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+                      </svg>
+                    </button>
                   </div>
                   <button
                     onClick={handleLogout}
@@ -219,12 +246,14 @@ export default function Navbar() {
             })}
           </nav>
 
-          <Link to="/why-desun" onClick={closeMenu} className="flex mt-6 justify-center items-center w-full py-3.5 text-[14px] font-black bg-gradient-to-r from-[#8cc63f]/10 to-[#8cc63f]/5 text-[#8cc63f] border border-[#8cc63f]/30 rounded-2xl transition-all uppercase tracking-wider gap-2">
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-              <path fillRule="evenodd" d="M11.3 1.046A1 1 0 0112 2v5h4a1 1 0 01.82 1.573l-7 10A1 1 0 018 18v-5H4a1 1 0 01-.82-1.573l7-10a1 1 0 011.12-.38z" clipRule="evenodd" />
-            </svg>
-            Our Success Story
-          </Link>
+          {!user && (
+            <Link to="/why-desun" onClick={closeMenu} className="flex mt-6 justify-center items-center w-full py-3.5 text-[14px] font-black bg-gradient-to-r from-[#8cc63f]/10 to-[#8cc63f]/5 text-[#8cc63f] border border-[#8cc63f]/30 rounded-2xl transition-all uppercase tracking-wider gap-2">
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                <path fillRule="evenodd" d="M11.3 1.046A1 1 0 0112 2v5h4a1 1 0 01.82 1.573l-7 10A1 1 0 018 18v-5H4a1 1 0 01-.82-1.573l7-10a1 1 0 011.12-.38z" clipRule="evenodd" />
+              </svg>
+              Our Success Story
+            </Link>
+          )}
 
           <div className="pt-6 border-t border-gray-100 flex flex-col gap-4">
             {tokenExpired ? (
@@ -236,14 +265,29 @@ export default function Navbar() {
               </button>
             ) : user ? (
               <div className="space-y-4">
-                <div className="flex items-center gap-4 p-4 bg-gray-50 rounded-2xl border border-gray-100">
-                  <div className="w-12 h-12 rounded-full bg-gradient-to-br from-[#8cc63f] to-[#7ab033] text-white flex items-center justify-center font-black text-lg shadow-md">
-                    {displayName.charAt(0).toUpperCase()}
+                <div className="flex items-center justify-between p-4 bg-gray-50 rounded-2xl border border-gray-100 group">
+                  <div className="flex items-center gap-4">
+                    <div className="w-12 h-12 rounded-full overflow-hidden shadow-md border-2 border-[#8cc63f]/30">
+                      <img 
+                        src={user?.profileImage?.url || DefaultProfile} 
+                        alt={displayName} 
+                        className="w-full h-full object-cover" 
+                        onError={(e) => { e.target.src = DefaultProfile; }}
+                      />
+                    </div>
+                    <div className="flex flex-col text-left">
+                      <span className="text-[11px] font-bold text-[#8cc63f] uppercase tracking-widest leading-none mb-1">Authenticated</span>
+                      <span className="font-extrabold text-gray-900 text-base">{displayName}</span>
+                    </div>
                   </div>
-                  <div className="flex flex-col text-left">
-                    <span className="text-[11px] font-bold text-[#8cc63f] uppercase tracking-widest leading-none mb-1">Authenticated</span>
-                    <span className="font-extrabold text-gray-900 text-base">{displayName}</span>
-                  </div>
+                  <button 
+                    onClick={() => { setIsProfileModalOpen(true); closeMenu(); }}
+                    className="w-9 h-9 rounded-full bg-white border border-gray-200 text-gray-400 hover:text-[#8cc63f] hover:border-[#8cc63f] flex items-center justify-center transition-all shadow-sm"
+                  >
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-5 h-5">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+                    </svg>
+                  </button>
                 </div>
                 <button
                   onClick={handleLogout}
@@ -271,6 +315,10 @@ export default function Navbar() {
           </div>
         </div>
       </div>
+
+      {isProfileModalOpen && (
+        <UpdateProfileModal isOpen={isProfileModalOpen} onClose={() => setIsProfileModalOpen(false)} />
+      )}
     </header>
   );
 }

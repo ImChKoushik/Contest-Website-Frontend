@@ -15,6 +15,7 @@ export default function SignInForm() {
   });
   const [showPassword, setShowPassword] = useState(false);
   const [rememberMe, setRememberMe] = useState(false);
+  const [isResending, setIsResending] = useState(false);
   const { sendRequest, loading, error } = useAuth();
   const { login, user } = useAuthContext();
   const { showToast } = useToast();
@@ -43,6 +44,21 @@ export default function SignInForm() {
       ...formData,
       [e.target.name]: e.target.value
     });
+  };
+
+  const handleResendVerification = async () => {
+    if (!formData.email) {
+      showToast("Please enter your email first to resend the verification link", "warning");
+      return;
+    }
+
+    setIsResending(true);
+    const result = await sendRequest("https://contest-backend-td3m.onrender.com/api/v1/user/resend-mail", { email: formData.email });
+    setIsResending(false);
+    
+    if (result) {
+      showToast("Verification email sent successfully! Please check your inbox.", "success");
+    }
   };
 
   const handleSubmit = async (e) => {
@@ -131,16 +147,30 @@ export default function SignInForm() {
 
           <Form onSubmit={handleSubmit} className="!p-0 !shadow-none !rounded-none !max-w-none w-full !bg-transparent">
             
-            <Input 
-              ref={emailRef}
-              label="Email Address" 
-              type="email" 
-              name="email"
-              value={formData.email}
-              onChange={handleChange}
-              placeholder="name@example.com" 
-              required
-            />
+            <div className="relative mb-0">
+              <div className="flex justify-between items-center mb-2">
+                <label className="text-sm font-semibold text-gray-800">Email Address</label>
+                {formData.email && (
+                  <button 
+                    type="button" 
+                    onClick={handleResendVerification} 
+                    disabled={isResending}
+                    className="text-xs font-semibold text-[#8cc63f] hover:underline bg-transparent border-none p-0 cursor-pointer disabled:opacity-50"
+                  >
+                    {isResending ? "Sending..." : "Resend Verification Mail"}
+                  </button>
+                )}
+              </div>
+              <Input 
+                ref={emailRef}
+                type="email" 
+                name="email"
+                value={formData.email}
+                onChange={handleChange}
+                placeholder="name@example.com" 
+                required
+              />
+            </div>
 
             <div className="relative mb-2">
               <div className="flex justify-between items-center mb-2">
