@@ -164,7 +164,7 @@ export default function TotalTeams() {
                        <div className="flex -space-x-2">
                           {team.members?.map((m, i) => (
                              <div key={i} title={m.userName} className="w-7 h-7 rounded-full bg-gray-100 border border-white flex items-center justify-center text-[10px] font-black text-gray-400">
-                                {m.userName?.charAt(0).toUpperCase()}
+                                {(m.userName || 'U').charAt(0).toUpperCase()}
                              </div>
                           ))}
                        </div>

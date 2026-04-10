@@ -192,6 +192,25 @@ export default function UpdateProfileModal({ isOpen, onClose }) {
               onChange={handleDetailsChange}
               className="!py-3"
             />
+            {formData.newPassword && (
+              <div className="mt-2 pl-1 animate-in slide-in-from-top-2 duration-300">
+                <div className="flex gap-1.5 h-1.5 w-full mb-1.5">
+                  <div className={`h-full flex-1 rounded-full transition-colors duration-300 ${formData.newPassword.length >= 8 ? 'bg-[#8cc63f]' : 'bg-red-400'}`}></div>
+                  <div className={`h-full flex-1 rounded-full transition-colors duration-300 ${/(?=.*[A-Za-z])(?=.*\d)/.test(formData.newPassword) ? 'bg-[#8cc63f]' : 'bg-gray-200'}`}></div>
+                  <div className={`h-full flex-1 rounded-full transition-colors duration-300 ${/(?=.*[^A-Za-z0-9])/.test(formData.newPassword) ? 'bg-[#8cc63f]' : 'bg-gray-200'}`}></div>
+                </div>
+                <div className="flex justify-between items-center text-[10px] font-bold">
+                  <span className={`${
+                    !/(?=.*[A-Za-z])(?=.*\d)/.test(formData.newPassword) || formData.newPassword.length < 8 ? 'text-red-500' :
+                    !/(?=.*[^A-Za-z0-9])/.test(formData.newPassword) ? 'text-[#fcb900]' : 'text-[#8cc63f]'
+                  } uppercase tracking-widest`}>
+                    {!/(?=.*[A-Za-z])(?=.*\d)/.test(formData.newPassword) || formData.newPassword.length < 8 ? 'Weak Password' :
+                    !/(?=.*[^A-Za-z0-9])/.test(formData.newPassword) ? 'Good Password' : 'Strong Password'}
+                  </span>
+                  <span className="text-gray-400 text-[9px] font-medium">Add symbols & numbers to strengthen</span>
+                </div>
+              </div>
+            )}
             
             <div className="pt-4">
               <Button 

@@ -387,7 +387,7 @@ export default function UserDashboard() {
                       {team.members?.map((m, i) => (
                         <div key={i} title={m.userName} className="relative group/member">
                           <div className="w-11 h-11 rounded-2xl bg-white border-2 border-gray-100 flex items-center justify-center text-xs font-black text-gray-400 hover:border-[#8cc63f] hover:text-[#8cc63f] transition-all cursor-help shadow-sm overflow-hidden">
-                            {m.userName?.substring(0, 2).toUpperCase()}
+                            {(m.userName || 'U').substring(0, 2).toUpperCase()}
                           </div>
                           {m._id === team.leader?._id && (
                             <div className="absolute -top-1 -right-1 w-4 h-4 bg-[#fcb900] rounded-full border-2 border-white flex items-center justify-center">

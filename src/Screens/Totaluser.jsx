@@ -128,7 +128,7 @@ export default function Totaluser() {
                       <td className="p-4">
                         <div className="flex items-center gap-3">
                           <div className="w-8 h-8 rounded-full bg-amber-100 flex items-center justify-center text-xs font-bold text-amber-700 border border-amber-200">
-                             {admin.userName?.substring(0,2).toUpperCase()}
+                             {(admin.userName || 'A').substring(0,2).toUpperCase()}
                           </div>
                           <span className="font-bold text-gray-800">{admin.userName}</span>
                         </div>
@@ -198,7 +198,7 @@ export default function Totaluser() {
                       <td className="p-4">
                         <div className="flex items-center gap-3">
                           <div className="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-xs font-bold text-gray-600 border border-gray-200">
-                             {user.userName?.substring(0,2).toUpperCase()}
+                             {(user.userName || 'U').substring(0,2).toUpperCase()}
                           </div>
                           <div className="flex flex-col">
                             <span className="font-bold text-gray-800">{user.userName}</span>
