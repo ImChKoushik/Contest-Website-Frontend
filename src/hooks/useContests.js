@@ -81,6 +81,21 @@ const useContests = () => {
     }
   };
 
+  const updateContest = async (contestId, contestData) => {
+    try {
+      // Assuming backend supports PATCH /api/v1/contest/update-contest/:id or similar
+      const res = await axiosInstance.patch(`/contest/update-contest/${contestId}`, contestData);
+      if (res.data && res.data.success) {
+        return { success: true, message: res.data.message };
+      } else {
+        return { success: false, message: res.data.message || "Failed to update contest" };
+      }
+    } catch (err) {
+      const msg = err.response?.data?.message || err.message || "Failed to update contest";
+      return { success: false, message: msg };
+    }
+  };
+
   const deleteContest = async (contestId) => {
     try {
       const res = await axiosInstance.delete(`/contest/delete-contest/${contestId}`);
@@ -100,7 +115,7 @@ const useContests = () => {
     fetchContests();
   }, [fetchContests]);
 
-  return { data, loading, error, fetchContests, fetchAllContests, addContest, updateContestStatus, deleteContest };
+  return { data, loading, error, fetchContests, fetchAllContests, addContest, updateContestStatus, updateContest, deleteContest };
 };
 
 export default useContests;

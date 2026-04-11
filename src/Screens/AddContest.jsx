@@ -21,7 +21,7 @@ export default function AddContest() {
 
   const CATEGORY_OPTIONS = ["MERN", "UI/UX DESIGN", "DIGITAL MARKETING", "WEBSITE DESIGNING"];
   const STATUS_OPTIONS = ["Upcoming", "On-Going", "Completed"];
-  const PROJECT_TYPE_OPTIONS = ["Individual", "Team"];
+  const PROJECT_TYPE_OPTIONS = ["Individual", "Team", "Both"];
 
   const { addContest, loading, error } = useContests();
   const { showToast } = useToast();
@@ -149,7 +149,7 @@ export default function AddContest() {
               </select>
             </div>
 
-            {formData.projectType === 'Team' && (
+            {['Team', 'Both'].includes(formData.projectType) && (
               <Input 
                 label="Max Team Size" 
                 type="number" 

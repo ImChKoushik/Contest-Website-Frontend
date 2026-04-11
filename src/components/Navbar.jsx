@@ -49,13 +49,17 @@ export default function Navbar() {
         refreshRes.data?.data?.token ||
         null;
 
+      const newRefreshToken =
+        refreshRes.data?.data?.refreshToken ||
+        refreshRes.data?.refreshToken ||
+        null;
+
       const res = await axiosInstance.get('/user/me');
       const userData = res.data?.user || res.data?.data?.user;
 
       if (userData) {
-        // Update both user and token in localStorage. 
-        // Passing null for newToken (if not found in response) will clear the stale one.
-        login(userData, newToken);
+        // Update user, access token, and refresh token in localStorage via AuthContext
+        login(userData, newToken, newRefreshToken);
         if (userData.role === 'Admin') {
           navigate('/admin-dashboard');
         } else {
@@ -150,16 +154,32 @@ export default function Navbar() {
             {/* Desktop Auth */}
             <div className="hidden md:flex items-center space-x-4">
               {tokenExpired ? (
-                <div className="flex items-center gap-3">
-                  <span className="text-xs text-amber-600 font-semibold bg-amber-50 border border-amber-200 px-3 py-1.5 rounded-full">
-                    Session expired
-                  </span>
+                <div className="flex items-center gap-3 animate-in fade-in slide-in-from-right-4 duration-500">
+                  <div className="flex flex-col items-end">
+                    <span className="text-[10px] text-amber-600 font-black uppercase tracking-widest leading-none mb-1">Session Expired</span>
+                    <span className="text-[11px] text-gray-400 font-bold leading-none">Please re-authenticate</span>
+                  </div>
                   <button
                     onClick={handleSilentReAuth}
                     disabled={refreshing}
-                    className="px-6 py-2.5 text-[13px] font-black bg-[#8cc63f] hover:bg-[#7ab033] text-white rounded-full transition-all duration-300 shadow-[0_4px_14px_rgba(140,198,63,0.3)] hover:shadow-lg hover:-translate-y-0.5 uppercase tracking-wider"
+                    className="group relative flex items-center justify-center h-11 px-6 bg-gradient-to-r from-[#fcb900] to-[#ff9900] text-white rounded-2xl transition-all duration-300 shadow-[0_4px_15px_rgba(252,185,0,0.3)] hover:shadow-[0_8px_25px_rgba(252,185,0,0.4)] hover:-translate-y-0.5 active:scale-95 disabled:opacity-50"
                   >
-                    {refreshing ? 'Reconnecting...' : 'Refresh Token'}
+                    <div className="absolute inset-0 bg-white/20 opacity-0 group-hover:opacity-100 transition-opacity rounded-2xl"></div>
+                    <span className="relative flex items-center gap-2 text-[13px] font-black uppercase tracking-wider">
+                      {refreshing ? (
+                        <>
+                          <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                          Syncing...
+                        </>
+                      ) : (
+                        <>
+                          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-4 h-4 animate-pulse">
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15m3 0l3-3m0 0l-3-3m3 3H9" />
+                          </svg>
+                          Login Again
+                        </>
+                      )}
+                    </span>
                   </button>
                 </div>
               ) : user ? (
@@ -259,9 +279,22 @@ export default function Navbar() {
             {tokenExpired ? (
               <button
                 onClick={handleSilentReAuth}
-                className="w-full py-4 text-[14px] font-black bg-[#8cc63f] text-white rounded-2xl shadow-lg uppercase tracking-wider"
+                disabled={refreshing}
+                className="w-full py-4 text-[14px] font-black bg-gradient-to-r from-[#fcb900] to-[#ff9900] text-white rounded-2xl shadow-lg shadow-amber-200 uppercase tracking-wider flex items-center justify-center gap-3 active:scale-[0.98] transition-transform"
               >
-                Session Expired - Sign In
+                {refreshing ? (
+                  <>
+                    <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                    Syncing Session...
+                  </>
+                ) : (
+                  <>
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-5 h-5">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15m3 0l3-3m0 0l-3-3m3 3H9" />
+                    </svg>
+                    Login Again
+                  </>
+                )}
               </button>
             ) : user ? (
               <div className="space-y-4">

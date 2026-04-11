@@ -22,6 +22,7 @@ const AddContest = lazy(() => import('./Screens/AddContest'))
 const TotalContests = lazy(() => import('./Screens/TotalContests'))
 const TotalTeams = lazy(() => import('./Screens/TotalTeams'))
 const TotalResults = lazy(() => import('./Screens/TotalResults'))
+const TotalInvites = lazy(() => import('./Screens/TotalInvites'))
 const UserDashboard = lazy(() => import('./Screens/UserDashboard'))
 const SubmitProject = lazy(() => import('./Screens/SubmitProject'))
 const WhyDesun = lazy(() => import('./Screens/WhyDesun'))
@@ -73,6 +74,7 @@ function App() {
               <Route path="/admin-dashboard/total-contests" element={<TotalContests />} />
               <Route path="/admin-dashboard/total-participants" element={<TotalTeams />} />
               <Route path="/admin-dashboard/total-results" element={<TotalResults />} />
+              <Route path="/admin-dashboard/total-invites" element={<TotalInvites />} />
             </Route>
 
             {/* Regular User Routes */}

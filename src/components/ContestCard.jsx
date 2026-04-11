@@ -68,8 +68,8 @@ export default function ContestCard({
         />
         {/* Category Pill Tag */}
         <div className="absolute top-5 left-5 bg-white/90 backdrop-blur text-gray-900 px-3 py-1 rounded-full text-[10px] font-extrabold uppercase tracking-wide shadow-sm flex items-center gap-1.5">
-          <span className={`w-1.5 h-1.5 rounded-full ${projectType === 'Team' ? 'bg-blue-500' : 'bg-[#8cc63f]'}`}></span>
-          {projectType || 'Individual'}
+          <span className={`w-1.5 h-1.5 rounded-full ${projectType === 'Team' ? 'bg-blue-500' : projectType === 'Both' ? 'bg-orange-500' : 'bg-[#8cc63f]'}`}></span>
+          {projectType === 'Both' ? 'Solo & Team' : projectType || 'Individual'}
         </div>
         <div className="absolute top-5 right-5 bg-pink-100/90 backdrop-blur text-pink-500 px-3 py-1 rounded-full text-[10px] font-extrabold uppercase tracking-wide shadow-sm">
           {category}

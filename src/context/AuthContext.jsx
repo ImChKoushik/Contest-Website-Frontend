@@ -1,4 +1,4 @@
-import { createContext, useState, useContext, useCallback } from 'react';
+import { createContext, useState, useContext, useCallback, useEffect } from 'react';
 
 const AuthContext = createContext();
 
@@ -29,7 +29,14 @@ export const AuthProvider = ({ children }) => {
 
   const [tokenExpired, setTokenExpired] = useState(false);
 
-  const login = useCallback((userData, authToken) => {
+  // listen for global session expiry signals (e.g. from axiosInstance)
+  useEffect(() => {
+    const handleAuthExpired = () => setTokenExpired(true);
+    window.addEventListener('auth:expired', handleAuthExpired);
+    return () => window.removeEventListener('auth:expired', handleAuthExpired);
+  }, []);
+
+  const login = useCallback((userData, authToken, refreshToken) => {
     if (!userData || typeof userData !== 'object') return;
     if (userData.role || userData.email || userData._id) {
       setUser(userData);
@@ -42,6 +49,12 @@ export const AuthProvider = ({ children }) => {
         // Explicitly clear token if null is passed
         setToken(null);
         localStorage.removeItem('authToken');
+      }
+
+      if (refreshToken) {
+        localStorage.setItem('refreshToken', refreshToken);
+      } else if (refreshToken === null) {
+        localStorage.removeItem('refreshToken');
       }
       
       setTokenExpired(false);

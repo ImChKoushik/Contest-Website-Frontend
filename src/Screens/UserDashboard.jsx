@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import ContestCard from '../components/ContestCard';
 import useContests from '../hooks/useContests';
 import useTeam from '../hooks/useTeam';
+import useInvite from '../hooks/useInvite';
 import TeamSelectionModal from '../components/TeamSelectionModal';
 import InviteModal from '../components/InviteModal';
 import { useAuthContext } from '../context/AuthContext';
@@ -28,14 +29,17 @@ export default function UserDashboard() {
 
   const {
     viewAllTeams, getTeamDetails, getMyTeam,
-    acceptInvite, rejectInvite, acceptRequest, rejectRequest,
     deleteTeamByUser,
     loading: teamLoading
   } = useTeam();
+  const {
+    getMyInvites, respondToInvite, respondToJoinRequest,
+  } = useInvite();
   const { fetchMyResults, myResults, loading: resultsLoading } = useResults();
   const { showToast } = useToast();
 
   const [myTeams, setMyTeams] = useState([]);
+  const [myInvites, setMyInvites] = useState([]);
   const [selectedContestForTeam, setSelectedContestForTeam] = useState(null);
   const [isTeamModalOpen, setIsTeamModalOpen] = useState(false);
   const [isInviteModalOpen, setIsInviteModalOpen] = useState(false);
@@ -51,6 +55,9 @@ export default function UserDashboard() {
       if (success) setMyTeams(allTeams);
       return;
     }
+
+    const { success: invSuccess, data: invData } = await getMyInvites();
+    if (invSuccess) setMyInvites(invData || []);
 
     // For regular users, fetch each team separately
     if (!loading && data?.contests) {
@@ -310,6 +317,59 @@ export default function UserDashboard() {
         </section>
       )}
 
+      {myInvites.length > 0 && (
+        <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-16 relative z-20">
+          <div className="flex items-center gap-3 mb-6">
+            <div className="w-8 h-8 rounded-lg bg-[#fcb900]/20 flex items-center justify-center text-[#fcb900]">
+              <span className="w-2.5 h-2.5 rounded-full bg-[#fcb900] animate-ping"></span>
+            </div>
+            <h2 className="text-2xl font-black text-gray-900 tracking-tight">Pending Invitations</h2>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {myInvites.map(invite => (
+              <div key={invite._id} className="bg-white border-2 border-[#fcb900]/20 rounded-3xl p-6 shadow-sm hover:shadow-md transition-all">
+                <div className="flex items-start justify-between mb-4">
+                  <div>
+                    <h3 className="text-xl font-bold text-gray-900 text-left line-clamp-1">{invite.team?.teamName || "A Team"}</h3>
+                    <p className="text-sm font-medium text-gray-500 mt-1">Invited by: {invite.sender?.userName || "Unknown Leader"}</p>
+                  </div>
+                  <div className="w-10 h-10 rounded-xl bg-orange-50 text-orange-400 flex items-center justify-center flex-shrink-0">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-5 h-5">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 0 1-2.25 2.25h-15a2.25 2.25 0 0 1-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25m19.5 0v.243a2.25 2.25 0 0 1-1.07 1.916l-7.5 4.615a2.25 2.25 0 0 1-2.36 0L3.32 8.91a2.25 2.25 0 0 1-1.07-1.916V6.75" />
+                    </svg>
+                  </div>
+                </div>
+                <div className="flex gap-3">
+                  <button
+                    onClick={async () => {
+                      const { success } = await respondToInvite(invite._id, "Accepted");
+                      if (success) {
+                        setMyInvites(prev => prev.filter(i => i._id !== invite._id));
+                        await fetchUserTeams();
+                      }
+                    }}
+                    className="flex-1 py-3 rounded-[16px] bg-[#8cc63f] text-white font-black text-xs uppercase tracking-wider hover:bg-black transition-all shadow-md active:scale-95"
+                  >
+                    Join
+                  </button>
+                  <button
+                    onClick={async () => {
+                      const { success } = await respondToInvite(invite._id, "Rejected");
+                      if (success) {
+                        setMyInvites(prev => prev.filter(i => i._id !== invite._id));
+                      }
+                    }}
+                    className="flex-1 py-3 rounded-[16px] bg-red-50 text-red-600 border border-red-100 font-bold text-xs uppercase tracking-wider hover:bg-red-600 hover:text-white transition-all active:scale-95"
+                  >
+                    Decline
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
+
       {/* 1.5 My Teams Section */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-24 relative z-20">
         <div className="flex flex-col md:flex-row md:items-end justify-between mb-10 gap-4">
@@ -340,25 +400,22 @@ export default function UserDashboard() {
                 <div className="flex items-start justify-between mb-8 relative z-10">
                   <div className="flex flex-col">
                     <div className="flex flex-wrap gap-2 mb-3">
-                        <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest w-max ${
-                          team.approvalStatus === 'Approved' ? 'bg-green-100 text-green-700' :
+                      <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest w-max ${team.approvalStatus === 'Approved' ? 'bg-green-100 text-green-700' :
                           team.approvalStatus === 'Rejected' ? 'bg-red-100 text-red-700' :
-                          'bg-[#fcb900]/10 text-[#e6a800]'
+                            'bg-[#fcb900]/10 text-[#e6a800]'
                         }`}>
-                          <span className={`w-1.5 h-1.5 rounded-full ${
-                            team.approvalStatus === 'Approved' ? 'bg-green-500' :
+                        <span className={`w-1.5 h-1.5 rounded-full ${team.approvalStatus === 'Approved' ? 'bg-green-500' :
                             team.approvalStatus === 'Rejected' ? 'bg-red-500' : 'bg-[#fcb900]'
                           }`}></span>
-                          Approval: {team.approvalStatus || 'Pending'}
-                        </span>
-                        
-                        {team.approvalStatus === 'Approved' && (
-                          <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest w-max ${
-                            team.submissionStatus === 'Submitted' ? 'bg-blue-100 text-blue-700' : 'bg-gray-100 text-gray-500'
+                        Approval: {team.approvalStatus || 'Pending'}
+                      </span>
+
+                      {team.approvalStatus === 'Approved' && (
+                        <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest w-max ${team.submissionStatus === 'Submitted' ? 'bg-blue-100 text-blue-700' : 'bg-gray-100 text-gray-500'
                           }`}>
-                            {team.submissionStatus || 'Draft'}
-                          </span>
-                        )}
+                          {team.submissionStatus || 'Draft'}
+                        </span>
+                      )}
                     </div>
                     <h3 className="text-2xl font-black text-gray-900 leading-tight group-hover:text-[#8cc63f] transition-colors line-clamp-1">{team.teamName}</h3>
                   </div>
@@ -458,7 +515,7 @@ export default function UserDashboard() {
                                   <button
                                     onClick={async (e) => {
                                       e.stopPropagation();
-                                      const { success } = await acceptRequest(team._id, requestEmail);
+                                      const { success } = await respondToJoinRequest(request._id || request.id, "Accepted");
                                       if (success) fetchUserTeams();
                                     }}
                                     className="w-10 h-10 rounded-[18px] bg-[#8cc63f] text-white flex items-center justify-center hover:bg-black transition-all shadow-lg shadow-[#8cc63f]/20 active:scale-90"
@@ -471,7 +528,7 @@ export default function UserDashboard() {
                                   <button
                                     onClick={async (e) => {
                                       e.stopPropagation();
-                                      const { success } = await rejectRequest(team._id, requestEmail);
+                                      const { success } = await respondToJoinRequest(request._id || request.id, "Rejected");
                                       if (success) fetchUserTeams();
                                     }}
                                     className="w-10 h-10 rounded-[18px] bg-white border-2 border-red-50 text-red-300 flex items-center justify-center hover:bg-red-50 hover:border-red-100 hover:text-red-500 transition-all active:scale-90"
@@ -492,68 +549,45 @@ export default function UserDashboard() {
 
                 <div className="mt-10 relative z-10 pt-6 border-t border-gray-50">
                   {/* Action Button */}
-                  {team.members?.some(m => m._id === currentUser?._id || m === currentUser?._id) ? (
-                    <div className="flex flex-col gap-3">
-                      {team.approvalStatus === 'Approved' ? (
-                        <button
-                          onClick={() => navigate(`/dashboard/submit-project/${team.contest?._id}`, { state: { contest: team.contest, team: team } })}
-                          className="w-full py-5 rounded-[22px] bg-gray-900 border-2 border-gray-900 text-white font-black text-[13px] transition-all flex items-center justify-center gap-3 tracking-[0.1em] uppercase hover:bg-white hover:text-gray-900 active:scale-[0.98] shadow-2xl shadow-gray-200 group/btn"
-                        >
-                          <span>{team.submissionStatus === 'Submitted' ? 'Update Submission' : 'Launch Project'}</span>
-                          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={3} stroke="currentColor" className="w-4 h-4 transition-transform group-hover/btn:translate-x-1">
-                            <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
-                          </svg>
-                        </button>
-                      ) : team.approvalStatus === 'Rejected' ? (
-                        <div className="w-full py-4 text-center rounded-[22px] bg-red-50 text-red-600 font-bold text-xs uppercase tracking-widest border border-red-100">
-                          Squad Rejected By Admin
-                        </div>
-                      ) : (
-                        <div className="w-full py-4 text-center rounded-[22px] bg-yellow-50 text-yellow-600 font-bold text-xs uppercase tracking-widest border border-yellow-100">
-                          Awaiting Admin Approval
-                        </div>
-                      )}
+                  <div className="flex flex-col gap-3">
+                    {team.approvalStatus === 'Approved' ? (
+                      <button
+                        onClick={() => navigate(`/dashboard/submit-project/${team.contest?._id}`, { state: { contest: team.contest, team: team } })}
+                        className="w-full py-5 rounded-[22px] bg-gray-900 border-2 border-gray-900 text-white font-black text-[13px] transition-all flex items-center justify-center gap-3 tracking-[0.1em] uppercase hover:bg-white hover:text-gray-900 active:scale-[0.98] shadow-2xl shadow-gray-200 group/btn"
+                      >
+                        <span>{team.submissionStatus === 'Submitted' ? 'Update Submission' : 'Launch Project'}</span>
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={3} stroke="currentColor" className="w-4 h-4 transition-transform group-hover/btn:translate-x-1">
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
+                        </svg>
+                      </button>
+                    ) : team.approvalStatus === 'Rejected' ? (
+                      <div className="w-full py-4 text-center rounded-[22px] bg-red-50 text-red-600 font-bold text-xs uppercase tracking-widest border border-red-100">
+                        Squad Rejected By Admin
+                      </div>
+                    ) : (
+                      <div className="w-full py-4 text-center rounded-[22px] bg-yellow-50 text-yellow-600 font-bold text-xs uppercase tracking-widest border border-yellow-100">
+                        Awaiting Admin Approval
+                      </div>
+                    )}
 
-                      {/* Explicitly show Delete Squad for Leader if Pending or Rejected */}
-                      {String(team.leader?._id || team.leader) === String(currentUser?._id || currentUser?.id) && team.approvalStatus !== 'Approved' && (
-                        <button
-                          onClick={async () => {
-                            if (window.confirm("Are you sure you want to delete this squad? This is irreversible!")) {
-                              const { success } = await deleteTeamByUser(team._id);
-                              if (success) fetchUserTeams();
-                            }
-                          }}
-                          className="w-full py-4 rounded-[22px] bg-white border border-red-200 text-red-500 font-bold text-[12px] uppercase tracking-wider hover:bg-red-50 transition-all active:scale-[0.98] flex items-center justify-center gap-2"
-                        >
-                          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-4 h-4">
-                            <path strokeLinecap="round" strokeLinejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" />
-                          </svg>
-                          Delete Squad
-                        </button>
-                      )}
-                    </div>
-                  ) : (
-                    <div className="flex flex-col gap-3">
+                    {/* Explicitly show Delete Squad for Leader if Pending or Rejected */}
+                    {String(team.leader?._id || team.leader) === String(currentUser?._id || currentUser?.id) && team.approvalStatus !== 'Approved' && (
                       <button
                         onClick={async () => {
-                          const { success } = await acceptInvite(team._id);
-                          if (success) fetchUserTeams();
+                          if (window.confirm("Are you sure you want to delete this squad? This is irreversible!")) {
+                            const { success } = await deleteTeamByUser(team._id);
+                            if (success) fetchUserTeams();
+                          }
                         }}
-                        className="w-full py-5 rounded-[22px] bg-[#8cc63f] text-white font-black text-[13px] uppercase tracking-[0.1em] hover:bg-black transition-all active:scale-[0.98] shadow-lg shadow-[#8cc63f]/10"
+                        className="w-full py-4 rounded-[22px] bg-white border border-red-200 text-red-500 font-bold text-[12px] uppercase tracking-wider hover:bg-red-50 transition-all active:scale-[0.98] flex items-center justify-center gap-2"
                       >
-                        Accept Squad Invitation
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-4 h-4">
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" />
+                        </svg>
+                        Delete Squad
                       </button>
-                      <button
-                        onClick={async () => {
-                          const { success } = await rejectInvite(team._id);
-                          if (success) fetchUserTeams();
-                        }}
-                        className="w-full py-4 rounded-[22px] bg-red-50 text-red-600 border border-red-100 font-bold text-[12px] uppercase tracking-wider hover:bg-red-600 hover:text-white transition-all active:scale-[0.95] font-sans"
-                      >
-                        Decline Invitation
-                      </button>
-                    </div>
-                  )}
+                    )}
+                  </div>
                 </div>
 
                 {/* Decorative background element */}
@@ -610,40 +644,40 @@ export default function UserDashboard() {
             { name: 'DIGITAL MARKETING', slug: 'digital-marketing', image: dmImg, color: 'from-orange-400 to-red-500' },
             { name: 'WEBSITE DESIGNING', slug: 'website-designing', image: webImg, color: 'from-green-400 to-emerald-600' }
           ].map((cat) => (
-              <div
-                key={cat.slug}
-                onClick={() => navigate(`/contests/category/${cat.slug}`)}
-                className="group cursor-pointer"
-              >
-                <div className="bg-white rounded-[40px] overflow-hidden border-2 border-gray-50 shadow-sm transition-all duration-500 hover:border-[#8cc63f] hover:shadow-2xl hover:shadow-green-900/5 hover:-translate-y-2 relative flex flex-col h-full">
-                  {/* Card Image Header */}
-                  <div className="h-48 w-full relative overflow-hidden">
-                    <img
-                      src={cat.image}
-                      alt={cat.name}
-                      loading="lazy"
-                      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 ease-in-out"
-                    />
-                    <div className={`absolute inset-0 bg-gradient-to-br ${cat.color} opacity-20 mix-blend-multiply`}></div>
-                    <div className="absolute inset-0 bg-gradient-to-t from-white via-transparent to-transparent"></div>
-                  </div>
-
-                  <div className="p-8 pt-4 flex flex-col items-center text-center">
-                    <h3 className="text-xl font-black text-gray-900 mb-2 tracking-tight group-hover:text-[#8cc63f] transition-colors uppercase">{cat.name}</h3>
-                    <p className="text-gray-400 text-sm font-medium mb-8">Click to view all {cat.name} contests.</p>
-
-                    <div className="flex items-center gap-2 text-[#8cc63f] font-black uppercase tracking-widest text-[10px] transform group-hover:translate-x-1 transition-all duration-500">
-                      Explore Now
-                      <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M14 5l7 7m0 0l-7 7m7-7H3" />
-                      </svg>
-                    </div>
-                  </div>
-
-                  {/* Abstract decoration */}
-                  <div className="absolute -bottom-10 -right-10 w-32 h-32 bg-gray-50 rounded-full z-0 group-hover:scale-125 transition-transform duration-700 opacity-50"></div>
+            <div
+              key={cat.slug}
+              onClick={() => navigate(`/contests/category/${cat.slug}`)}
+              className="group cursor-pointer"
+            >
+              <div className="bg-white rounded-[40px] overflow-hidden border-2 border-gray-50 shadow-sm transition-all duration-500 hover:border-[#8cc63f] hover:shadow-2xl hover:shadow-green-900/5 hover:-translate-y-2 relative flex flex-col h-full">
+                {/* Card Image Header */}
+                <div className="h-48 w-full relative overflow-hidden">
+                  <img
+                    src={cat.image}
+                    alt={cat.name}
+                    loading="lazy"
+                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 ease-in-out"
+                  />
+                  <div className={`absolute inset-0 bg-gradient-to-br ${cat.color} opacity-20 mix-blend-multiply`}></div>
+                  <div className="absolute inset-0 bg-gradient-to-t from-white via-transparent to-transparent"></div>
                 </div>
+
+                <div className="p-8 pt-4 flex flex-col items-center text-center">
+                  <h3 className="text-xl font-black text-gray-900 mb-2 tracking-tight group-hover:text-[#8cc63f] transition-colors uppercase">{cat.name}</h3>
+                  <p className="text-gray-400 text-sm font-medium mb-8">Click to view all {cat.name} contests.</p>
+
+                  <div className="flex items-center gap-2 text-[#8cc63f] font-black uppercase tracking-widest text-[10px] transform group-hover:translate-x-1 transition-all duration-500">
+                    Explore Now
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                    </svg>
+                  </div>
+                </div>
+
+                {/* Abstract decoration */}
+                <div className="absolute -bottom-10 -right-10 w-32 h-32 bg-gray-50 rounded-full z-0 group-hover:scale-125 transition-transform duration-700 opacity-50"></div>
               </div>
+            </div>
           ))}
         </div>
       </section>

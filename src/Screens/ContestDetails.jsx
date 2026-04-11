@@ -103,8 +103,8 @@ export default function ContestDetails() {
             {/* Top Right Badges */}
             <div className="absolute top-8 right-6 md:right-12 z-20 flex gap-3">
               <div className="bg-black/40 backdrop-blur-md border border-white/20 text-white px-5 py-2 rounded-full text-xs font-black uppercase tracking-widest flex items-center gap-2">
-                <span className={`w-2 h-2 rounded-full shadow-[0_0_10px_currentColor] ${contest.projectType === 'Team' ? 'bg-[#3b82f6] text-[#3b82f6]' : 'bg-[#8cc63f] text-[#8cc63f]'}`}></span>
-                {contest.projectType || 'Individual'}
+                <span className={`w-2 h-2 rounded-full shadow-[0_0_10px_currentColor] ${contest.projectType === 'Team' ? 'bg-[#3b82f6] text-[#3b82f6]' : contest.projectType === 'Both' ? 'bg-orange-500 text-orange-500' : 'bg-[#8cc63f] text-[#8cc63f]'}`}></span>
+                {contest.projectType === 'Both' ? 'Solo & Team' : contest.projectType || 'Individual'}
               </div>
               <div className="bg-white/10 backdrop-blur-md border border-white/20 text-white px-5 py-2 rounded-full text-xs font-black uppercase tracking-widest">
                 {contest.category}
@@ -205,7 +205,10 @@ export default function ContestDetails() {
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-4 h-4"><path strokeLinecap="round" strokeLinejoin="round" d="M18 18.72a9.094 9.094 0 003.741-.479 3 3 0 00-4.682-2.72m.94 3.198l.001.031c0 .225-.012.447-.037.666A11.944 11.944 0 0112 21c-2.17 0-4.207-.576-5.963-1.584A6.062 6.062 0 016 18.719m12 0a5.971 5.971 0 00-.941-3.197m0 0A5.995 5.995 0 0012 12.75a5.995 5.995 0 00-5.058 2.772m0 0a5.971 5.971 0 00-.941 3.197m0 0l.001.031c0 .225.012.447.038.666M12 18.75a.75.75 0 100-1.5.75.75 0 000 1.5zM12 12.75a.75.75 0 100-1.5.75.75 0 000 1.5zM12 6.75a.75.75 0 100-1.5.75.75 0 000 1.5z" /></svg>
                         Model
                       </span>
-                      <span className="text-sm font-black text-gray-900">{contest.projectType} {contest.projectType === 'Team' && `(Max ${contest.teamSize})`}</span>
+                      <span className="text-sm font-black text-gray-900">
+                        {contest.projectType === 'Both' ? 'Hybrid (Solo + Team)' : contest.projectType} 
+                        {['Team', 'Both'].includes(contest.projectType) && ` (Max ${contest.teamSize})`}
+                      </span>
                     </div>
                     
                     <div className="flex items-start justify-between">

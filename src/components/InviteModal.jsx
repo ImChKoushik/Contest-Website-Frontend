@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import useTeam from '../hooks/useTeam';
+import useInvite from '../hooks/useInvite';
 import Button from './Button';
 import Input from './Input';
 import { useToast } from '../context/ToastContext';
@@ -7,7 +8,7 @@ import { useToast } from '../context/ToastContext';
 export default function InviteModal({ team, isOpen, onClose }) {
   const [email, setEmail] = useState('');
   const [emails, setEmails] = useState([]);
-  const { inviteUser, loading } = useTeam();
+  const { sendInvite, loading } = useInvite();
   const { showToast } = useToast();
 
   const addEmail = (e) => {
@@ -46,7 +47,7 @@ export default function InviteModal({ team, isOpen, onClose }) {
 
     let successCount = 0;
     for (const emailToInvite of currentEmails) {
-      const { success } = await inviteUser(team._id, emailToInvite);
+      const { success } = await sendInvite(team._id, emailToInvite);
       if (success) successCount++;
     }
 

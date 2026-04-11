@@ -5,6 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import useFetchUsers from '../hooks/useFetchUsers';
 import useContests from '../hooks/useContests';
 import useTeam from '../hooks/useTeam';
+import useInvite from '../hooks/useInvite';
 import useResults from '../hooks/useResults';
 import { 
   BarChart, 
@@ -40,15 +41,36 @@ export default function AdminDashboard() {
   const { fetchAllResults, allResults, loading: resultsFetchingLoading } = useResults();
 
   const [teamsData, setTeamsData] = useState([]);
+  const [invitesData, setInvitesData] = useState([]);
+  const [invitesLoading, setInvitesLoading] = useState(false);
+
+  const { getAllInvites, deleteInvite } = useInvite();
+
+  const fetchTeams = async () => {
+    const { success, data } = await viewAllTeams();
+    if (success) setTeamsData(data || []);
+  };
 
   useEffect(() => {
-    const fetchTeams = async () => {
-      const { success, data } = await viewAllTeams();
-      if (success) setTeamsData(data || []);
+    const fetchInvites = async () => {
+      setInvitesLoading(true);
+      const { success, data } = await getAllInvites();
+      if (success) setInvitesData(data?.invites || []);
+      setInvitesLoading(false);
     };
     fetchTeams();
+    fetchInvites();
     fetchAllResults();
-  }, [viewAllTeams]);
+  }, [viewAllTeams, getAllInvites, fetchAllResults]);
+
+  const handleDeleteInvite = async (id) => {
+    if (window.confirm("Delete this invitation?")) {
+      const { success } = await deleteInvite(id);
+      if (success) {
+        setInvitesData(prev => prev.filter(i => i._id !== id));
+      }
+    }
+  };
   
   const totalUsersValue = usersLoading ? '...' : (usersData?.total || 0);
   const totalContestsValue = contestsLoading ? '...' : (contestsData?.total || 0);
@@ -155,6 +177,7 @@ export default function AdminDashboard() {
     { label: 'Active Contests', value: activeContestsCount, change: '+2', color: 'from-[#fcb900] to-[#e6a800]' },
     { label: 'Total Teams', value: totalTeamsValue, change: 'Submissions', color: 'from-purple-500 to-indigo-600', link: '/admin-dashboard/total-participants' },
     { label: 'Total Results', value: totalResultsValue, change: 'Leaderboard', color: 'from-pink-500 to-rose-600', link: '/admin-dashboard/total-results' },
+    { label: 'Total Invites', value: invitesData.length, change: 'Registry', color: 'from-orange-400 to-red-500', link: '/admin-dashboard/total-invites' },
     { label: 'Total Contests', value: totalContestsValue, change: 'All time', color: 'from-blue-500 to-blue-600', link: '/admin-dashboard/total-contests' },
   ];
 
@@ -277,6 +300,71 @@ export default function AdminDashboard() {
       </div>
 
       {/* Main Content Area */}
+      <div className="grid grid-cols-1 gap-8 mb-8">
+        {/* Platform Invitations Database */}
+        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+          <div className="p-6 border-b border-gray-50 flex justify-between items-center">
+            <h3 className="font-bold text-lg text-gray-800">Platform Invitations Database</h3>
+            <button 
+              onClick={() => navigate("/admin-dashboard/total-invites")}
+              className="text-sm font-semibold text-[#8cc63f] hover:text-[#7ab033]"
+            >View All Registry →</button>
+          </div>
+          <div className="overflow-x-auto">
+            <table className="w-full text-left border-collapse">
+              <thead>
+                <tr className="bg-gray-50 text-gray-500 text-[10px] uppercase tracking-wider">
+                  <th className="p-4 font-black">Sender</th>
+                  <th className="p-4 font-black">Receiver</th>
+                  <th className="p-4 font-black">Context Team</th>
+                  <th className="p-4 font-black">Status</th>
+                  <th className="p-4 font-black text-right">Action</th>
+                </tr>
+              </thead>
+              <tbody className="text-sm divide-y divide-gray-50">
+                {invitesLoading ? (
+                  <tr><td colSpan="5" className="p-8 text-center text-gray-400">Loading invites...</td></tr>
+                ) : invitesData.length > 0 ? (
+                  invitesData.slice(0, 8).map((invite) => (
+                    <tr key={invite._id} className="hover:bg-gray-50/50 transition-colors">
+                      <td className="p-4">
+                        <div className="font-bold text-gray-800 text-xs">{invite.sender?.userName || 'N/A'}</div>
+                        <div className="text-[10px] text-gray-400">{invite.sender?.email}</div>
+                      </td>
+                      <td className="p-4 text-gray-600">
+                         <div className="font-bold text-gray-800 text-xs">{invite.receiver?.userName || 'N/A'}</div>
+                         <div className="text-[10px] text-gray-400">{invite.receiver?.email}</div>
+                      </td>
+                      <td className="p-4 font-bold text-gray-700 text-xs truncate max-w-[150px]">{invite.team?.teamName || 'Deleted Team'}</td>
+                      <td className="p-4">
+                        <span className={`px-2 py-0.5 rounded-full text-[9px] font-black uppercase tracking-tighter ${
+                          invite.status === 'Accepted' ? 'bg-green-100 text-green-700' : 
+                          invite.status === 'Rejected' ? 'bg-red-100 text-red-700' : 'bg-yellow-100 text-yellow-700'
+                        }`}>
+                          {invite.status}
+                        </span>
+                      </td>
+                      <td className="p-4 text-right">
+                        <button 
+                          onClick={() => handleDeleteInvite(invite._id)}
+                          className="p-1.5 rounded-lg text-red-300 hover:text-red-600 hover:bg-red-50 transition-all"
+                        >
+                          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-4 h-4">
+                            <path strokeLinecap="round" strokeLinejoin="round" d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0" />
+                          </svg>
+                        </button>
+                      </td>
+                    </tr>
+                  ))
+                ) : (
+                  <tr><td colSpan="5" className="p-12 text-center text-gray-400 italic">No invitations currently in database.</td></tr>
+                )}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         {/* Recent Contests Table - takes up 2 columns */}
         <div className="lg:col-span-2 bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">

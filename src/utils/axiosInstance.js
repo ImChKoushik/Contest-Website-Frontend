@@ -111,9 +111,14 @@ axiosInstance.interceptors.response.use(
       } catch (refreshError) {
         // Refresh token was present but server rejected it — user must re-login
         processQueue(refreshError, null);
+        
+        // Dispatch global event for AuthContext to show "Login Again"
+        window.dispatchEvent(new CustomEvent('auth:expired'));
+        
+        // Clear tokens but KEEP authUser so Navbar can still show the greeting
         localStorage.removeItem('authToken');
         localStorage.removeItem('refreshToken');
-        localStorage.removeItem('authUser');
+        
         return Promise.reject(refreshError);
       } finally {
         isRefreshing = false;
