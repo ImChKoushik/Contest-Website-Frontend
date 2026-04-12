@@ -4,7 +4,7 @@ import Button from '../components/Button';
 import Form from '../components/Form';
 import useAuth from '../hooks/useAuth';
 import { useAuthContext } from '../context/AuthContext';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { useToast } from '../context/ToastContext';
 
 export default function SignInForm() {
@@ -249,11 +249,11 @@ export default function SignInForm() {
               </button>
             </div>
 
-            <p className="text-center text-[14px] text-gray-600 font-medium">
-              Don't have an account? <a href="#" className="text-[#8cc63f] font-bold hover:underline transition-colors hover:text-[#7ab135]">Sign Up</a>
-            </p>
-
           </Form>
+          
+          <p className="text-center text-[14px] text-gray-600 font-medium mt-7">
+            Don't have an account? <Link to="/signup" className="text-[#8cc63f] font-bold hover:underline transition-colors hover:text-[#7ab135]">Sign Up</Link>
+          </p>
         </div>
         
       </div>

@@ -11,11 +11,29 @@ const LockIcon = () => (
     <path strokeLinecap="round" strokeLinejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z" />
   </svg>
 );
+// --- Password Strength Helper ---
+const getPasswordStrength = (password) => {
+  if (!password) return { score: 0, label: '', color: '' };
+  let score = 0;
+  if (password.length >= 8) score++;
+  if (/[A-Z]/.test(password)) score++;
+  if (/[0-9]/.test(password)) score++;
+  if (/[^A-Za-z0-9]/.test(password)) score++;
+  const levels = [
+    { label: 'Weak',   color: '#ef4444' },
+    { label: 'Fair',   color: '#f97316' },
+    { label: 'Good',   color: '#eab308' },
+    { label: 'Strong', color: '#22c55e' },
+  ];
+  return { score, ...levels[score - 1] };
+};
+
 
 export default function ResetPassword() {
   const { token } = useParams();
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+  const passwordStrength = getPasswordStrength(newPassword);
   const { sendRequest, loading, error } = useAuth();
   const { showToast } = useToast();
   const navigate = useNavigate();
@@ -30,6 +48,26 @@ export default function ResetPassword() {
     
     if (newPassword.length < 8) {
       showToast("Password must be at least 8 characters long", "warning");
+      return;
+    }
+
+    if (!/[A-Z]/.test(newPassword)) {
+      showToast("Password must contain at least one uppercase letter", "warning");
+      return;
+    }
+
+    if (!/[0-9]/.test(newPassword)) {
+      showToast("Password must contain at least one number", "warning");
+      return;
+    }
+
+    if (!/[^A-Za-z0-9]/.test(newPassword)) {
+      showToast("Password must contain at least one special character", "warning");
+      return;
+    }
+
+    if (passwordStrength.score < 4) {
+      showToast("Please use a stronger password", "warning");
       return;
     }
 
@@ -83,6 +121,33 @@ export default function ResetPassword() {
             placeholder="Min. 8 characters" 
             icon={<LockIcon />} 
             required
+            afterContent={
+              newPassword ? (
+                <div className="mt-2 px-1">
+                  <div className="flex gap-1.5 mb-1.5">
+                    {[1, 2, 3, 4].map((seg) => (
+                      <div
+                        key={seg}
+                        className="h-1.5 flex-1 rounded-full transition-all duration-300"
+                        style={{
+                          backgroundColor: passwordStrength.score >= seg
+                            ? passwordStrength.color
+                            : '#e5e7eb',
+                        }}
+                      />
+                    ))}
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <p className="text-[12px] font-semibold" style={{ color: passwordStrength.color }}>
+                      {passwordStrength.label}
+                    </p>
+                    <p className="text-[11px] text-gray-400">
+                      {passwordStrength.score < 4 ? 'Use A–Z, 0–9 & symbol' : '✓ Strong password'}
+                    </p>
+                  </div>
+                </div>
+              ) : null
+            }
           />
 
           <Input 

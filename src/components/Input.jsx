@@ -1,6 +1,6 @@
 import { useId, forwardRef } from 'react';
 
-const Input = forwardRef(({ label, icon, ...props }, ref) => {
+const Input = forwardRef(({ label, icon, afterContent, ...props }, ref) => {
   const id = useId();
   return (
     <div className="flex flex-col mb-5 w-full">
@@ -18,6 +18,7 @@ const Input = forwardRef(({ label, icon, ...props }, ref) => {
           {...props}
         />
       </div>
+      {afterContent}
     </div>
   );
 });

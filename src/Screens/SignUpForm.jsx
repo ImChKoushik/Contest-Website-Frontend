@@ -380,16 +380,17 @@ export default function SignUpForm() {
               )}
             </Button>
             
-            <p className="text-center text-[15px] text-gray-500 mt-8">
-              Already have an account?{' '}
-              <button 
-                onClick={() => navigate('/signin')} 
-                className="font-semibold text-[#8cc63f] hover:underline bg-transparent border-none p-0"
-              >
-                Sign In
-              </button>
-            </p>
           </Form>
+          
+          <p className="text-center text-[15px] text-gray-500 mt-8">
+            Already have an account?{' '}
+            <button 
+              onClick={() => navigate('/signin')} 
+              className="font-semibold text-[#8cc63f] hover:underline bg-transparent border-none p-0 cursor-pointer"
+            >
+              Sign In
+            </button>
+          </p>
         </div>
         
       </div>
