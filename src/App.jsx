@@ -26,6 +26,8 @@ const TotalInvites = lazy(() => import('./Screens/TotalInvites'))
 const UserDashboard = lazy(() => import('./Screens/UserDashboard'))
 const SubmitProject = lazy(() => import('./Screens/SubmitProject'))
 const WhyDesun = lazy(() => import('./Screens/WhyDesun'))
+const PrivacyPolicy = lazy(() => import('./Screens/PrivacyPolicy'))
+const TermsOfService = lazy(() => import('./Screens/TermsOfService'))
 
 // Premium Loading Fallback
 const ScreenLoader = () => (
@@ -65,6 +67,8 @@ function App() {
             <Route path="/forgot-password" element={<ForgotPassword />} />
             <Route path="/contact" element={<ContactUs />} />
             <Route path="/why-desun" element={<WhyDesun />} />
+            <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+            <Route path="/terms-of-service" element={<TermsOfService />} />
 
             {/* Admin Routes */}
             <Route element={<ProtectedRoute allowedRoles={['Admin']} />}>

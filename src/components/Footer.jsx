@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom';
 import logo from '../assets/images/logo.png';
 
 export default function Footer() {
@@ -53,10 +54,10 @@ export default function Footer() {
           <div className="md:col-span-2 lg:col-span-2 md:ml-auto">
             <h3 className="font-bold text-white mb-6">Platform</h3>
             <ul className="space-y-4">
-              <li><a href="#" className="text-blue-50/70 hover:text-[#8cc63f] text-sm transition-colors">Explore Contests</a></li>
-              <li><a href="#" className="text-blue-50/70 hover:text-[#8cc63f] text-sm transition-colors">Leaderboard</a></li>
-              <li><a href="#" className="text-blue-50/70 hover:text-[#8cc63f] text-sm transition-colors">Success Stories</a></li>
-              <li><a href="#" className="text-blue-50/70 hover:text-[#8cc63f] text-sm transition-colors">Mentor Program</a></li>
+              <li><Link to="/contests" className="text-blue-50/70 hover:text-[#8cc63f] text-sm transition-colors">Explore Contests</Link></li>
+              <li><Link to="/leaderboard" className="text-blue-50/70 hover:text-[#8cc63f] text-sm transition-colors">Leaderboard</Link></li>
+              <li><Link to="/success-stories" className="text-blue-50/70 hover:text-[#8cc63f] text-sm transition-colors">Success Stories</Link></li>
+              <li><Link to="/contact" className="text-blue-50/70 hover:text-[#8cc63f] text-sm transition-colors">Support Center</Link></li>
             </ul>
           </div>
 
@@ -64,26 +65,51 @@ export default function Footer() {
           <div className="md:col-span-2 lg:col-span-2">
             <h3 className="font-bold text-white mb-6">Support</h3>
             <ul className="space-y-4">
-              <li><a href="#" className="text-blue-50/70 hover:text-[#8cc63f] text-sm transition-colors">FAQ</a></li>
-              <li><a href="#" className="text-blue-50/70 hover:text-[#8cc63f] text-sm transition-colors">Support Center</a></li>
-              <li><a href="#" className="text-blue-50/70 hover:text-[#8cc63f] text-sm transition-colors">Privacy Policy</a></li>
-              <li><a href="#" className="text-blue-50/70 hover:text-[#8cc63f] text-sm transition-colors">Terms of Service</a></li>
+              <li><Link to="/faq" className="text-blue-50/70 hover:text-[#8cc63f] text-sm transition-colors">FAQ</Link></li>
+              <li><Link to="/contact" className="text-blue-50/70 hover:text-[#8cc63f] text-sm transition-colors">Contact Us</Link></li>
+              <li><Link to="/privacy-policy" className="text-blue-50/70 hover:text-[#8cc63f] text-sm transition-colors">Privacy Policy</Link></li>
+              <li><Link to="/terms-of-service" className="text-blue-50/70 hover:text-[#8cc63f] text-sm transition-colors">Terms of Service</Link></li>
             </ul>
           </div>
 
-          {/* Newsletter Column */}
+          {/* Contact Column */}
           <div className="md:col-span-4 lg:col-span-4">
-            <h3 className="font-bold text-white mb-6">Newsletter</h3>
-            <p className="text-blue-50/70 text-sm mb-6">Stay updated with the latest contests and academy news.</p>
-            <div className="flex flex-col gap-3">
-              <input 
-                type="email" 
-                placeholder="Email address" 
-                className="w-full px-5 py-3 rounded-lg bg-white text-gray-900 text-sm outline-none"
-              />
-              <button className="w-full bg-[#8cc63f] hover:bg-[#7ab033] text-white py-3 rounded-lg text-sm font-bold transition-all shadow-lg shadow-[#8cc63f]/20">
-                Subscribe
-              </button>
+            <h3 className="font-bold text-white mb-6 uppercase tracking-wider">Contact Us</h3>
+            <div className="space-y-6">
+              <a 
+                href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent("Ambuja Neotia Eco Station Sector V Salt Lake Kolkata")}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex gap-4 group cursor-pointer"
+              >
+                <div className="w-10 h-10 rounded-xl bg-white/10 flex items-center justify-center flex-shrink-0 group-hover:bg-[#8cc63f] transition-all duration-300">
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M15 10.5a3 3 0 11-6 0 3 3 0 016 0z" />
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1115 0z" />
+                  </svg>
+                </div>
+                <div>
+                  <p className="text-blue-50/70 text-xs font-black uppercase tracking-widest mb-1 group-hover:text-[#8cc63f] transition-colors">Find Us</p>
+                  <p className="text-white text-sm leading-relaxed font-medium">
+                    11th Floor, Room No - 1104, Ambuja Neotia Eco Station, BP Block, Sector V, Salt lake, Kolkata, West Bengal 700091
+                  </p>
+                </div>
+              </a>
+
+              <a 
+                href="tel:+919429691888"
+                className="flex gap-4 group cursor-pointer"
+              >
+                <div className="w-10 h-10 rounded-xl bg-white/10 flex items-center justify-center flex-shrink-0 group-hover:bg-[#8cc63f] transition-all duration-300">
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 6.75c0 8.284 6.716 15 15 15h2.25a2.25 2.25 0 002.25-2.25v-1.372c0-.516-.351-.966-.852-1.091l-4.423-1.106c-.44-.11-.902.055-1.173.417l-.97 1.293c-.282.376-.769.542-1.21.38a12.035 12.035 0 01-7.143-7.143c-.162-.441.004-.928.38-1.21l1.293-.97c.363-.271.527-.734.417-1.173L6.963 3.102a1.125 1.125 0 00-1.091-.852H4.5A2.25 2.25 0 002.25 4.5v2.25z" />
+                  </svg>
+                </div>
+                <div>
+                  <p className="text-blue-50/70 text-xs font-black uppercase tracking-widest mb-1 group-hover:text-[#8cc63f] transition-colors">Call Support</p>
+                  <p className="text-white text-sm font-black">+91 942 969 1888</p>
+                </div>
+              </a>
             </div>
           </div>
         </div>

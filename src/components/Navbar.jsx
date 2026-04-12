@@ -107,7 +107,11 @@ export default function Navbar() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         <div className="flex justify-between items-center h-16">
           {/* Logo Section */}
-          <Link to="/" onClick={closeMenu} className="flex flex-col items-center justify-center transition-transform hover:scale-[1.02] active:scale-[0.98]">
+          <Link 
+            to="/" 
+            onClick={closeMenu} 
+            className="flex flex-col items-center justify-center transition-all hover:scale-[1.02] active:scale-[0.98] lg:static absolute left-1/2 -translate-x-1/2 lg:left-0 lg:translate-x-0 group"
+          >
             <img src={logo} alt="Desun Academy" className="h-[30px] md:h-[34px] w-auto object-contain" />
             <div className="flex items-center gap-1 mt-[-2px]">
               <span className="text-[11px] md:text-[12px] font-black bg-gradient-to-r from-[#8cc63f] to-[#5a8624] bg-clip-text text-transparent tracking-tighter drop-shadow-sm">
