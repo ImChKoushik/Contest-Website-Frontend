@@ -169,7 +169,7 @@ const useTeam = () => {
   const getUserParticipation = useCallback(async (userId) => {
     setLoading(true);
     try {
-      const res = await axiosInstance.get(`/team/user-contest/${userId}`);
+      const res = await axiosInstance.get(`/team/user/${userId}/contests`);
       return { success: true, data: res.data.data };
     } catch (err) {
       const msg = err.response?.data?.message || "Failed to fetch user participation";

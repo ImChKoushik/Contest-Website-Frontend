@@ -45,7 +45,7 @@ export default function ParticipantsModal({ isOpen, onClose, title, data, loadin
               <div className="w-12 h-12 border-4 border-gray-100 border-t-[#8cc63f] rounded-full animate-spin"></div>
               <p className="text-gray-400 font-bold text-xs tracking-[0.2em] uppercase animate-pulse">Synchronizing Data Registry...</p>
             </div>
-          ) : data && (type === 'contest' ? data.teams?.length > 0 : data.length > 0) ? (
+          ) : data && (type === 'contest' ? data.teams?.length > 0 : data.participatedContests?.length > 0) ? (
             <div className="overflow-x-auto border border-gray-100 rounded-3xl overflow-hidden shadow-sm">
               <table className="w-full text-left border-collapse">
                 <thead>
@@ -89,7 +89,7 @@ export default function ParticipantsModal({ isOpen, onClose, title, data, loadin
                       </tr>
                     ))
                   ) : (
-                    data.map((participation) => (
+                    data.participatedContests.map((participation) => (
                       <tr key={participation._id} className="hover:bg-gray-50/50 transition-colors group">
                         <td className="p-6">
                           <span className="font-bold text-gray-900 block group-hover:text-[#8cc63f] transition-colors">{participation.contest?.contestTitle || 'Unknown Contest'}</span>

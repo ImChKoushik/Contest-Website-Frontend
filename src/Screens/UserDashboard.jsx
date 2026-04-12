@@ -21,10 +21,15 @@ import webImg from '../assets/images/Website-Designing.jpg';
 import bannerSliderImg from '../assets/images/BannerSlider.jpg';
 import mernHomeImg from '../assets/images/mernHome.jpg';
 import learningImg from '../assets/images/learning.jpg';
+import contestChallengeImg from '../assets/images/contestchallenge.jpg';
+import contestImg2 from '../assets/images/contest2.jpg';
+import contestBlogImg from '../assets/images/contest-blog-feature.jpg';
 
 export default function UserDashboard() {
   const { user: currentUser } = useAuthContext();
   const [currentSlide, setCurrentSlide] = useState(0);
+  const [impactIdx, setImpactIdx] = useState(0);
+  const impactImages = [contestChallengeImg, contestImg2, contestBlogImg];
   const navigate = useNavigate();
 
   const {
@@ -115,6 +120,13 @@ export default function UserDashboard() {
     }, 5000);
     return () => clearInterval(timer);
   }, []);
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setImpactIdx((prev) => (prev + 1) % impactImages.length);
+    }, 5000);
+    return () => clearInterval(timer);
+  }, [impactImages.length]);
 
   const [touchStart, setTouchStart] = useState(null);
   const [touchEnd, setTouchEnd] = useState(null);
@@ -258,61 +270,94 @@ export default function UserDashboard() {
       {/* 1.2 Performance & Leaderboard Section */}
       {Array.isArray(myResults) && myResults.length > 0 && (
         <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-16 relative z-20">
-          <div className="flex items-center gap-4 mb-8">
-            <div className="w-10 h-10 rounded-2xl bg-yellow-50 flex items-center justify-center text-yellow-600 shadow-sm border border-yellow-100/50">
-              <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12c0 1.268-.63 2.39-1.593 3.068a3.745 3.745 0 0 1-1.043 3.296 3.745 3.745 0 0 1-3.296 1.043A3.745 3.745 0 0 1 12 21a3.745 3.745 0 0 1-3.068-.63 3.745 3.745 0 0 1-3.296-1.043 3.745 3.745 0 0 1-1.043-3.296A3.745 3.745 0 0 1 3 12c0-1.268.63-2.39 1.593-3.068a3.745 3.745 0 0 1 1.043-3.296 3.745 3.745 0 0 1 3.296-1.043A3.745 3.745 0 0 1 12 3c1.268 0 2.39.63 3.068 1.593a3.746 3.746 0 0 1 3.296 1.043 3.746 3.746 0 0 1 1.043 3.296A3.745 3.745 0 0 1 21 12Z" />
-              </svg>
-            </div>
-            <div>
-              <h2 className="text-2xl font-black text-gray-900 tracking-tight">Performance & Leaderboard</h2>
-              <p className="text-sm text-gray-400 font-medium italic">Track your contest achievements and expert feedback</p>
-            </div>
-          </div>
-
-          <div className="flex gap-6 overflow-x-auto pb-4 scrollbar-hide snap-x">
-            {myResults.map((result) => (
-              <div key={result._id} className="min-w-[320px] bg-white rounded-[40px] p-8 shadow-[0_8px_40px_rgba(0,0,0,0.03)] border border-gray-100/50 snap-start flex flex-col gap-6 relative overflow-hidden group">
-                {/* Rank Bubble */}
-                <div className="absolute -top-10 -right-10 w-40 h-40 bg-purple-500/5 rounded-full z-0 group-hover:scale-125 transition-transform duration-700"></div>
-
-                <div className="relative z-10 flex items-center justify-between">
-                  <div className="flex flex-col">
-                    <span className="text-[10px] font-black uppercase tracking-widest text-[#8cc63f] mb-1">{result.contest?.category}</span>
-                    <h3 className="font-extrabold text-gray-900 leading-tight">{result.contest?.contestTitle}</h3>
-                  </div>
-                  <div className={`w-14 h-14 rounded-[22px] flex flex-col items-center justify-center border-2 ${result.rank === '1st' ? 'bg-yellow-50 border-yellow-200 text-yellow-700' :
-                    result.rank === '2nd' ? 'bg-gray-50 border-gray-200 text-gray-600' :
-                      'bg-purple-50 border-purple-100 text-purple-700'
-                    }`}>
-                    <span className="text-xl font-black leading-none">{result.rank.replace('st', '').replace('nd', '').replace('rd', '')}</span>
-                    <span className="text-[10px] font-black uppercase mt-[-2px]">{result.rank.slice(-2)}</span>
-                  </div>
+          <div className="flex flex-col lg:flex-row gap-12 items-stretch">
+            {/* Leaderboard Left Side */}
+            <div className="lg:w-2/3 flex flex-col">
+              <div className="flex items-center gap-4 mb-8">
+                <div className="w-10 h-10 rounded-2xl bg-yellow-50 flex items-center justify-center text-yellow-600 shadow-sm border border-yellow-100/50">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12c0 1.268-.63 2.39-1.593 3.068a3.745 3.745 0 0 1-1.043 3.296 3.745 3.745 0 0 1-3.296 1.043A3.745 3.745 0 0 1 12 21a3.745 3.745 0 0 1-3.068-.63 3.745 3.745 0 0 1-3.296-1.043 3.745 3.745 0 0 1-1.043-3.296A3.745 3.745 0 0 1 3 12c0-1.268.63-2.39 1.593-3.068a3.745 3.745 0 0 1 1.043-3.296 3.745 3.745 0 0 1 3.296-1.043A3.745 3.745 0 0 1 12 3c1.268 0 2.39.63 3.068 1.593a3.746 3.746 0 0 1 3.296 1.043 3.746 3.746 0 0 1 1.043 3.296A3.745 3.745 0 0 1 21 12Z" />
+                  </svg>
                 </div>
-
-                <div className="relative z-10 flex items-end justify-between bg-gray-50/50 p-6 rounded-[32px] border border-gray-100/50">
-                  <div className="flex flex-col">
-                    <span className="text-[10px] font-black uppercase tracking-widest text-gray-400 mb-2">Final Score</span>
-                    <div className="flex items-baseline gap-1">
-                      <span className="text-4xl font-black text-gray-900">{result.score}</span>
-                      <span className="text-xs font-bold text-gray-400">/100</span>
-                    </div>
-                  </div>
-                  <div className="h-10 w-[2px] bg-gray-200/60 hidden sm:block"></div>
-                  <div className="flex flex-col items-end">
-                    <span className="text-[10px] font-black uppercase tracking-widest text-gray-400 mb-2">Judged On</span>
-                    <span className="font-bold text-gray-700 text-sm">{new Date(result.createdAt).toLocaleDateString()}</span>
-                  </div>
-                </div>
-
-                <div className="relative z-10">
-                  <p className="text-[10px] font-black uppercase tracking-widest text-gray-400 mb-2">Instructor Remarks</p>
-                  <p className="text-xs text-gray-500 font-medium italic leading-relaxed">
-                    "{result.remarks || 'Excellent participation and effort in the challenge.'}"
-                  </p>
+                <div>
+                  <h2 className="text-2xl font-black text-gray-900 tracking-tight">Performance & Leaderboard</h2>
+                  <p className="text-sm text-gray-400 font-medium italic">Track your contest achievements and expert feedback</p>
                 </div>
               </div>
-            ))}
+
+              <div className="flex gap-6 overflow-x-auto pb-4 scrollbar-hide snap-x flex-grow">
+                {myResults.map((result) => (
+                  <div key={result._id} className="min-w-[320px] bg-white rounded-[40px] p-8 shadow-[0_8px_40px_rgba(0,0,0,0.03)] border border-gray-100/50 snap-start flex flex-col gap-6 relative overflow-hidden group">
+                    {/* Rank Bubble */}
+                    <div className="absolute -top-10 -right-10 w-40 h-40 bg-purple-500/5 rounded-full z-0 group-hover:scale-125 transition-transform duration-700"></div>
+
+                    <div className="relative z-10 flex items-center justify-between">
+                      <div className="flex flex-col">
+                        <span className="text-[10px] font-black uppercase tracking-widest text-[#8cc63f] mb-1">{result.contest?.category}</span>
+                        <h3 className="font-extrabold text-gray-900 leading-tight">{result.contest?.contestTitle}</h3>
+                      </div>
+                      <div className={`w-14 h-14 rounded-[22px] flex flex-col items-center justify-center border-2 ${result.rank === '1st' ? 'bg-yellow-50 border-yellow-200 text-yellow-700' :
+                        result.rank === '2nd' ? 'bg-gray-50 border-gray-200 text-gray-600' :
+                          'bg-purple-50 border-purple-100 text-purple-700'
+                        }`}>
+                        <span className="text-xl font-black leading-none">{result.rank.replace('st', '').replace('nd', '').replace('rd', '')}</span>
+                        <span className="text-[10px] font-black uppercase mt-[-2px]">{result.rank.slice(-2)}</span>
+                      </div>
+                    </div>
+
+                    <div className="relative z-10 flex items-end justify-between bg-gray-50/50 p-6 rounded-[32px] border border-gray-100/50">
+                      <div className="flex flex-col">
+                        <span className="text-[10px] font-black uppercase tracking-widest text-gray-400 mb-2">Final Score</span>
+                        <div className="flex items-baseline gap-1">
+                          <span className="text-4xl font-black text-gray-900">{result.score}</span>
+                          <span className="text-xs font-bold text-gray-400">/100</span>
+                        </div>
+                      </div>
+                      <div className="h-10 w-[2px] bg-gray-200/60 hidden sm:block"></div>
+                      <div className="flex flex-col items-end">
+                        <span className="text-[10px] font-black uppercase tracking-widest text-gray-400 mb-2">Judged On</span>
+                        <span className="font-bold text-gray-700 text-sm">{new Date(result.createdAt).toLocaleDateString()}</span>
+                      </div>
+                    </div>
+
+                    <div className="relative z-10">
+                      <p className="text-[10px] font-black uppercase tracking-widest text-gray-400 mb-2">Instructor Remarks</p>
+                      <p className="text-xs text-gray-500 font-medium italic leading-relaxed">
+                        "{result.remarks || 'Excellent participation and effort in the challenge.'}"
+                      </p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Visual Quote Card Right Side */}
+            <div className="lg:w-1/3 w-full flex flex-col pt-2 md:pt-0">
+               <div className="relative h-full flex flex-col group/quote bg-white rounded-[44px] shadow-2xl overflow-hidden transition-all duration-700 hover:-translate-y-4 hover:rotate-1 border border-gray-100">
+                  <div className="overflow-hidden bg-gray-50 flex items-center justify-center relative h-56">
+                    {impactImages.map((img, idx) => (
+                      <img 
+                        key={idx}
+                        src={img} 
+                        className={`absolute inset-0 w-full h-full object-contain transition-all duration-1000 ease-in-out ${
+                          impactIdx === idx ? "opacity-100 scale-100" : "opacity-0 scale-95"
+                        } group-hover/quote:scale-105`} 
+                        alt="Contest Challenge"
+                      />
+                    ))}
+                  </div>
+                  <div className="p-8 md:p-10 flex flex-col justify-center flex-grow">
+                     <p className="text-gray-800 text-base md:text-lg font-bold leading-relaxed italic tracking-wide group-hover/quote:text-[#8cc63f] transition-colors duration-500">
+                        "Where code meets creativity, design finds purpose, and ideas grow into digital impact"
+                     </p>
+                     <div className="w-12 h-1 bg-[#8cc63f] mt-4 rounded-full group-hover/quote:w-20 transition-all duration-500"></div>
+                  </div>
+                  {/* Decorative tag */}
+                  <div className="absolute top-6 left-6 bg-[#8cc63f] text-white text-[9px] font-black uppercase tracking-[0.2em] px-3 py-1.5 rounded-full shadow-lg z-10">
+                     Featured Challenge
+                  </div>
+               </div>
+            </div>
           </div>
         </section>
       )}
@@ -327,19 +372,21 @@ export default function UserDashboard() {
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {myInvites.map(invite => (
-              <div key={invite._id} className="bg-white border-2 border-[#fcb900]/20 rounded-3xl p-6 shadow-sm hover:shadow-md transition-all">
-                <div className="flex items-start justify-between mb-4">
-                  <div>
-                    <h3 className="text-xl font-bold text-gray-900 text-left line-clamp-1">{invite.team?.teamName || "A Team"}</h3>
-                    <p className="text-sm font-medium text-gray-500 mt-1">Invited by: {invite.sender?.userName || "Unknown Leader"}</p>
+              <div key={invite._id} className="bg-white border-2 border-[#fcb900]/30 rounded-[32px] p-8 shadow-[0_10px_30px_rgba(252,185,0,0.05)] hover:shadow-[0_20px_50px_rgba(252,185,0,0.1)] transition-all relative overflow-hidden group">
+                <div className="absolute top-0 right-0 w-32 h-32 bg-[#fcb900]/5 rounded-full -translate-y-1/2 translate-x-1/2 group-hover:scale-110 transition-transform"></div>
+                <div className="flex items-start justify-between mb-6 relative z-10">
+                  <div className="flex flex-col gap-1">
+                    <span className="text-[10px] font-black uppercase tracking-[0.2em] text-[#fcb900]">New Invitation</span>
+                    <h3 className="text-2xl font-black text-gray-900 text-left line-clamp-1 group-hover:text-[#fcb900] transition-colors">{invite.team?.teamName || "A Team"}</h3>
+                    <p className="text-sm font-bold text-gray-400">From: <span className="text-gray-600">{invite.sender?.userName || "Unknown Leader"}</span></p>
                   </div>
-                  <div className="w-10 h-10 rounded-xl bg-orange-50 text-orange-400 flex items-center justify-center flex-shrink-0">
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-5 h-5">
+                  <div className="w-12 h-12 rounded-2xl bg-[#fcb900]/10 text-[#fcb900] flex items-center justify-center flex-shrink-0 shadow-inner">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-6 h-6">
                       <path strokeLinecap="round" strokeLinejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 0 1-2.25 2.25h-15a2.25 2.25 0 0 1-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25m19.5 0v.243a2.25 2.25 0 0 1-1.07 1.916l-7.5 4.615a2.25 2.25 0 0 1-2.36 0L3.32 8.91a2.25 2.25 0 0 1-1.07-1.916V6.75" />
                     </svg>
                   </div>
                 </div>
-                <div className="flex gap-3">
+                <div className="flex gap-4 relative z-10">
                   <button
                     onClick={async () => {
                       const { success } = await respondToInvite(invite._id, "Accepted");
@@ -348,9 +395,9 @@ export default function UserDashboard() {
                         await fetchUserTeams();
                       }
                     }}
-                    className="flex-1 py-3 rounded-[16px] bg-[#8cc63f] text-white font-black text-xs uppercase tracking-wider hover:bg-black transition-all shadow-md active:scale-95"
+                    className="flex-1 py-4 rounded-2xl bg-gray-900 text-white font-black text-xs uppercase tracking-[0.2em] hover:bg-[#8cc63f] transition-all shadow-xl active:scale-95"
                   >
-                    Join
+                    Accept
                   </button>
                   <button
                     onClick={async () => {
@@ -359,7 +406,7 @@ export default function UserDashboard() {
                         setMyInvites(prev => prev.filter(i => i._id !== invite._id));
                       }
                     }}
-                    className="flex-1 py-3 rounded-[16px] bg-red-50 text-red-600 border border-red-100 font-bold text-xs uppercase tracking-wider hover:bg-red-600 hover:text-white transition-all active:scale-95"
+                    className="flex-1 py-4 rounded-2xl bg-white text-red-500 border border-red-100 font-black text-xs uppercase tracking-[0.2em] hover:bg-red-50 transition-all active:scale-95"
                   >
                     Decline
                   </button>
@@ -393,9 +440,9 @@ export default function UserDashboard() {
         </div>
 
         {myTeams.length > 0 ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8">
+          <div className="flex flex-wrap justify-center gap-8">
             {myTeams.map((team) => (
-              <div key={team._id} className="bg-white rounded-[44px] p-8 shadow-[0_8px_30px_rgb(0,0,0,0.02)] border border-gray-50 hover:border-[#8cc63f]/20 hover:shadow-[0_20px_50px_rgba(140,198,63,0.08)] transition-all duration-500 group relative overflow-hidden flex flex-col">
+              <div key={team._id} className="bg-white rounded-[44px] p-8 shadow-[0_12px_45px_rgba(0,0,0,0.03)] border-2 border-gray-50 hover:border-[#8cc63f]/30 hover:shadow-[0_24px_60px_rgba(140,198,63,0.12)] transition-all duration-500 group relative overflow-hidden flex flex-col w-full md:max-w-[400px]">
 
                 <div className="flex items-start justify-between mb-8 relative z-10">
                   <div className="flex flex-col">
@@ -404,8 +451,8 @@ export default function UserDashboard() {
                           team.approvalStatus === 'Rejected' ? 'bg-red-100 text-red-700' :
                             'bg-[#fcb900]/10 text-[#e6a800]'
                         }`}>
-                        <span className={`w-1.5 h-1.5 rounded-full ${team.approvalStatus === 'Approved' ? 'bg-green-500' :
-                            team.approvalStatus === 'Rejected' ? 'bg-red-500' : 'bg-[#fcb900]'
+                        <span className={`w-1.5 h-1.5 rounded-full ${team.approvalStatus === 'Approved' ? 'bg-green-500 shadow-[0_0_8px_rgba(34,197,94,0.6)]' :
+                            team.approvalStatus === 'Rejected' ? 'bg-red-500 shadow-[0_0_8px_rgba(239,68,68,0.6)]' : 'bg-[#fcb900] shadow-[0_0_8px_rgba(252,185,0,0.6)]'
                           }`}></span>
                         Approval: {team.approvalStatus || 'Pending'}
                       </span>
@@ -427,28 +474,27 @@ export default function UserDashboard() {
                 </div>
 
                 <div className="space-y-6 flex-grow relative z-10">
-                  {/* Contest Info */}
-                  <div className="bg-gray-50/80 rounded-[28px] p-5 border border-gray-100">
-                    <p className="text-[10px] font-black uppercase text-gray-400 tracking-widest mb-1.5">Participating In</p>
-                    <p className="text-sm font-extrabold text-gray-700 line-clamp-1">{team.contest?.contestTitle}</p>
-                    <p className="text-[11px] font-bold text-[#8cc63f] mt-1">{team.contest?.category}</p>
-                  </div>
-
                   {/* Members */}
                   <div>
-                    <div className="flex items-center justify-between mb-3 px-1">
-                      <p className="text-[10px] font-black uppercase text-gray-400 tracking-widest">The Squad</p>
-                      <span className="text-[10px] font-black text-gray-400">{team.members?.length} / {team.contest?.teamSize || '∞'}</span>
+                    <div className="flex flex-col gap-2 mb-4 px-1">
+                      <p className="text-[11px] font-black uppercase text-[#8cc63f] tracking-[0.15em]">Invite team collaborators</p>
+                      <div className="flex items-center justify-between">
+                        <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Active Squad</span>
+                        <span className="text-[10px] font-black text-gray-400 bg-gray-50 px-2 py-0.5 rounded-md">{team.members?.length} / {team.contest?.teamSize || '∞'}</span>
+                      </div>
                     </div>
                     <div className="flex flex-wrap gap-2.5">
                       {team.members?.map((m, i) => (
                         <div key={i} title={m.userName} className="relative group/member">
-                          <div className="w-11 h-11 rounded-2xl bg-white border-2 border-gray-100 flex items-center justify-center text-xs font-black text-gray-400 hover:border-[#8cc63f] hover:text-[#8cc63f] transition-all cursor-help shadow-sm overflow-hidden">
-                            {(m.userName || 'U').substring(0, 2).toUpperCase()}
+                          <div className="px-3.5 py-2 rounded-xl bg-gray-50 border border-gray-100 flex items-center gap-2.5 hover:border-[#8cc63f]/40 hover:bg-[#8cc63f]/5 transition-all cursor-default shadow-sm group/name">
+                            <div className="w-6 h-6 rounded-lg bg-white border border-gray-200 flex items-center justify-center text-[10px] font-black text-[#8cc63f] shadow-sm group-hover/name:bg-[#8cc63f] group-hover/name:text-white transition-all">
+                              {(m.userName || 'U').charAt(0).toUpperCase()}
+                            </div>
+                            <span className="text-[11px] font-bold text-gray-600 group-hover/name:text-gray-900 transition-colors">{m.userName}</span>
                           </div>
                           {m._id === team.leader?._id && (
-                            <div className="absolute -top-1 -right-1 w-4 h-4 bg-[#fcb900] rounded-full border-2 border-white flex items-center justify-center">
-                              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="white" className="w-2 h-2">
+                            <div className="absolute -top-1.5 -right-1.5 w-4.5 h-4.5 bg-[#fcb900] rounded-full border-2 border-white flex items-center justify-center shadow-sm">
+                              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="white" className="w-2.5 h-2.5">
                                 <path d="M11.645 20.91l-.007-.003-.022-.012a15.247 15.247 0 01-.383-.218 25.18 25.18 0 01-4.244-3.17C4.688 15.36 2.25 12.174 2.25 8.25 2.25 5.322 4.714 3 7.688 3A5.5 5.5 0 0112 5.052 5.5 5.5 0 0116.313 3c2.973 0 5.437 2.322 5.437 5.25 0 3.925-2.438 7.111-4.739 9.256a25.175 25.175 0 01-4.244 3.17 15.247 15.247 0 01-.383.219l-.022.012-.007.004-.003.001z" />
                               </svg>
                             </div>
@@ -463,12 +509,12 @@ export default function UserDashboard() {
                             setTeamToInvite(team);
                             setIsInviteModalOpen(true);
                           }}
-                          className="w-11 h-11 rounded-2xl border-2 border-dashed border-gray-200 flex items-center justify-center text-gray-400 hover:border-[#8cc63f] hover:bg-[#8cc63f]/5 hover:text-[#8cc63f] transition-all group/invite active:scale-90"
-                          title="Invite Team Members"
+                          className="px-4 py-2 rounded-xl border-2 border-dashed border-gray-200 flex items-center gap-2 text-gray-400 hover:border-[#8cc63f] hover:bg-[#8cc63f]/5 hover:text-[#8cc63f] transition-all group/invite active:scale-95"
                         >
-                          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={3} stroke="currentColor" className="w-5 h-5">
+                          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={3} stroke="currentColor" className="w-4 h-4">
                             <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
                           </svg>
+                          <span className="text-[11px] font-black uppercase tracking-wider">Invite</span>
                         </button>
                       )}
                     </div>
@@ -561,12 +607,16 @@ export default function UserDashboard() {
                         </svg>
                       </button>
                     ) : team.approvalStatus === 'Rejected' ? (
-                      <div className="w-full py-4 text-center rounded-[22px] bg-red-50 text-red-600 font-bold text-xs uppercase tracking-widest border border-red-100">
-                        Squad Rejected By Admin
+                      <div className="w-full py-5 text-center rounded-[22px] bg-red-50/50 border-2 border-dashed border-red-200 text-red-600 font-black text-[11px] uppercase tracking-[0.2em] flex items-center justify-center gap-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={3} stroke="currentColor" className="w-4 h-4">
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                        Squad Rejected
                       </div>
                     ) : (
-                      <div className="w-full py-4 text-center rounded-[22px] bg-yellow-50 text-yellow-600 font-bold text-xs uppercase tracking-widest border border-yellow-100">
-                        Awaiting Admin Approval
+                      <div className="w-full py-5 text-center rounded-[22px] bg-yellow-50/50 border-2 border-dashed border-yellow-200 text-yellow-600 font-black text-[11px] uppercase tracking-[0.2em] flex items-center justify-center gap-2">
+                        <span className="w-2 h-2 rounded-full bg-yellow-400 animate-pulse shadow-[0_0_8px_rgba(252,185,0,0.6)]"></span>
+                        Awaiting Admin Review
                       </div>
                     )}
 

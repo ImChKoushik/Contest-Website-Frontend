@@ -78,11 +78,17 @@ axiosInstance.interceptors.response.use(
       const refreshToken = localStorage.getItem('refreshToken');
 
       // ── Case 1: No refresh token stored (old session / not yet logged in fresh) ──
-      // Just re-throw the original 401 — do NOT touch localStorage.
-      // Optional hooks like fetchMyResults will catch it and handle silently.
+      // If a user is stored in localStorage, their session has expired → signal the UI.
+      // If there's no user at all, they were never logged in — just reject silently.
       if (!refreshToken) {
         isRefreshing = false;
         processQueue(error, null);
+        const hasUser = localStorage.getItem('authUser');
+        if (hasUser) {
+          // Clear stale access token but keep user data so Navbar shows the greeting
+          localStorage.removeItem('authToken');
+          window.dispatchEvent(new CustomEvent('auth:expired'));
+        }
         return Promise.reject(error);
       }
 
