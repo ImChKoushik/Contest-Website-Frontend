@@ -35,13 +35,16 @@ const useResults = () => {
       const res = await axiosInstance.get("/result/all");
       if (res.data && res.data.success) {
         setAllResults(res.data.data || []);
+        return { success: true, data: res.data.data };
       } else {
         setError(res.data.message || "Failed to fetch results");
+        return { success: false, message: res.data.message };
       }
     } catch (err) {
       const msg = err.response?.data?.message || err.message || "An error occurred";
       setError(msg);
       showToast(msg, "error");
+      return { success: false, message: msg };
     } finally {
       setLoading(false);
     }
@@ -54,19 +57,22 @@ const useResults = () => {
       const res = await axiosInstance.get("/result/my");
       if (res.data && res.data.success) {
         setMyResults(res.data.data || []);
+        return { success: true, data: res.data.data };
       } else {
         setError(res.data.message || "Failed to fetch your results");
+        return { success: false, message: res.data.message };
       }
     } catch (err) {
       const status = err.response?.status;
       // Silently ignore 401/403 — user is not authenticated
       if (status === 401 || status === 403) {
         setMyResults([]);
-        return;
+        return { success: false, message: "Unauthorized" };
       }
       const msg = err.response?.data?.message || err.message || "An error occurred";
       setError(msg);
       showToast(msg, "error");
+      return { success: false, message: msg };
     } finally {
       setLoading(false);
     }

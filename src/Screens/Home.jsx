@@ -14,10 +14,43 @@ import bannerSliderImg from '../assets/images/BannerSlider.jpg';
 import mernHomeImg from '../assets/images/mernHome.jpg';
 import learningImg from '../assets/images/learning.jpg';
 
+// Welcome Gallery Images
+import galleryImg1 from '../assets/images/IMG-20251102-WA0017.jpg';
+import galleryImg2 from '../assets/images/IMG-20250905-WA0011.jpg';
+import galleryImg3 from '../assets/images/IMG_20260413_121254.jpg';
+import galleryImg4 from '../assets/images/IMG_20260413_121238.jpg';
+
 const Home = () => {
   const navigate = useNavigate();
   const { user } = useAuthContext();
   const [currentSlide, setCurrentSlide] = useState(0);
+  const [typedText, setTypedText] = useState('');
+  const fullWelcomeText = "Welcome to Desun's Learn and earn contest";
+  const typingSpeed = 100;
+
+  useEffect(() => {
+    let i = 0;
+    let timeoutId;
+    let intervalId;
+
+    const runAnimation = () => {
+      i = 0;
+      intervalId = setInterval(() => {
+        setTypedText(fullWelcomeText.slice(0, i));
+        i++;
+        if (i > fullWelcomeText.length) {
+          clearInterval(intervalId);
+          timeoutId = setTimeout(runAnimation, 2000);
+        }
+      }, typingSpeed);
+    };
+
+    runAnimation();
+    return () => {
+      clearInterval(intervalId);
+      clearTimeout(timeoutId);
+    };
+  }, []);
 
   const slides = [
     {
@@ -187,6 +220,89 @@ const Home = () => {
           ))}
         </div>
       </section>
+
+      {/* New Welcome Gallery Section */}
+      <section className="py-24 bg-[#fbfcfb] overflow-hidden">
+        <div className="container mx-auto px-6">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+            
+            {/* Left Column: Typing Text */}
+            <div className="relative">
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-green-100 text-[#8cc63f] text-[10px] font-black uppercase tracking-widest mb-6">
+                <span className="relative flex h-2 w-2">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#8cc63f] opacity-75"></span>
+                  <span className="relative inline-flex rounded-full h-2 w-2 bg-[#8cc63f]"></span>
+                </span>
+                Official Announcement
+              </div>
+              <h2 className="text-4xl md:text-6xl font-black bg-gradient-to-r from-orange-500 via-[#8cc63f] to-[#5a8624] bg-clip-text text-transparent leading-[1.1] mb-8 min-h-[120px] md:min-h-[180px]">
+                {typedText}
+                <span className="animate-pulse text-[#8cc63f]">|</span>
+              </h2>
+              
+              {/* Green Theme Accent (Geometric Shapes) */}
+              <div className="relative w-full h-4 bg-gray-100 rounded-full overflow-hidden mb-10">
+                <div className="absolute inset-0 bg-gradient-to-r from-[#8cc63f] to-[#5a8624] w-3/4 rounded-full shadow-[0_0_15px_rgba(140,198,63,0.5)]"></div>
+              </div>
+              
+              <p className="text-gray-500 text-lg font-medium max-w-lg leading-relaxed mb-8">
+                Witness the moments of excellence and collaboration from our recent sessions. Join the community where learning meets earning.
+              </p>
+              
+              <div className="flex items-center gap-6">
+                <div className="flex -space-x-3">
+                  <div className="w-12 h-12 rounded-full border-4 border-white bg-gray-200 overflow-hidden shadow-sm">
+                    <img src={galleryImg1} className="w-full h-full object-cover" alt="User" />
+                  </div>
+                  <div className="w-12 h-12 rounded-full border-4 border-white bg-gray-300 overflow-hidden shadow-sm">
+                    <img src={galleryImg2} className="w-full h-full object-cover" alt="User" />
+                  </div>
+                  <div className="w-12 h-12 rounded-full border-4 border-white bg-[#8cc63f] flex items-center justify-center text-white font-bold text-xs shadow-sm">
+                    +50k
+                  </div>
+                </div>
+                <div className="h-10 w-[1px] bg-gray-200"></div>
+                <div>
+                  <p className="text-gray-900 font-black text-xl leading-none">Global Reach</p>
+                  <p className="text-gray-400 text-xs font-bold uppercase tracking-widest mt-1 italic">Active Participants</p>
+                </div>
+              </div>
+            </div>
+
+            {/* Right Column: Swipeable Gallery */}
+            <div className="relative">
+              {/* Decorative background blur */}
+              <div className="absolute -top-20 -right-20 w-64 h-64 bg-[#8cc63f]/10 rounded-full blur-[100px]"></div>
+              
+              <div className="flex gap-6 overflow-x-auto pb-10 pt-4 snap-x snap-mandatory no-scrollbar cursor-grab active:cursor-grabbing">
+                {[galleryImg1, galleryImg2, galleryImg3, galleryImg4].map((img, index) => (
+                  <div 
+                    key={index}
+                    className="flex-shrink-0 w-[280px] md:w-[350px] aspect-[4/5] rounded-[2.5rem] overflow-hidden shadow-2xl shadow-green-900/10 snap-center transform hover:scale-[1.02] transition-all duration-500 border-4 border-white"
+                  >
+                    <img src={img} alt={`Gallery ${index+1}`} className="w-full h-full object-cover" />
+                  </div>
+                ))}
+              </div>
+              
+              {/* Swipe Instruction */}
+              <div className="flex justify-center mt-2">
+                <div className="px-6 py-2 rounded-full bg-white border border-gray-100 shadow-sm flex items-center gap-3">
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-4 h-4 text-gray-400 animate-bounce-x">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M6.75 15.75L3 12m0 0l3.75-3.75M3 12h18" />
+                  </svg>
+                  <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Swipe to explore</span>
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-4 h-4 text-gray-400 animate-bounce-x-reverse">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M17.25 8.25L21 12m0 0l-3.75 3.75M21 12H3" />
+                  </svg>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </section>
+
 
       {/* Explore Categories Section */}
       <section className="py-20 bg-white">

@@ -165,7 +165,7 @@ export default function SignUpForm() {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
         
         {/* Left Side: Content & Features */}
-        <div className="space-y-12">
+        <div className="order-2 lg:order-1 space-y-12">
           {/* Main heading */}
           <div>
             <h1 className="text-5xl md:text-[56px] font-extrabold text-gray-900 leading-[1.15] mb-6 tracking-tight">
@@ -222,7 +222,7 @@ export default function SignUpForm() {
         </div>
 
         {/* Right Side: Form Component */}
-        <div className="flex justify-center lg:justify-end">
+        <div className="order-1 lg:order-2 flex flex-col items-center lg:items-end w-full">
           <Form onSubmit={handleSubmit}>
             <div className="mb-8">
               <h2 className="text-3xl font-bold text-gray-900 mb-2">Create Account</h2>

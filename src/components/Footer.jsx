@@ -116,9 +116,10 @@ export default function Footer() {
 
         {/* Bottom Bar */}
         <div className="pt-10 border-t border-white/10 flex flex-col md:flex-row justify-between items-center gap-6">
-          <p className="text-blue-50/40 text-[11px] max-w-md text-center md:text-left">
-            Empowering the next generation of specialists through high-stakes competition and elite academic training.
-          </p>
+          <div className="text-blue-50/50 text-[10px] md:text-[11px] text-center md:text-left space-y-1.5">
+            <p className="font-semibold tracking-wide">© 2026 Desun Academy. All Rights Reserved. A unit of DESUN Tech Foundation. All Rights Reserved.</p>
+            <p className="font-bold text-blue-50/40">Powered by DESUN Technology PVT LTD.</p>
+          </div>
           <div className="flex items-center gap-8 text-[11px] text-blue-50/40">
             <span>language English (US)</span>
             <span className="flex items-center gap-2">

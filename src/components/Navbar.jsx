@@ -7,6 +7,7 @@ import axiosInstance from '../utils/axiosInstance';
 import logo from '../assets/images/logo.png';
 import DefaultProfile from '../assets/images/DefaultProfile.png';
 import UpdateProfileModal from './UpdateProfileModal';
+import NotificationDropdown from './NotificationDropdown';
 
 export default function Navbar() {
   const navigate = useNavigate();
@@ -16,6 +17,7 @@ export default function Navbar() {
   const [refreshing, setRefreshing] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
+  const [isNotifOpen, setIsNotifOpen] = useState(false);
 
   const handleLogout = () => {
     logout();
@@ -154,7 +156,7 @@ export default function Navbar() {
           )}
 
           {/* Auth/Profile & Hamburger Section */}
-          <div className="flex items-center space-x-4">
+          <div className="flex items-center space-x-4 ml-auto lg:ml-0">
             {/* Desktop Auth */}
             <div className="hidden md:flex items-center space-x-4">
               {tokenExpired ? (
@@ -187,7 +189,29 @@ export default function Navbar() {
                   </button>
                 </div>
               ) : user ? (
-                <div className="flex items-center gap-3">
+                <div className="flex items-center gap-4">
+                  {/* Notification Bell */}
+                  <div className="relative">
+                    <button 
+                      onClick={() => setIsNotifOpen(!isNotifOpen)}
+                      className={`w-10 h-10 rounded-xl flex items-center justify-center transition-all ${
+                        isNotifOpen ? 'bg-[#8cc63f] text-white shadow-lg' : 'bg-gray-50 text-gray-400 hover:bg-gray-100 hover:text-gray-600'
+                      }`}
+                    >
+                      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-5 h-5">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M14.857 17.082a23.848 23.848 0 0 0 5.454-1.31A8.967 8.967 0 0 1 18 9.75V9A6 6 0 0 0 6 9v.75a8.967 8.967 0 0 1-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 0 1-5.714 0m5.714 0a3 3 0 1 1-5.714 0" />
+                      </svg>
+                      {/* Badge (Pulsing Effect) */}
+                      <span className="absolute top-2 right-2 w-2.5 h-2.5 bg-red-500 border-2 border-white rounded-full animate-bounce"></span>
+                    </button>
+                    
+                    <NotificationDropdown 
+                      isOpen={isNotifOpen} 
+                      onClose={() => setIsNotifOpen(false)} 
+                    />
+                  </div>
+
+                  <div className="flex items-center gap-3">
                   <div className="flex items-center pr-1.5 pl-1.5 py-1.5 bg-gray-50/80 hover:bg-white rounded-full border border-gray-100 shadow-sm transition-all cursor-default group">
                     <div className="w-8 h-8 rounded-full overflow-hidden shadow-sm transform group-hover:rotate-12 transition-transform border border-[#8cc63f]/30">
                       <img 
@@ -219,7 +243,8 @@ export default function Navbar() {
                     {loading ? '...' : 'Logout'}
                   </button>
                 </div>
-              ) : (
+              </div>
+            ) : (
                 <div className="flex items-center gap-3">
                   <button onClick={() => navigate('/signin')} className="px-5 py-2.5 text-[13px] font-bold text-gray-600 hover:text-[#8cc63f] transition-colors tracking-wide">Sign In</button>
                   <button onClick={() => navigate('/signup')} className="px-6 py-2.5 text-[13px] font-black bg-[#8cc63f] hover:bg-[#7ab033] text-white rounded-full transition-all duration-300 shadow-[0_4px_14px_rgba(140,198,63,0.3)] hover:shadow-lg hover:-translate-y-0.5 uppercase tracking-wider">Sign Up</button>
@@ -243,7 +268,7 @@ export default function Navbar() {
 
       {/* Mobile Navigation Overlay */}
       <div
-        className={`fixed inset-x-0 top-[70px] bg-white/95 backdrop-blur-2xl border-b border-[#8cc63f]/20 transition-all duration-500 ease-in-out z-40 lg:hidden overflow-hidden ${isMenuOpen ? 'max-h-[500px] opacity-100' : 'max-h-0 opacity-0'}`}
+        className={`fixed inset-x-0 top-[70px] bg-white/95 backdrop-blur-2xl border-b border-[#8cc63f]/20 transition-all duration-500 ease-in-out z-40 lg:hidden overflow-y-auto ${isMenuOpen ? 'h-[calc(100vh-70px)] opacity-100' : 'h-0 opacity-0 pointer-events-none'}`}
       >
         <div className="px-6 py-8 space-y-6">
           <nav className="flex flex-col space-y-4">
@@ -317,14 +342,38 @@ export default function Navbar() {
                       <span className="font-extrabold text-gray-900 text-base">{displayName}</span>
                     </div>
                   </div>
-                  <button 
-                    onClick={() => { setIsProfileModalOpen(true); closeMenu(); }}
-                    className="w-9 h-9 rounded-full bg-white border border-gray-200 text-gray-400 hover:text-[#8cc63f] hover:border-[#8cc63f] flex items-center justify-center transition-all shadow-sm"
-                  >
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-5 h-5">
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
-                    </svg>
-                  </button>
+                  <div className="flex items-center gap-2">
+                    <div className="relative">
+                      <button 
+                        onClick={() => setIsNotifOpen(!isNotifOpen)}
+                        className={`w-9 h-9 rounded-full flex items-center justify-center transition-all ${
+                          isNotifOpen ? 'bg-[#8cc63f] text-white' : 'bg-white border border-gray-200 text-gray-400'
+                        }`}
+                      >
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-5 h-5">
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M14.857 17.082a23.848 23.848 0 0 0 5.454-1.31A8.967 8.967 0 0 1 18 9.75V9A6 6 0 0 0 6 9v.75a8.967 8.967 0 0 1-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 0 1-5.714 0m5.714 0a3 3 0 1 1-5.714 0" />
+                        </svg>
+                        <span className="absolute top-1 right-1 w-2.5 h-2.5 bg-red-500 border-2 border-white rounded-full animate-bounce"></span>
+                      </button>
+                      
+                      {isNotifOpen && (
+                        <div className="absolute right-0 mt-2 z-[60]">
+                           <NotificationDropdown 
+                            isOpen={isNotifOpen} 
+                            onClose={() => setIsNotifOpen(false)} 
+                          />
+                        </div>
+                      )}
+                    </div>
+                    <button 
+                      onClick={() => { setIsProfileModalOpen(true); closeMenu(); }}
+                      className="w-9 h-9 rounded-full bg-white border border-gray-200 text-gray-400 hover:text-[#8cc63f] hover:border-[#8cc63f] flex items-center justify-center transition-all shadow-sm"
+                    >
+                      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-5 h-5">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+                      </svg>
+                    </button>
+                  </div>
                 </div>
                 <button
                   onClick={handleLogout}
