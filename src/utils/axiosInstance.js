@@ -131,6 +131,16 @@ axiosInstance.interceptors.response.use(
       }
     }
 
+    // Dispatch auth:expired for 500 errors on protected routes to allow the "Login Again" silent re-auth
+    if (
+      error.response?.status === 500 && 
+      localStorage.getItem('authUser') &&
+      !originalRequest.url?.includes('generate-access') &&
+      !originalRequest.url?.includes('login-user')
+    ) {
+      window.dispatchEvent(new CustomEvent('auth:expired'));
+    }
+
     return Promise.reject(error);
   }
 );
