@@ -1,5 +1,42 @@
 @import "tailwindcss";
 
+:root {
+  --bg-primary: #fbfcfb;
+  --bg-secondary: #ffffff;
+  --text-primary: #111817;
+  --text-secondary: #6b7280;
+  --border-primary: rgba(140, 198, 63, 0.1);
+  --accent-green: #8cc63f;
+  --accent-yellow: #fcb900;
+  --card-bg: #ffffff;
+  --card-shadow: 0 10px 40px rgba(0,0,0,0.02);
+  --nav-link: #6b7280;
+  --input-bg: #f7f7f7;
+  --input-focus-bg: #ffffff;
+}
+
+.dark {
+  --bg-primary: #060c0a;
+  --bg-secondary: #0a110f;
+  --text-primary: #f0fdf4;
+  --text-secondary: #94a3b8;
+  --border-primary: rgba(140, 198, 63, 0.15);
+  --accent-green: #8cc63f;
+  --accent-yellow: #fcd34d;
+  --card-bg: #0e1512;
+  --card-shadow: 0 10px 40px rgba(0,0,0,0.4);
+  --nav-link: #94a3b8;
+  --input-bg: #111a16;
+  --input-focus-bg: #16241f;
+}
+
+body {
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  transition: background-color 0.4s cubic-bezier(0.4, 0, 0.2, 1), 
+              color 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
 @layer utilities {
   @keyframes background-pan {
     0% {

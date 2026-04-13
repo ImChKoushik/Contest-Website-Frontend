@@ -130,7 +130,7 @@ export default function SignUpForm() {
 
     let formattedGender = formData.gender.trim().toLowerCase();
     if (formattedGender === 'other') formattedGender = 'others';
-    
+
     if (!['male', 'female', 'others'].includes(formattedGender)) {
       showToast("Gender must be Male, Female, or Others", "warning");
       return;
@@ -147,13 +147,13 @@ export default function SignUpForm() {
     submissionData.append('contact', formData.contact);
     submissionData.append('gender', formattedGender);
     submissionData.append('password', formData.password);
-    
+
     if (profileImage) {
       submissionData.append('profileImage', profileImage);
     }
 
     const result = await sendRequest("https://contest-backend-td3m.onrender.com/api/v1/user/register-user", submissionData);
-    
+
     if (result) {
       showToast("User Registered Successfully! Please check your email to verify your account.", "success");
       navigate("/signin");
@@ -161,19 +161,19 @@ export default function SignUpForm() {
   };
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-24">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-24 transition-colors duration-300">
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
-        
+
         {/* Left Side: Content & Features */}
         <div className="order-2 lg:order-1 space-y-12">
           {/* Main heading */}
           <div>
-            <h1 className="text-5xl md:text-[56px] font-extrabold text-gray-900 leading-[1.15] mb-6 tracking-tight">
+            <h1 className="text-5xl md:text-[56px] font-extrabold text-[var(--text-primary)] leading-[1.15] mb-6 tracking-tight transition-colors">
               Elevate Your<br />
-              <span className="text-[#8cc63f]">Skills</span> with the<br />
+              <span className="text-[var(--accent-green)]">Skills</span> with the<br />
               Elite.
             </h1>
-            <p className="text-xl text-gray-600 max-w-[480px] leading-relaxed">
+            <p className="text-xl text-[var(--text-secondary)] max-w-[480px] leading-relaxed transition-colors">
               Join a global community of specialists. Participate in high-stakes contests and master the pulse of academic excellence.
             </p>
           </div>
@@ -182,14 +182,14 @@ export default function SignUpForm() {
           <div className="space-y-8">
             {/* Feature 1 */}
             <div className="flex gap-5">
-              <div className="flex-shrink-0 w-12 h-12 bg-lime-100 rounded-full flex items-center justify-center text-[#8cc63f]">
+              <div className="flex-shrink-0 w-12 h-12 bg-[var(--accent-green)]/10 rounded-full flex items-center justify-center text-[var(--accent-green)] transition-colors">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-6 h-6">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M11.48 3.499a.562.562 0 011.04 0l2.125 5.111a.563.563 0 00.475.345l5.518.442c.499.04.701.663.321.988l-4.204 3.602a.563.563 0 00-.182.557l1.285 5.385a.562.562 0 01-.84.61l-4.725-2.885a.563.563 0 00-.586 0L6.982 20.54a.562.562 0 01-.84-.61l1.285-5.386a.562.562 0 00-.182-.557l-4.204-3.602a.563.563 0 01.321-.988l5.518-.442a.563.563 0 00.475-.345L11.48 3.5z" />
                 </svg>
               </div>
               <div>
-                <h3 className="text-lg font-bold text-gray-900 mb-1">Premium Certifications</h3>
-                <p className="text-gray-500 text-sm">Validated by industry-leading academic boards.</p>
+                <h3 className="text-lg font-bold text-[var(--text-primary)] mb-1 transition-colors">Premium Certifications</h3>
+                <p className="text-[var(--text-secondary)] text-sm transition-colors">Validated by industry-leading academic boards.</p>
               </div>
             </div>
 
@@ -223,20 +223,20 @@ export default function SignUpForm() {
 
         {/* Right Side: Form Component */}
         <div className="order-1 lg:order-2 flex flex-col items-center lg:items-end w-full">
-          <Form onSubmit={handleSubmit}>
+          <Form onSubmit={handleSubmit} className="!bg-[var(--card-bg)] transition-colors">
             <div className="mb-8">
-              <h2 className="text-3xl font-bold text-gray-900 mb-2">Create Account</h2>
-              <p className="text-gray-500 text-[15px]">Start your journey at Desun Academy today.</p>
+              <h2 className="text-3xl font-bold text-[var(--text-primary)] mb-2 transition-colors">Create Account</h2>
+              <p className="text-[var(--text-secondary)] text-[15px] transition-colors">Start your journey at Desun Academy today.</p>
             </div>
-            
+
             {/* Image Upload Area */}
             <div className="flex flex-col items-center justify-center mb-8">
               <label htmlFor="profileImage" className="relative cursor-pointer group">
-                <div className="w-[100px] h-[100px] rounded-full border-[3px] border-dashed border-[#8cc63f] overflow-hidden bg-[#f7f7f7] flex items-center justify-center group-hover:bg-gray-100 transition-colors shadow-sm">
+                <div className="w-[100px] h-[100px] rounded-full border-[3px] border-dashed border-[var(--accent-green)] overflow-hidden bg-[var(--bg-secondary)] flex items-center justify-center group-hover:brightness-110 transition-all shadow-sm">
                   {imagePreview ? (
                     <img src={imagePreview} alt="Profile Preview" className="w-full h-full object-cover" />
                   ) : (
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.2} stroke="currentColor" className="w-9 h-9 text-gray-400">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.2} stroke="currentColor" className="w-9 h-9 text-[var(--text-secondary)]">
                       <path strokeLinecap="round" strokeLinejoin="round" d="M6.827 6.175A2.31 2.31 0 015.186 7.23c-.38.054-.757.112-1.134.175C2.999 7.58 2.25 8.507 2.25 9.574V18a2.25 2.25 0 002.25 2.25h15A2.25 2.25 0 0021.75 18V9.574c0-1.067-.75-1.994-1.802-2.169a47.865 47.865 0 00-1.134-.175 2.31 2.31 0 01-1.64-1.055l-.822-1.316a2.192 2.192 0 00-1.736-1.039 48.774 48.774 0 00-5.232 0 2.192 2.192 0 00-1.736 1.039l-.821 1.316z" />
                       <path strokeLinecap="round" strokeLinejoin="round" d="M16.5 12.75a4.5 4.5 0 11-9 0 4.5 4.5 0 019 0zM18.75 10.5h.008v.008h-.008V10.5z" />
                     </svg>
@@ -245,12 +245,12 @@ export default function SignUpForm() {
                 <div className="absolute inset-0 bg-black/40 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
                   <span className="text-white text-xs font-semibold">Upload</span>
                 </div>
-                <input 
-                  id="profileImage" 
-                  type="file" 
-                  accept="image/*" 
-                  className="hidden" 
-                  onChange={handleImageChange} 
+                <input
+                  id="profileImage"
+                  type="file"
+                  accept="image/*"
+                  className="hidden"
+                  onChange={handleImageChange}
                 />
               </label>
               <span className="text-sm text-gray-500 mt-3 font-medium">Profile Image (Optional)</span>
@@ -258,48 +258,48 @@ export default function SignUpForm() {
 
             {error && <div className="mb-4 p-3 bg-red-50 text-red-600 rounded-lg text-sm">{error}</div>}
 
-            <Input 
-              label="Full Name" 
-              type="text" 
+            <Input
+              label="Full Name"
+              type="text"
               name="userName"
               value={formData.userName}
               onChange={handleChange}
-              placeholder="John Doe" 
-              icon={<UserIcon />} 
+              placeholder="John Doe"
+              icon={<UserIcon />}
               required
             />
-            
-            <Input 
-              label="Email Address" 
-              type="email" 
+
+            <Input
+              label="Email Address"
+              type="email"
               name="email"
               value={formData.email}
               onChange={handleChange}
-              placeholder="john@example.com" 
-              icon={<MailIcon />} 
+              placeholder="john@example.com"
+              icon={<MailIcon />}
               required
             />
 
             <div className="flex flex-col sm:flex-row gap-4 mb-2">
               <div className="flex-1">
-                <Input 
-                  label="Contact Number" 
-                  type="tel" 
+                <Input
+                  label="Contact Number"
+                  type="tel"
                   name="contact"
                   value={formData.contact}
                   onChange={handleChange}
-                  placeholder="10-digit mobile number" 
-                  icon={<PhoneIcon />} 
+                  placeholder="10-digit mobile number"
+                  icon={<PhoneIcon />}
                   required
                 />
               </div>
               <div className="flex-1">
-                <Select 
-                  label="Gender" 
+                <Select
+                  label="Gender"
                   name="gender"
                   value={formData.gender}
                   onChange={handleChange}
-                  icon={<GenderIcon />} 
+                  icon={<GenderIcon />}
                   options={[
                     { value: 'male', label: 'Male' },
                     { value: 'female', label: 'Female' },
@@ -309,17 +309,17 @@ export default function SignUpForm() {
                 />
               </div>
             </div>
-            
+
             <div className="flex flex-col sm:flex-row gap-4 mb-2">
               <div className="flex-1">
-                <Input 
-                  label="Password" 
-                  type="password" 
+                <Input
+                  label="Password"
+                  type="password"
                   name="password"
                   value={formData.password}
                   onChange={handleChange}
-                  placeholder="Min. 8 characters" 
-                  icon={<LockIcon />} 
+                  placeholder="Min. 8 characters"
+                  icon={<LockIcon />}
                   required
                 />
                 {strength && (
@@ -334,37 +334,37 @@ export default function SignUpForm() {
                 )}
               </div>
               <div className="flex-1">
-                <Input 
-                  label="Confirm Password" 
-                  type="password" 
+                <Input
+                  label="Confirm Password"
+                  type="password"
                   name="confirmPassword"
                   value={formData.confirmPassword}
                   onChange={handleChange}
-                  placeholder="••••••••" 
-                  icon={<RenewIcon />} 
+                  placeholder="••••••••"
+                  icon={<RenewIcon />}
                   required
                 />
               </div>
             </div>
-            
+
             <div className="flex items-start mb-8 mt-2">
               <div className="flex items-center h-5 mt-0.5">
-                <input 
-                  id="terms" 
-                  type="checkbox" 
+                <input
+                  id="terms"
+                  type="checkbox"
                   checked={termsAccepted}
                   onChange={(e) => setTermsAccepted(e.target.checked)}
-                  className="w-4 h-4 rounded border-gray-300 text-[#8cc63f] focus:ring-[#8cc63f]" 
+                  className="w-4 h-4 rounded border-[var(--border-primary)] text-[var(--accent-green)] focus:ring-[var(--accent-green)] bg-[var(--input-bg)] transition-colors"
                 />
               </div>
               <div className="ml-3 text-sm leading-relaxed">
-                <label htmlFor="terms" className="text-gray-500">
+                <label htmlFor="terms" className="text-[var(--text-secondary)] transition-colors">
                   I agree to the{' '}
-                  <a href="#" className="font-semibold text-[#8cc63f] hover:underline">
+                  <a href="#" className="font-semibold text-[var(--accent-green)] hover:underline transition-colors">
                     Terms and Conditions
                   </a>
                   {' '}and the{' '}
-                  <a href="#" className="font-semibold text-[#8cc63f] hover:underline">
+                  <a href="#" className="font-semibold text-[var(--accent-green)] hover:underline transition-colors">
                     Privacy Policy
                   </a>.
                 </label>
@@ -379,20 +379,20 @@ export default function SignUpForm() {
                 </svg>
               )}
             </Button>
-            
+
           </Form>
-          
-          <p className="text-center text-[15px] text-gray-500 mt-8">
+
+          <p className="text-center text-[15px] text-[var(--text-secondary)] mt-8 transition-colors">
             Already have an account?{' '}
-            <button 
-              onClick={() => navigate('/signin')} 
-              className="font-semibold text-[#8cc63f] hover:underline bg-transparent border-none p-0 cursor-pointer"
+            <button
+              onClick={() => navigate('/signin')}
+              className="font-semibold text-[var(--accent-green)] hover:underline bg-transparent border-none p-0 cursor-pointer transition-colors"
             >
               Sign In
             </button>
           </p>
         </div>
-        
+
       </div>
     </div>
   );

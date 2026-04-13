@@ -54,54 +54,58 @@ const ContactUs = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col items-center justify-center p-6 bg-gradient-to-br from-[#f0f9e6] via-white to-gray-50">
-      <div className="max-w-4xl w-full">
+    <div className="min-h-screen bg-[var(--bg-primary)] flex flex-col items-center justify-center p-6 transition-colors duration-300 relative overflow-hidden">
+      {/* Background Doodles (Subtle) */}
+      <div className="absolute top-[10%] -left-[5%] w-64 h-64 bg-[var(--accent-green)]/5 rounded-full blur-[100px] pointer-events-none"></div>
+      <div className="absolute bottom-[10%] -right-[5%] w-64 h-64 bg-[var(--accent-yellow)]/5 rounded-full blur-[100px] pointer-events-none"></div>
+
+      <div className="max-w-4xl w-full relative z-10">
         {/* Clickable Header Section */}
-        <a 
+        <a
           href={`mailto:${contactInfo.email}`}
-          className="group mb-8 block w-full bg-white rounded-3xl p-8 border border-[#8cc63f]/20 shadow-xl shadow-[#8cc63f]/5 hover:shadow-2xl transition-all duration-500 hover:-translate-y-1 relative overflow-hidden"
+          className="group mb-8 block w-full bg-[var(--card-bg)] rounded-3xl p-8 border border-[var(--border-primary)] shadow-[var(--card-shadow)] hover:shadow-[var(--card-shadow)]/50 transition-all duration-500 hover:-translate-y-1 relative overflow-hidden"
         >
           <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
             <div>
-              <h1 className="text-3xl md:text-4xl font-black text-gray-900 mb-2">Have Questions?</h1>
-              <p className="text-lg text-[#8cc63f] font-bold tracking-tight">Click here to send us an email directly</p>
+              <h1 className="text-3xl md:text-4xl font-black text-[var(--text-primary)] mb-2 transition-colors">Have Questions?</h1>
+              <p className="text-lg text-[var(--accent-green)] font-bold tracking-tight transition-colors">Click here to send us an email directly</p>
             </div>
-            <div className="flex items-center gap-3 bg-[#8cc63f] text-white px-8 py-4 rounded-2xl font-black text-sm uppercase tracking-widest group-hover:bg-[#7ab033] transition-colors shadow-lg shadow-[#8cc63f]/30">
+            <div className="flex items-center gap-3 bg-[var(--accent-green)] text-white px-8 py-4 rounded-2xl font-black text-sm uppercase tracking-widest group-hover:bg-[#7ab033] transition-all shadow-lg shadow-[var(--accent-green)]/30">
               {contactInfo.email}
               <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-5 h-5 group-hover:translate-x-1 transition-transform">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M6 12L3.269 3.126A59.768 59.768 0 0121.485 12 59.77 59.77 0 013.27 20.876L5.999 12zm0 0h7.5" />
               </svg>
             </div>
           </div>
-          
+
           {/* Abstract background shapes */}
           <div className="absolute top-0 right-0 w-32 h-32 bg-[#8cc63f]/5 rounded-full -mr-16 -mt-16 transition-transform group-hover:scale-150 duration-700"></div>
           <div className="absolute bottom-0 left-0 w-24 h-24 bg-[#fca311]/5 rounded-full -ml-12 -mb-12"></div>
         </a>
 
         {/* Contact Info Card */}
-        <div className="bg-white rounded-[2.5rem] p-10 md:p-14 shadow-2xl shadow-gray-200 border border-gray-100 relative overflow-hidden">
+        <div className="bg-[var(--card-bg)] rounded-[2.5rem] p-10 md:p-14 shadow-[var(--card-shadow)] border border-[var(--border-primary)] relative overflow-hidden transition-all">
           <div className="relative z-10">
-            <h2 className="text-2xl font-black text-gray-900 mb-4 tracking-tight uppercase border-b-4 border-[#8cc63f] inline-block pb-1">Contact Info</h2>
-            <p className="text-lg md:text-xl text-gray-600 font-medium leading-relaxed mb-12 max-w-2xl">
+            <h2 className="text-2xl font-black text-[var(--text-primary)] mb-4 tracking-tight uppercase border-b-4 border-[var(--accent-green)] inline-block pb-1 transition-colors">Contact Info</h2>
+            <p className="text-lg md:text-xl text-[var(--text-secondary)] font-medium leading-relaxed mb-12 max-w-2xl transition-colors">
               {contactInfo.tagline}
             </p>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-10">
               {contactItems.map((item, index) => (
-                <a 
-                  key={index} 
+                <a
+                  key={index}
                   href={item.link}
                   target={item.label === "ADDRESS" || item.label === "WHATSAPP NO." ? "_blank" : undefined}
                   rel={item.label === "ADDRESS" || item.label === "WHATSAPP NO." ? "noopener noreferrer" : undefined}
                   className="flex gap-5 group cursor-pointer"
                 >
-                  <div className="w-14 h-14 rounded-2xl bg-[#8cc63f]/10 text-[#8cc63f] flex items-center justify-center flex-shrink-0 group-hover:bg-[#8cc63f] group-hover:text-white transition-all duration-500 shadow-sm">
+                  <div className="w-14 h-14 rounded-2xl bg-[var(--accent-green)]/10 text-[var(--accent-green)] flex items-center justify-center flex-shrink-0 group-hover:bg-[var(--accent-green)] group-hover:text-white transition-all duration-500 shadow-sm">
                     {item.icon}
                   </div>
                   <div>
-                    <h3 className="text-xs font-black text-[#8cc63f] uppercase tracking-[0.2em] mb-2">{item.label}</h3>
-                    <p className="text-base font-bold text-gray-800 leading-snug group-hover:text-[#8cc63f] transition-colors">
+                    <h3 className="text-xs font-black text-[var(--accent-green)] uppercase tracking-[0.2em] mb-2 transition-colors">{item.label}</h3>
+                    <p className="text-base font-bold text-[var(--text-primary)] leading-snug group-hover:text-[var(--accent-green)] transition-all">
                       {item.value}
                     </p>
                   </div>

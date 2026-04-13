@@ -28,7 +28,7 @@ export default function Contests() {
   };
 
   return (
-    <div className="bg-[#fbfcfb] min-h-screen pb-24">
+    <div className="bg-[var(--bg-primary)] min-h-screen pb-24 transition-colors duration-300">
       <div className="bg-[#063327] py-20 px-6 mb-12 relative overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-r from-green-900/40 via-transparent to-transparent opacity-30"></div>
         <div className="max-w-7xl mx-auto relative z-10 text-center">
@@ -49,7 +49,7 @@ export default function Contests() {
                 onClick={() => handleCategoryClick(cat.slug)}
                 className="group cursor-pointer"
               >
-                <div className="bg-white rounded-[40px] overflow-hidden border-2 border-gray-50 shadow-sm transition-all duration-500 hover:border-[#8cc63f] hover:shadow-2xl hover:shadow-green-900/5 hover:-translate-y-2 relative flex flex-col h-full">
+                <div className="bg-[var(--card-bg)] rounded-[40px] overflow-hidden border-2 border-[var(--border-primary)] shadow-[var(--card-shadow)] transition-all duration-500 hover:border-[var(--accent-green)] hover:shadow-2xl hover:shadow-green-900/5 hover:-translate-y-2 relative flex flex-col h-full">
                   {/* Card Image Header */}
                   <div className="h-48 w-full relative overflow-hidden">
                     <img
@@ -59,14 +59,14 @@ export default function Contests() {
                       className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 ease-in-out"
                     />
                     <div className={`absolute inset-0 bg-gradient-to-br ${cat.color} opacity-20 mix-blend-multiply`}></div>
-                    <div className="absolute inset-0 bg-gradient-to-t from-white via-transparent to-transparent"></div>
+                    <div className="absolute inset-0 bg-gradient-to-t from-[var(--card-bg)] via-transparent to-transparent transition-colors"></div>
                   </div>
 
                   <div className="p-8 pt-4 flex flex-col items-center text-center">
-                    <h3 className="text-xl font-black text-gray-900 mb-2 tracking-tight group-hover:text-[#8cc63f] transition-colors uppercase">{cat.name}</h3>
-                    <p className="text-gray-400 text-sm font-medium mb-8">Click to view all {cat.name} contests.</p>
+                    <h3 className="text-xl font-black text-[var(--text-primary)] mb-2 tracking-tight group-hover:text-[var(--accent-green)] transition-all uppercase">{cat.name}</h3>
+                    <p className="text-[var(--text-secondary)] text-sm font-medium mb-8 transition-colors">Click to view all {cat.name} contests.</p>
 
-                    <div className="flex items-center gap-2 text-[#8cc63f] font-black uppercase tracking-widest text-[10px] transform group-hover:translate-x-1 transition-all duration-500">
+                    <div className="flex items-center gap-2 text-[var(--accent-green)] font-black uppercase tracking-widest text-[10px] transform group-hover:translate-x-1 transition-all duration-500">
                       Explore Now
                       <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M14 5l7 7m0 0l-7 7m7-7H3" />
@@ -75,7 +75,7 @@ export default function Contests() {
                   </div>
 
                   {/* Abstract decoration */}
-                  <div className="absolute -bottom-10 -right-10 w-32 h-32 bg-gray-50 rounded-full z-0 group-hover:scale-125 transition-transform duration-700 opacity-50"></div>
+                  <div className="absolute -bottom-10 -right-10 w-32 h-32 bg-[var(--accent-green)]/5 rounded-full z-0 group-hover:scale-125 transition-transform duration-700 opacity-50"></div>
                 </div>
               </div>
           ))}

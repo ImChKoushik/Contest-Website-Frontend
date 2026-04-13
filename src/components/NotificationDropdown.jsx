@@ -25,7 +25,7 @@ export default function NotificationDropdown({ isOpen, onClose }) {
   const { viewAllTeams } = useTeam();
   const { getAllInvites, getMyInvites } = useInvite();
   const { fetchMyResults, myResults } = useResults();
-  const { data: usersData } = useFetchUsers();
+  const { data: usersData } = useFetchUsers(user?.role === 'Admin');
 
   const [notifications, setNotifications] = useState([]);
   const [loading, setLoading] = useState(false);

@@ -11,34 +11,34 @@ const STATUS_OPTIONS = ['Upcoming', 'On-Going', 'Completed'];
 
 // Map UI label → backend API value
 const LABEL_TO_API = {
-  'Upcoming':  'Upcoming',
-  'On-Going':  'On-Going',
+  'Upcoming': 'Upcoming',
+  'On-Going': 'On-Going',
   'Completed': 'Completed',
 };
 
 // Map backend API value → UI label
 const API_TO_LABEL = {
-  'Upcoming':  'Upcoming',
-  'On-Going':  'On-Going',
+  'Upcoming': 'Upcoming',
+  'On-Going': 'On-Going',
   'Completed': 'Completed',
 };
 
 const STATUS_STYLES = {
-  'On-Going':  { dot: 'bg-[#8cc63f]',  text: 'text-[#7ab033]' },
-  'Upcoming':  { dot: 'bg-[#fcb900]',  text: 'text-[#e6a800]' },
-  'Completed': { dot: 'bg-gray-300',   text: 'text-gray-500'  },
+  'On-Going': { dot: 'bg-[#8cc63f]', text: 'text-[#7ab033]' },
+  'Upcoming': { dot: 'bg-[#fcb900]', text: 'text-[#e6a800]' },
+  'Completed': { dot: 'bg-gray-300', text: 'text-gray-500' },
 };
 
 export default function TotalContests() {
-  const { 
-    data, 
-    loading, 
-    error, 
-    fetchAllContests, 
-    updateContestStatus, 
-    updateContest, 
+  const {
+    data,
+    loading,
+    error,
+    fetchAllContests,
+    updateContestStatus,
+    updateContest,
     updateContestImage,
-    deleteContest 
+    deleteContest
   } = useContests();
   const { showToast } = useToast();
   const navigate = useNavigate();
@@ -70,7 +70,7 @@ export default function TotalContests() {
   const handleSaveContest = async (id) => {
     setSavingId(id);
     const updates = {};
-    
+
     if (pendingStatus[id]) updates.status = LABEL_TO_API[pendingStatus[id]];
     if (pendingType[id]) updates.projectType = pendingType[id];
     if (pendingSize[id] !== undefined) updates.teamSize = Number(pendingSize[id]);
@@ -82,17 +82,17 @@ export default function TotalContests() {
 
     let result;
     if (updates.status && Object.keys(updates).length === 1) {
-       result = await updateContestStatus(id, updates.status);
+      result = await updateContestStatus(id, updates.status);
     } else {
-       result = await updateContest(id, updates);
+      result = await updateContest(id, updates);
     }
 
     if (result.success) {
       showToast('Contest updated successfully!', 'success');
       fetchAllContests();
-      setPendingStatus(p => { const n = {...p}; delete n[id]; return n; });
-      setPendingType(p => { const n = {...p}; delete n[id]; return n; });
-      setPendingSize(p => { const n = {...p}; delete n[id]; return n; });
+      setPendingStatus(p => { const n = { ...p }; delete n[id]; return n; });
+      setPendingType(p => { const n = { ...p }; delete n[id]; return n; });
+      setPendingSize(p => { const n = { ...p }; delete n[id]; return n; });
     } else {
       showToast(result.message || 'Failed to update', 'error');
     }
@@ -116,7 +116,7 @@ export default function TotalContests() {
       {/* Header */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-10 pb-6 border-b border-gray-100">
         <div>
-          <button 
+          <button
             onClick={() => navigate("/admin-dashboard")}
             className="flex items-center gap-2 text-gray-500 hover:text-[#8cc63f] font-bold text-sm mb-4 transition-colors"
           >
@@ -129,8 +129,8 @@ export default function TotalContests() {
           <p className="text-gray-500 mt-2">Comprehensive view of every specialization challenge in the system.</p>
         </div>
         <div className="flex gap-3">
-          <Button 
-            variant="secondary" 
+          <Button
+            variant="secondary"
             onClick={fetchAllContests}
             className="px-5 py-2.5 text-sm font-bold flex items-center gap-2"
           >
@@ -139,8 +139,8 @@ export default function TotalContests() {
             </svg>
             Refresh Data
           </Button>
-          <Button 
-            variant="primary" 
+          <Button
+            variant="primary"
             onClick={() => navigate("/admin-dashboard/add-contest")}
             className="px-6 py-2.5 text-sm font-bold shadow-lg shadow-[#8cc63f]/20"
           >
@@ -194,28 +194,28 @@ export default function TotalContests() {
                     </td>
                     <td className="p-6">
                       <div className="relative group/img h-12 w-20 rounded-lg overflow-hidden border border-gray-100 shadow-sm flex-shrink-0">
-                         <img 
-                          src={contest.contestImage?.url || "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?q=80&w=100&auto=format&fit=crop"} 
-                          alt="Thumb" 
+                        <img
+                          src={contest.contestImage?.url || "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?q=80&w=100&auto=format&fit=crop"}
+                          alt="Thumb"
                           className="w-full h-full object-cover group-hover/img:scale-110 transition-transform duration-500"
-                         />
-                         <label className="absolute inset-0 bg-black/60 opacity-0 group-hover/img:opacity-100 flex items-center justify-center cursor-pointer transition-opacity">
-                            <input 
-                              type="file" 
-                              className="hidden" 
-                              accept="image/*"
-                              onChange={async (e) => {
-                                const file = e.target.files[0];
-                                if (file) {
-                                  const res = await updateContestImage(contest._id, file);
-                                  if (res.success) fetchAllContests();
-                                }
-                              }}
-                            />
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-4 h-4 text-white">
-                              <path strokeLinecap="round" strokeLinejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99" />
-                            </svg>
-                         </label>
+                        />
+                        <label className="absolute inset-0 bg-black/60 opacity-0 group-hover/img:opacity-100 flex items-center justify-center cursor-pointer transition-opacity">
+                          <input
+                            type="file"
+                            className="hidden"
+                            accept="image/*"
+                            onChange={async (e) => {
+                              const file = e.target.files[0];
+                              if (file) {
+                                const res = await updateContestImage(contest._id, file);
+                                if (res.success) fetchAllContests();
+                              }
+                            }}
+                          />
+                          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-4 h-4 text-white">
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99" />
+                          </svg>
+                        </label>
                       </div>
                     </td>
                     <td className="p-6">
@@ -231,14 +231,13 @@ export default function TotalContests() {
                     </td>
                     <td className="p-6">
                       <div className="flex flex-col gap-2">
-                         <select 
+                        <select
                           value={pendingType[contest._id] || contest.projectType}
                           onChange={(e) => setPendingType(prev => ({ ...prev, [contest._id]: e.target.value }))}
-                          className={`text-[11px] font-black uppercase px-2 py-1 rounded border ${
-                            (pendingType[contest._id] || contest.projectType) === 'Team' ? 'text-blue-600 border-blue-100 bg-blue-50' : 
-                            (pendingType[contest._id] || contest.projectType) === 'Both' ? 'text-green-600 border-green-100 bg-green-50' :
-                            'text-purple-600 border-purple-100 bg-purple-50'
-                          }`}
+                          className={`text-[11px] font-black uppercase px-2 py-1 rounded border ${(pendingType[contest._id] || contest.projectType) === 'Team' ? 'text-blue-600 border-blue-100 bg-blue-50' :
+                              (pendingType[contest._id] || contest.projectType) === 'Both' ? 'text-green-600 border-green-100 bg-green-50' :
+                                'text-purple-600 border-purple-100 bg-purple-50'
+                            }`}
                         >
                           <option value="Individual">Individual</option>
                           <option value="Team">Team</option>
@@ -246,14 +245,14 @@ export default function TotalContests() {
                         </select>
                         {(pendingType[contest._id] || contest.projectType) !== 'Individual' && (
                           <div className="flex items-center gap-2">
-                             <span className="text-[9px] font-black text-gray-400 uppercase">Max Size:</span>
-                             <input 
+                            <span className="text-[9px] font-black text-gray-400 uppercase">Max Size:</span>
+                            <input
                               type="number"
                               min="2"
                               value={pendingSize[contest._id] ?? contest.teamSize ?? 1}
                               onChange={(e) => setPendingSize(prev => ({ ...prev, [contest._id]: e.target.value }))}
                               className="w-12 text-[10px] font-bold border border-gray-200 rounded px-1 py-0.5"
-                             />
+                            />
                           </div>
                         )}
                       </div>
@@ -298,7 +297,7 @@ export default function TotalContests() {
                     </td>
                     <td className="p-6 text-right">
                       <div className="flex items-center justify-end gap-2">
-                        <button 
+                        <button
                           onClick={() => handleViewParticipants(contest._id, contest.contestTitle)}
                           className="p-2 rounded-xl bg-[#8cc63f]/10 text-[#8cc63f] hover:bg-[#8cc63f] hover:text-white transition-all shadow-sm border border-[#8cc63f]/20"
                           title="View Participants"
@@ -308,7 +307,7 @@ export default function TotalContests() {
                             <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                           </svg>
                         </button>
-                        <button 
+                        <button
                           onClick={() => handleDelete(contest._id)}
                           className="p-2 rounded-xl bg-red-50 text-red-500 hover:bg-red-500 hover:text-white transition-all shadow-sm border border-red-100"
                           title="Delete Contest"
@@ -337,7 +336,7 @@ export default function TotalContests() {
         </div>
       </div>
 
-      <ParticipantsModal 
+      <ParticipantsModal
         isOpen={isParticipantsModalOpen}
         onClose={() => setIsParticipantsModalOpen(false)}
         title={`Participants: ${selectedContestName}`}

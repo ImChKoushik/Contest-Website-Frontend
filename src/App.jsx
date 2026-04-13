@@ -54,7 +54,7 @@ function App() {
       <Navbar />
       <ToastContainer />
 
-      <main className="min-h-[calc(100vh-80px)] bg-[#fbfcfb]">
+      <main className="min-h-[calc(100vh-80px)] bg-[var(--bg-primary)] transition-colors duration-300">
         <Suspense fallback={<ScreenLoader />}>
           <Routes>
             <Route path="/" element={<LandingRedirect />} />

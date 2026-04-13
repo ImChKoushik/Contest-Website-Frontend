@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import axiosInstance from "../utils/axiosInstance";
 
-const useFetchUsers = () => {
+const useFetchUsers = (enabled = true) => {
   const [data, setData] = useState({ total: 0, users: [] });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -24,8 +24,8 @@ const useFetchUsers = () => {
   };
 
   useEffect(() => {
-    fetchUsers();
-  }, []);
+    if (enabled) fetchUsers();
+  }, [enabled]);
 
   return { data, loading, error, refetch: fetchUsers };
 };

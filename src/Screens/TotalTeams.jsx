@@ -10,7 +10,7 @@ export default function TotalTeams() {
   const { uploadResult, loading: resultLoading } = useResults();
   const { showToast } = useToast();
   const navigate = useNavigate();
-  
+
   const [teamsData, setTeamsData] = useState([]);
   const [selectedTeam, setSelectedTeam] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -90,7 +90,7 @@ export default function TotalTeams() {
     const { success } = await updateTeamApproval(teamId, status);
     if (success) {
       if (selectedTeam && selectedTeam._id === teamId) {
-        setSelectedTeam({...selectedTeam, approvalStatus: status});
+        setSelectedTeam({ ...selectedTeam, approvalStatus: status });
       }
       fetchTeams();
     }
@@ -101,7 +101,7 @@ export default function TotalTeams() {
       {/* Header Section */}
       <div className="flex flex-col md:flex-row md:items-center justify-between mb-8 pb-5 border-b border-gray-100">
         <div className="flex items-center gap-4">
-          <button 
+          <button
             onClick={() => navigate(-1)}
             className="w-10 h-10 rounded-full bg-gray-50 flex items-center justify-center text-gray-500 hover:bg-gray-100 transition"
             aria-label="Go back"
@@ -148,7 +148,7 @@ export default function TotalTeams() {
                 {teamsData.map((team) => (
                   <tr key={team._id} className="hover:bg-gray-50/50 transition-colors">
                     <td className="p-4">
-                      <button 
+                      <button
                         onClick={() => openModal(team)}
                         className="font-bold text-gray-900 hover:text-[#8cc63f] transition-all text-left"
                       >
@@ -161,40 +161,38 @@ export default function TotalTeams() {
                       <div className="text-[11px] text-gray-400">{team.leader?.email}</div>
                     </td>
                     <td className="p-4">
-                       <div className="flex -space-x-2">
-                          {team.members?.map((m, i) => (
-                             <div key={i} title={m.userName} className="w-7 h-7 rounded-full bg-gray-100 border border-white flex items-center justify-center text-[10px] font-black text-gray-400">
-                                {(m.userName || 'U').charAt(0).toUpperCase()}
-                             </div>
-                          ))}
-                       </div>
+                      <div className="flex -space-x-2">
+                        {team.members?.map((m, i) => (
+                          <div key={i} title={m.userName} className="w-7 h-7 rounded-full bg-gray-100 border border-white flex items-center justify-center text-[10px] font-black text-gray-400">
+                            {(m.userName || 'U').charAt(0).toUpperCase()}
+                          </div>
+                        ))}
+                      </div>
                     </td>
                     <td className="p-4 font-medium text-gray-700">{team.contest?.contestTitle || 'N/A'}</td>
                     <td className="p-4">
                       <div className="flex flex-col gap-1.5 justify-center">
-                        <span className={`w-max px-2.5 py-1 rounded-full text-[10px] font-bold tracking-wider uppercase ${
-                          team.approvalStatus === 'Approved' ? 'bg-green-100 text-green-700 border border-green-200' :
-                          team.approvalStatus === 'Rejected' ? 'bg-red-100 text-red-700 border border-red-200' :
-                          'bg-[#fcb900]/10 text-[#e6a800] border border-[#fcb900]/20'
-                        }`}>
-                           App: {team.approvalStatus || 'Pending'}
+                        <span className={`w-max px-2.5 py-1 rounded-full text-[10px] font-bold tracking-wider uppercase ${team.approvalStatus === 'Approved' ? 'bg-green-100 text-green-700 border border-green-200' :
+                            team.approvalStatus === 'Rejected' ? 'bg-red-100 text-red-700 border border-red-200' :
+                              'bg-[#fcb900]/10 text-[#e6a800] border border-[#fcb900]/20'
+                          }`}>
+                          App: {team.approvalStatus || 'Pending'}
                         </span>
-                        <span className={`w-max px-2.5 py-1 rounded-full text-[10px] font-bold tracking-wider uppercase ${
-                          team.submissionStatus === 'Submitted' ? 'bg-blue-100 text-blue-700 border border-blue-200' : 'bg-gray-100 text-gray-500 border border-gray-200'
-                        }`}>
+                        <span className={`w-max px-2.5 py-1 rounded-full text-[10px] font-bold tracking-wider uppercase ${team.submissionStatus === 'Submitted' ? 'bg-blue-100 text-blue-700 border border-blue-200' : 'bg-gray-100 text-gray-500 border border-gray-200'
+                          }`}>
                           Sub: {team.submissionStatus || 'Draft'}
                         </span>
                       </div>
                     </td>
                     <td className="p-4 text-right flex justify-end gap-2">
-                      <Button 
+                      <Button
                         onClick={() => openModal(team)}
-                        variant="secondary" 
+                        variant="secondary"
                         className="px-3 py-1.5 text-xs bg-gray-100 text-gray-600 hover:bg-gray-200 border-none"
                       >
                         {team.submissionStatus === 'Submitted' ? 'Grade Team' : 'View Team'}
                       </Button>
-                      <button 
+                      <button
                         onClick={() => handleDelete(team._id)}
                         className="p-1.5 rounded-lg bg-red-50 text-red-500 hover:bg-red-100 transition-colors"
                         title="Delete Team"
@@ -230,7 +228,7 @@ export default function TotalTeams() {
                 <h2 className="text-2xl font-black text-gray-900 tracking-tight">Team Overview</h2>
                 <p className="text-sm text-[#8cc63f] font-mono mt-1">Ref: {selectedTeam._id}</p>
               </div>
-              <button 
+              <button
                 onClick={closeModal}
                 className="w-10 h-10 rounded-full bg-gray-50 flex items-center justify-center text-gray-400 hover:bg-gray-100 transition"
               >
@@ -244,46 +242,46 @@ export default function TotalTeams() {
             <div className="p-8 space-y-10">
               {/* Contest Section */}
               <section>
-                 <div className="flex items-center gap-2 mb-4">
-                    <div className="w-8 h-8 rounded-lg bg-[#8cc63f]/10 flex items-center justify-center text-[#8cc63f] font-bold text-lg">C</div>
-                    <h3 className="font-bold text-gray-800">Contest Information</h3>
-                 </div>
-                 <div className="bg-gray-50/50 p-6 rounded-2xl border border-gray-100">
-                    <p className="text-[10px] uppercase font-black text-gray-400 tracking-widest mb-1">Active Contest</p>
-                    <p className="font-bold text-gray-800 text-lg">{selectedTeam.contest?.contestTitle || 'N/A'}</p>
-                 </div>
+                <div className="flex items-center gap-2 mb-4">
+                  <div className="w-8 h-8 rounded-lg bg-[#8cc63f]/10 flex items-center justify-center text-[#8cc63f] font-bold text-lg">C</div>
+                  <h3 className="font-bold text-gray-800">Contest Information</h3>
+                </div>
+                <div className="bg-gray-50/50 p-6 rounded-2xl border border-gray-100">
+                  <p className="text-[10px] uppercase font-black text-gray-400 tracking-widest mb-1">Active Contest</p>
+                  <p className="font-bold text-gray-800 text-lg">{selectedTeam.contest?.contestTitle || 'N/A'}</p>
+                </div>
               </section>
 
               {/* Team Section */}
               <section>
                 <div className="flex items-center gap-2 mb-4">
-                   <div className="w-8 h-8 rounded-lg bg-blue-500/10 flex items-center justify-center text-blue-600 font-bold text-lg">T</div>
-                   <h3 className="font-bold text-gray-800">Team Structure</h3>
+                  <div className="w-8 h-8 rounded-lg bg-blue-500/10 flex items-center justify-center text-blue-600 font-bold text-lg">T</div>
+                  <h3 className="font-bold text-gray-800">Team Structure</h3>
                 </div>
                 <div className="bg-gray-50/50 p-6 rounded-2xl border border-gray-100 space-y-6">
                   <div>
                     <p className="text-[10px] uppercase font-black text-gray-400 tracking-widest mb-1">Team Name</p>
                     <p className="font-bold text-gray-800 text-xl">{selectedTeam.teamName}</p>
                   </div>
-                  
+
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
                       <p className="text-[10px] uppercase font-black text-gray-400 tracking-widest mb-2">Leader</p>
                       <div className="bg-white p-3 rounded-xl border border-gray-100 flex items-center gap-3">
-                         <div className="w-10 h-10 rounded-full bg-[#8cc63f] text-white flex items-center justify-center font-bold">L</div>
-                         <div>
-                            <p className="text-sm font-bold text-gray-800">{selectedTeam.leader?.userName}</p>
-                            <p className="text-[10px] text-gray-400">{selectedTeam.leader?.email}</p>
-                         </div>
+                        <div className="w-10 h-10 rounded-full bg-[#8cc63f] text-white flex items-center justify-center font-bold">L</div>
+                        <div>
+                          <p className="text-sm font-bold text-gray-800">{selectedTeam.leader?.userName}</p>
+                          <p className="text-[10px] text-gray-400">{selectedTeam.leader?.email}</p>
+                        </div>
                       </div>
                     </div>
                     <div>
                       <p className="text-[10px] uppercase font-black text-gray-400 tracking-widest mb-2">Members ({selectedTeam.members?.length})</p>
                       <div className="flex flex-wrap gap-2">
                         {selectedTeam.members?.map((m, i) => (
-                           <div key={i} className="px-3 py-1.5 bg-white rounded-lg border border-gray-100 text-[11px] font-bold text-gray-600">
-                             {m.userName}
-                           </div>
+                          <div key={i} className="px-3 py-1.5 bg-white rounded-lg border border-gray-100 text-[11px] font-bold text-gray-600">
+                            {m.userName}
+                          </div>
                         ))}
                       </div>
                     </div>
@@ -293,62 +291,58 @@ export default function TotalTeams() {
 
               {/* Approval Section */}
               <section>
-                 <div className="flex items-center gap-2 mb-4">
-                    <div className="w-8 h-8 rounded-lg bg-teal-500/10 flex items-center justify-center text-teal-600 font-bold text-lg">A</div>
-                    <h3 className="font-bold text-gray-800">Admin Approval</h3>
-                 </div>
-                 <div className="bg-gray-50/50 p-6 rounded-2xl border border-gray-100 flex flex-col md:flex-row md:items-center justify-between gap-4">
-                    <div>
-                        <p className="text-[10px] uppercase font-black text-gray-400 tracking-widest mb-1">Current Status</p>
-                        <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-black uppercase tracking-widest ${
-                          selectedTeam.approvalStatus === 'Approved' ? 'bg-green-100 text-green-700' :
-                          selectedTeam.approvalStatus === 'Rejected' ? 'bg-red-100 text-red-700' : 'bg-[#fcb900]/10 text-[#fcb900]'
-                        }`}>
-                          {selectedTeam.approvalStatus || 'Pending'}
-                        </span>
-                    </div>
-                    <div className="flex gap-2.5 items-center">
-                        <button 
-                          onClick={() => handleApprovalChange(selectedTeam._id, 'Approved')}
-                          disabled={selectedTeam.approvalStatus === 'Approved'}
-                          className={`px-4 py-2 text-xs font-black uppercase tracking-wider rounded-xl transition-all ${
-                            selectedTeam.approvalStatus === 'Approved' 
-                            ? 'bg-gray-100 text-gray-400 cursor-not-allowed border border-gray-200' 
-                            : 'bg-green-500 hover:bg-green-600 text-white shadow-lg shadow-green-500/20 active:scale-95'
-                          }`}
-                        >
-                          Approve Team
-                        </button>
-                        <button 
-                          onClick={() => handleApprovalChange(selectedTeam._id, 'Rejected')}
-                          disabled={selectedTeam.approvalStatus === 'Rejected'}
-                          className={`px-4 py-2 text-xs font-black uppercase tracking-wider rounded-xl transition-all ${
-                            selectedTeam.approvalStatus === 'Rejected' 
-                            ? 'bg-gray-100 text-gray-400 cursor-not-allowed border border-gray-200' 
-                            : 'bg-white border-2 border-red-100 text-red-500 hover:bg-red-50 hover:border-red-200 active:scale-95'
-                          }`}
-                        >
-                          Reject Team
-                        </button>
-                    </div>
-                 </div>
+                <div className="flex items-center gap-2 mb-4">
+                  <div className="w-8 h-8 rounded-lg bg-teal-500/10 flex items-center justify-center text-teal-600 font-bold text-lg">A</div>
+                  <h3 className="font-bold text-gray-800">Admin Approval</h3>
+                </div>
+                <div className="bg-gray-50/50 p-6 rounded-2xl border border-gray-100 flex flex-col md:flex-row md:items-center justify-between gap-4">
+                  <div>
+                    <p className="text-[10px] uppercase font-black text-gray-400 tracking-widest mb-1">Current Status</p>
+                    <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-black uppercase tracking-widest ${selectedTeam.approvalStatus === 'Approved' ? 'bg-green-100 text-green-700' :
+                        selectedTeam.approvalStatus === 'Rejected' ? 'bg-red-100 text-red-700' : 'bg-[#fcb900]/10 text-[#fcb900]'
+                      }`}>
+                      {selectedTeam.approvalStatus || 'Pending'}
+                    </span>
+                  </div>
+                  <div className="flex gap-2.5 items-center">
+                    <button
+                      onClick={() => handleApprovalChange(selectedTeam._id, 'Approved')}
+                      disabled={selectedTeam.approvalStatus === 'Approved'}
+                      className={`px-4 py-2 text-xs font-black uppercase tracking-wider rounded-xl transition-all ${selectedTeam.approvalStatus === 'Approved'
+                          ? 'bg-gray-100 text-gray-400 cursor-not-allowed border border-gray-200'
+                          : 'bg-green-500 hover:bg-green-600 text-white shadow-lg shadow-green-500/20 active:scale-95'
+                        }`}
+                    >
+                      Approve Team
+                    </button>
+                    <button
+                      onClick={() => handleApprovalChange(selectedTeam._id, 'Rejected')}
+                      disabled={selectedTeam.approvalStatus === 'Rejected'}
+                      className={`px-4 py-2 text-xs font-black uppercase tracking-wider rounded-xl transition-all ${selectedTeam.approvalStatus === 'Rejected'
+                          ? 'bg-gray-100 text-gray-400 cursor-not-allowed border border-gray-200'
+                          : 'bg-white border-2 border-red-100 text-red-500 hover:bg-red-50 hover:border-red-200 active:scale-95'
+                        }`}
+                    >
+                      Reject Team
+                    </button>
+                  </div>
+                </div>
               </section>
 
               {/* Submission Section */}
               <section>
                 <div className="flex items-center gap-2 mb-4">
-                   <div className="w-8 h-8 rounded-lg bg-orange-500/10 flex items-center justify-center text-orange-600 font-bold text-lg">S</div>
-                   <h3 className="font-bold text-gray-800">Team Submission</h3>
+                  <div className="w-8 h-8 rounded-lg bg-orange-500/10 flex items-center justify-center text-orange-600 font-bold text-lg">S</div>
+                  <h3 className="font-bold text-gray-800">Team Submission</h3>
                 </div>
                 <div className="bg-gray-50/50 p-6 rounded-2xl border border-gray-100 space-y-6">
-                   <div className="flex items-center justify-between">
-                      <span className={`px-3 py-1 rounded-full text-xs font-black uppercase ${
-                        selectedTeam.submissionStatus === 'Submitted' ? 'bg-green-500 text-white' : 'bg-gray-200 text-gray-500'
+                  <div className="flex items-center justify-between">
+                    <span className={`px-3 py-1 rounded-full text-xs font-black uppercase ${selectedTeam.submissionStatus === 'Submitted' ? 'bg-green-500 text-white' : 'bg-gray-200 text-gray-500'
                       }`}>
-                        {selectedTeam.submissionStatus || 'Open'}
-                      </span>
-                   </div>
-                  
+                      {selectedTeam.submissionStatus || 'Open'}
+                    </span>
+                  </div>
+
                   {selectedTeam.submissionLink && (
                     <div>
                       <p className="text-[10px] uppercase font-black text-gray-400 tracking-widest mb-1">Shared Link</p>
@@ -371,9 +365,9 @@ export default function TotalTeams() {
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                       <div className="flex flex-col">
                         <label className="text-[10px] uppercase font-black text-gray-400 tracking-widest mb-2">Award Rank</label>
-                        <select 
+                        <select
                           value={resultForm.rank}
-                          onChange={(e) => setResultForm({...resultForm, rank: e.target.value})}
+                          onChange={(e) => setResultForm({ ...resultForm, rank: e.target.value })}
                           className="w-full px-4 py-3 rounded-xl border border-purple-100 bg-white shadow-sm focus:outline-none focus:ring-2 focus:ring-purple-200 text-sm font-bold text-gray-700"
                         >
                           <option value="1st">🥇 1st Place</option>
@@ -384,12 +378,12 @@ export default function TotalTeams() {
                       </div>
                       <div className="flex flex-col">
                         <label className="text-[10px] uppercase font-black text-gray-400 tracking-widest mb-2">Team Score (0-100)</label>
-                        <input 
+                        <input
                           type="number"
                           min="0"
                           max="100"
                           value={resultForm.score}
-                          onChange={(e) => setResultForm({...resultForm, score: parseInt(e.target.value)})}
+                          onChange={(e) => setResultForm({ ...resultForm, score: parseInt(e.target.value) })}
                           className="w-full px-4 py-3 rounded-xl border border-purple-100 bg-white shadow-sm focus:outline-none focus:ring-2 focus:ring-purple-200 text-sm font-bold text-gray-700"
                           required
                         />
@@ -397,15 +391,15 @@ export default function TotalTeams() {
                     </div>
                     <div className="flex flex-col">
                       <label className="text-[10px] uppercase font-black text-gray-400 tracking-widest mb-2">Feedback for Team</label>
-                      <textarea 
+                      <textarea
                         value={resultForm.remarks}
-                        onChange={(e) => setResultForm({...resultForm, remarks: e.target.value})}
+                        onChange={(e) => setResultForm({ ...resultForm, remarks: e.target.value })}
                         placeholder="Add some team-specific feedback..."
                         className="w-full px-4 py-3 rounded-xl border border-purple-100 bg-white shadow-sm focus:outline-none focus:ring-2 focus:ring-purple-200 text-sm font-medium text-gray-700 min-h-[100px] resize-none"
                       />
                     </div>
-                    <Button 
-                      type="submit" 
+                    <Button
+                      type="submit"
                       disabled={resultLoading}
                       className="w-full py-4 bg-purple-600 hover:bg-purple-700 text-white font-black uppercase tracking-widest text-xs shadow-lg shadow-purple-200"
                     >
@@ -425,4 +419,5 @@ export default function TotalTeams() {
       )}
     </div>
   );
+}
 }

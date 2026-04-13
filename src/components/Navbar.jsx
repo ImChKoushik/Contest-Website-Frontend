@@ -8,6 +8,8 @@ import logo from '../assets/images/logo.png';
 import DefaultProfile from '../assets/images/DefaultProfile.png';
 import UpdateProfileModal from './UpdateProfileModal';
 import NotificationDropdown from './NotificationDropdown';
+import ThemeToggle from './ThemeToggle';
+import { useTheme } from '../context/ThemeContext';
 
 export default function Navbar() {
   const navigate = useNavigate();
@@ -86,20 +88,17 @@ export default function Navbar() {
     { name: 'Contact', path: '/contact' },
   ];
 
-  // Dynamically add Portal link if user is logged in
-  const navLinks = [...baseLinks];
-  if (user) {
-    if (user.role === 'Admin') {
-      navLinks.push({ name: 'Admin Portal', path: '/admin-dashboard' });
-    } else {
-      navLinks.push({ name: 'Candidate Portal', path: '/dashboard' });
-    }
-  }
+  // Dynamically calculate navigation links based on user role
+  const navLinks = user?.role === 'Admin'
+    ? baseLinks.filter(link => link.name !== 'Contests').concat({ name: 'Admin Portal', path: '/admin-dashboard' })
+    : user
+      ? [...baseLinks, { name: 'Candidate Portal', path: '/dashboard' }]
+      : [...baseLinks];
 
   return (
-    <header className="bg-white/80 backdrop-blur-xl sticky top-0 z-50 py-1.5 border-b border-[#8cc63f]/10 shadow-[0_2px_15px_-3px_rgba(140,198,63,0.07)]">
+    <header className="bg-[var(--bg-secondary)]/80 backdrop-blur-xl sticky top-0 z-50 py-1.5 border-b border-[var(--border-primary)] shadow-[0_2px_15px_-3px_rgba(140,198,63,0.07)] transition-colors duration-300">
       {/* Animated Background Layer */}
-      <div className="absolute inset-0 bg-gradient-to-r from-white via-[#8cc63f]/5 to-white animate-navbar-gradient -z-10"></div>
+      <div className="absolute inset-0 bg-gradient-to-r from-[var(--bg-secondary)] via-[var(--accent-green)]/5 to-[var(--bg-secondary)] animate-navbar-gradient -z-10"></div>
 
       {/* Shimmering Bottom Border */}
       <div className="absolute bottom-0 left-0 w-full h-[2px] overflow-hidden">
@@ -142,6 +141,7 @@ export default function Navbar() {
                 </Link>
               );
             })}
+            <ThemeToggle />
           </nav>
 
           {!user && (
@@ -192,14 +192,14 @@ export default function Navbar() {
                   <div className="relative">
                     <button
                       onClick={() => setIsNotifOpen(!isNotifOpen)}
-                      className={`w-10 h-10 rounded-xl flex items-center justify-center transition-all ${isNotifOpen ? 'bg-[#8cc63f] text-white shadow-lg' : 'bg-gray-50 text-gray-400 hover:bg-gray-100 hover:text-gray-600'
+                      className={`w-10 h-10 rounded-xl flex items-center justify-center transition-all ${isNotifOpen ? 'bg-[var(--accent-green)] text-white shadow-lg' : 'bg-[var(--bg-primary)] text-[var(--text-secondary)] border border-[var(--border-primary)] hover:bg-[var(--bg-secondary)] hover:text-[var(--text-primary)]'
                         }`}
                     >
                       <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-5 h-5">
                         <path strokeLinecap="round" strokeLinejoin="round" d="M14.857 17.082a23.848 23.848 0 0 0 5.454-1.31A8.967 8.967 0 0 1 18 9.75V9A6 6 0 0 0 6 9v.75a8.967 8.967 0 0 1-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 0 1-5.714 0m5.714 0a3 3 0 1 1-5.714 0" />
                       </svg>
                       {/* Badge (Pulsing Effect) */}
-                      <span className="absolute top-2 right-2 w-2.5 h-2.5 bg-red-500 border-2 border-white rounded-full animate-bounce"></span>
+                      <span className="absolute top-2 right-2 w-2.5 h-2.5 bg-red-500 border-2 border-[var(--bg-secondary)] rounded-full animate-bounce"></span>
                     </button>
 
                     <NotificationDropdown
@@ -209,8 +209,8 @@ export default function Navbar() {
                   </div>
 
                   <div className="flex items-center gap-3">
-                    <div className="flex items-center pr-1.5 pl-1.5 py-1.5 bg-gray-50/80 hover:bg-white rounded-full border border-gray-100 shadow-sm transition-all cursor-default group">
-                      <div className="w-8 h-8 rounded-full overflow-hidden shadow-sm transform group-hover:rotate-12 transition-transform border border-[#8cc63f]/30">
+                    <div className="flex items-center pr-1.5 pl-1.5 py-1.5 bg-[var(--bg-primary)] hover:bg-[var(--bg-secondary)] rounded-full border border-[var(--border-primary)] shadow-sm transition-all cursor-default group">
+                      <div className="w-8 h-8 rounded-full overflow-hidden shadow-sm transform group-hover:rotate-12 transition-transform border border-[var(--accent-green)]/30">
                         <img
                           src={user?.profileImage?.url || DefaultProfile}
                           alt={displayName}
@@ -218,14 +218,14 @@ export default function Navbar() {
                           onError={(e) => { e.target.src = DefaultProfile; }}
                         />
                       </div>
-                      <div className="flex flex-col ml-2.5 pr-1">
-                        <span className="text-[10px] font-bold text-[#8cc63f] uppercase tracking-widest leading-none mb-0.5">Welcome</span>
-                        <span className="font-extrabold text-gray-800 text-[13px] leading-none tracking-tight">{displayName}</span>
+                      <div className="flex flex-col ml-2.5 pr-1 text-left">
+                        <span className="text-[10px] font-bold text-[var(--accent-green)] uppercase tracking-widest leading-none mb-0.5 transition-colors">Welcome</span>
+                        <span className="font-extrabold text-[var(--text-primary)] text-[13px] leading-none tracking-tight transition-colors">{displayName}</span>
                       </div>
                       <button
                         onClick={() => setIsProfileModalOpen(true)}
                         title="Edit Profile"
-                        className="w-6 h-6 rounded-full bg-gray-100/80 group-hover:bg-[#8cc63f] text-gray-400 group-hover:text-white flex items-center justify-center transition-colors shadow-sm ml-1"
+                        className="w-6 h-6 rounded-full bg-[var(--bg-secondary)] border border-[var(--border-primary)] group-hover:bg-[var(--accent-green)] text-[var(--text-secondary)] group-hover:text-white flex items-center justify-center transition-all shadow-sm ml-1"
                       >
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={3} stroke="currentColor" className="w-3 h-3">
                           <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
@@ -235,7 +235,7 @@ export default function Navbar() {
                     <button
                       onClick={handleLogout}
                       disabled={loading}
-                      className="px-5 h-10 rounded-full bg-white border-2 border-red-500/10 hover:border-red-500 hover:bg-red-500 text-red-500 hover:text-white transition-all duration-300 shadow-sm text-[13px] font-black uppercase tracking-wider"
+                      className="px-5 h-10 rounded-full bg-[var(--bg-secondary)] border-2 border-red-500/10 hover:border-red-500 hover:bg-red-500 text-red-500 hover:text-white transition-all duration-300 shadow-sm text-[13px] font-black uppercase tracking-wider"
                     >
                       {loading ? '...' : 'Logout'}
                     </button>
@@ -249,23 +249,25 @@ export default function Navbar() {
               )}
             </div>
 
-            {/* Mobile Hamburger Button */}
-            <button
-              onClick={toggleMenu}
-              className={`lg:hidden p-2.5 rounded-xl border border-[#8cc63f]/20 bg-white/50 backdrop-blur-sm transition-all duration-300 ${isMenuOpen ? 'bg-[#8cc63f]/10 border-[#8cc63f] rotate-180' : 'hover:bg-white'}`}
-              aria-label="Toggle menu"
-            >
-              <div className={`hamburger-box ${isMenuOpen ? 'hamburger-open' : ''}`}>
-                <span className="hamburger-inner"></span>
-              </div>
-            </button>
+            {/* Mobile Actions Section */}
+            <div className="flex items-center gap-2">
+              <button
+                onClick={toggleMenu}
+                className={`lg:hidden p-2.5 rounded-xl border border-[var(--accent-green)]/20 bg-[var(--bg-secondary)]/50 backdrop-blur-sm transition-all duration-300 ${isMenuOpen ? 'bg-[var(--accent-green)]/10 border-[var(--accent-green)] rotate-180' : 'hover:bg-[var(--bg-secondary)]'}`}
+                aria-label="Toggle menu"
+              >
+                <div className={`hamburger-box ${isMenuOpen ? 'hamburger-open' : ''}`}>
+                  <span className="hamburger-inner"></span>
+                </div>
+              </button>
+            </div>
           </div>
         </div>
       </div>
 
       {/* Mobile Navigation Overlay */}
       <div
-        className={`fixed inset-x-0 top-[70px] bg-white/95 backdrop-blur-2xl border-b border-[#8cc63f]/20 transition-all duration-500 ease-in-out z-40 lg:hidden overflow-y-auto ${isMenuOpen ? 'h-[calc(100vh-70px)] opacity-100' : 'h-0 opacity-0 pointer-events-none'}`}
+        className={`fixed inset-x-0 top-[70px] bg-[var(--bg-secondary)]/95 backdrop-blur-2xl border-b border-[var(--accent-green)]/20 transition-all duration-500 ease-in-out z-40 lg:hidden overflow-y-auto ${isMenuOpen ? 'h-[calc(100vh-70px)] opacity-100' : 'h-0 opacity-0 pointer-events-none'}`}
       >
         <div className="px-6 py-8 space-y-6">
           <nav className="flex flex-col space-y-4">
@@ -276,7 +278,7 @@ export default function Navbar() {
                   key={link.name}
                   to={link.path}
                   onClick={closeMenu}
-                  className={`text-[17px] font-extrabold transition-all flex items-center justify-between group ${isActive ? 'nav-link-active' : 'text-gray-800 nav-link-green-light'
+                  className={`text-[17px] font-extrabold transition-all flex items-center justify-between group ${isActive ? 'nav-link-active' : 'text-[var(--text-primary)] nav-link-green-light'
                     }`}
                   style={{ transitionDelay: `${idx * 50}ms` }}
                 >
@@ -288,6 +290,15 @@ export default function Navbar() {
                 </Link>
               );
             })}
+
+            {/* Theme Toggle in Mobile Menu */}
+            <div className="flex items-center justify-between p-4 bg-[var(--bg-primary)] rounded-2xl border border-[var(--border-primary)] transition-colors mt-4">
+              <div className="flex flex-col">
+                <span className="text-[12px] font-black text-[var(--text-primary)] uppercase tracking-wider">Appearance</span>
+                <span className="text-[11px] text-[var(--text-secondary)] font-bold">Switch between light & dark</span>
+              </div>
+              <ThemeToggle />
+            </div>
           </nav>
 
           {!user && (
@@ -299,7 +310,7 @@ export default function Navbar() {
             </Link>
           )}
 
-          <div className="pt-6 border-t border-gray-100 flex flex-col gap-4">
+          <div className="pt-6 border-t border-[var(--border-primary)] flex flex-col gap-4">
             {tokenExpired ? (
               <button
                 onClick={handleSilentReAuth}
@@ -322,9 +333,9 @@ export default function Navbar() {
               </button>
             ) : user ? (
               <div className="space-y-4">
-                <div className="flex items-center justify-between p-4 bg-gray-50 rounded-2xl border border-gray-100 group">
+                <div className="flex items-center justify-between p-4 bg-[var(--bg-primary)] rounded-2xl border border-[var(--border-primary)] group transition-colors">
                   <div className="flex items-center gap-4">
-                    <div className="w-12 h-12 rounded-full overflow-hidden shadow-md border-2 border-[#8cc63f]/30">
+                    <div className="w-12 h-12 rounded-full overflow-hidden shadow-md border-2 border-[var(--accent-green)]/30">
                       <img
                         src={user?.profileImage?.url || DefaultProfile}
                         alt={displayName}
@@ -333,8 +344,8 @@ export default function Navbar() {
                       />
                     </div>
                     <div className="flex flex-col text-left">
-                      <span className="text-[11px] font-bold text-[#8cc63f] uppercase tracking-widest leading-none mb-1">Authenticated</span>
-                      <span className="font-extrabold text-gray-900 text-base">{displayName}</span>
+                      <span className="text-[11px] font-bold text-[var(--accent-green)] uppercase tracking-widest leading-none mb-1">Authenticated</span>
+                      <span className="font-extrabold text-[var(--text-primary)] text-base transition-colors">{displayName}</span>
                     </div>
                   </div>
                   <div className="flex items-center gap-2">
@@ -361,7 +372,7 @@ export default function Navbar() {
                     </div>
                     <button
                       onClick={() => { setIsProfileModalOpen(true); closeMenu(); }}
-                      className="w-9 h-9 rounded-full bg-white border border-gray-200 text-gray-400 hover:text-[#8cc63f] hover:border-[#8cc63f] flex items-center justify-center transition-all shadow-sm"
+                      className="w-9 h-9 rounded-full bg-[var(--bg-secondary)] border border-[var(--border-primary)] text-[var(--text-secondary)] hover:text-[var(--accent-green)] hover:border-[var(--accent-green)] flex items-center justify-center transition-all shadow-sm"
                     >
                       <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-5 h-5">
                         <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
@@ -380,7 +391,7 @@ export default function Navbar() {
               <div className="flex flex-col gap-3">
                 <button
                   onClick={() => { navigate('/signin'); closeMenu(); }}
-                  className="w-full py-4 text-[14px] font-bold text-gray-600 bg-gray-50 rounded-2xl transition-all"
+                  className="w-full py-4 text-[14px] font-bold text-[var(--text-primary)] bg-[var(--bg-primary)] rounded-2xl border border-[var(--border-primary)] transition-all"
                 >
                   Sign In
                 </button>

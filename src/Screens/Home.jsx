@@ -20,6 +20,10 @@ import galleryImg2 from '../assets/images/IMG-20250905-WA0011.jpg';
 import galleryImg3 from '../assets/images/IMG_20260413_121254.jpg';
 import galleryImg4 from '../assets/images/IMG_20260413_121238.jpg';
 
+// Doodle Images
+import doodle1 from '../assets/images/1000146440.jpg';
+import doodle2 from '../assets/images/1000146438.webp';
+
 const Home = () => {
   const navigate = useNavigate();
   const { user } = useAuthContext();
@@ -126,7 +130,18 @@ const Home = () => {
   };
 
   return (
-    <div className="flex flex-col min-h-screen bg-white">
+    <div className="flex flex-col min-h-screen bg-[var(--bg-primary)] transition-colors duration-300 relative overflow-hidden">
+      {/* Background Doodles */}
+      <div className="absolute top-[15%] -left-[5%] w-64 h-64 opacity-[0.03] dark:opacity-[0.02] pointer-events-none rotate-12 z-0">
+        <img src={doodle1} alt="" className="w-full h-full object-contain rounded-full grayscale" />
+      </div>
+      <div className="absolute top-[40%] -right-[5%] w-72 h-72 opacity-[0.04] dark:opacity-[0.02] pointer-events-none -rotate-12 z-0">
+        <img src={doodle2} alt="" className="w-full h-full object-contain rounded-full grayscale" />
+      </div>
+      <div className="absolute bottom-[20%] -left-[3%] w-56 h-56 opacity-[0.03] dark:opacity-[0.02] pointer-events-none rotate-45 z-0">
+        <img src={doodle2} alt="" className="w-full h-full object-contain rounded-full grayscale" />
+      </div>
+
       {/* Hero Section */}
       <section
         className="relative h-[85vh] flex items-center overflow-hidden"
@@ -148,7 +163,7 @@ const Home = () => {
             />
           ))}
           <div className="absolute inset-0 bg-gradient-to-r from-[#173a20]/95 via-[#0c402b]/80 to-[#107044]/60 mix-blend-multiply z-10"></div>
-          <div className="absolute inset-0 bg-gradient-to-t from-[#fbfcfb]/10 via-transparent to-transparent z-10"></div> {/* Bottom soft fade */}
+          <div className="absolute inset-0 bg-gradient-to-t from-[var(--bg-primary)]/10 via-transparent to-transparent z-10"></div> {/* Bottom soft fade */}
         </div>
 
         <div className="container mx-auto px-6 relative z-10 text-white">
@@ -222,7 +237,7 @@ const Home = () => {
       </section>
 
       {/* New Welcome Gallery Section */}
-      <section className="py-24 bg-[#fbfcfb] overflow-hidden">
+      <section className="py-24 bg-[var(--bg-secondary)] overflow-hidden transition-colors">
         <div className="container mx-auto px-6">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
             
@@ -263,8 +278,8 @@ const Home = () => {
                 </div>
                 <div className="h-10 w-[1px] bg-gray-200"></div>
                 <div>
-                  <p className="text-gray-900 font-black text-xl leading-none">Global Reach</p>
-                  <p className="text-gray-400 text-xs font-bold uppercase tracking-widest mt-1 italic">Active Participants</p>
+                  <p className="text-[var(--text-primary)] font-black text-xl leading-none transition-colors">Global Reach</p>
+                  <p className="text-[var(--text-secondary)] text-xs font-bold uppercase tracking-widest mt-1 italic transition-colors">Active Participants</p>
                 </div>
               </div>
             </div>
@@ -305,11 +320,11 @@ const Home = () => {
 
 
       {/* Explore Categories Section */}
-      <section className="py-20 bg-white">
+      <section className="py-20 bg-[var(--bg-primary)] transition-colors">
         <div className="container mx-auto px-6 text-center">
           <div className="mb-16">
-            <h2 className="text-3xl font-black text-gray-900 mb-4 tracking-tight uppercase">Explore <span className="text-[#8cc63f]">Categories</span></h2>
-            <p className="text-gray-500 max-w-2xl mx-auto font-medium">
+            <h2 className="text-3xl font-black text-[var(--text-primary)] mb-4 tracking-tight uppercase transition-colors">Explore <span className="text-[var(--accent-green)]">Categories</span></h2>
+            <p className="text-[var(--text-secondary)] max-w-2xl mx-auto font-medium transition-colors">
               Filter challenges by your expertise. Deep dive into specialized contests and showcase your mastery in specific domains.
             </p>
           </div>
@@ -321,7 +336,7 @@ const Home = () => {
                 onClick={() => handleCategoryClick(cat.slug)}
                 className="group cursor-pointer"
               >
-                <div className="bg-white rounded-[40px] overflow-hidden border-2 border-gray-50 shadow-sm transition-all duration-500 hover:border-[#8cc63f] hover:shadow-2xl hover:shadow-green-900/5 hover:-translate-y-2 relative flex flex-col h-full">
+                <div className="bg-[var(--card-bg)] rounded-[40px] overflow-hidden border-2 border-[var(--border-primary)] shadow-[var(--card-shadow)] transition-all duration-500 hover:border-[var(--accent-green)] hover:shadow-2xl hover:shadow-green-900/5 hover:-translate-y-2 relative flex flex-col h-full">
                   {/* Card Image Header */}
                   <div className="h-48 w-full relative overflow-hidden">
                     <img
@@ -331,14 +346,14 @@ const Home = () => {
                       className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 ease-in-out"
                     />
                     <div className={`absolute inset-0 bg-gradient-to-br ${cat.color} opacity-20 mix-blend-multiply`}></div>
-                    <div className="absolute inset-0 bg-gradient-to-t from-white via-transparent to-transparent"></div>
+                    <div className="absolute inset-0 bg-gradient-to-t from-[var(--card-bg)] via-transparent to-transparent"></div>
                   </div>
 
                   <div className="p-8 pt-4 flex flex-col items-center text-center">
-                    <h3 className="text-xl font-black text-gray-900 mb-2 tracking-tight group-hover:text-[#8cc63f] transition-colors uppercase">{cat.name}</h3>
-                    <p className="text-gray-400 text-sm font-medium mb-8">Click to view all {cat.name} contests.</p>
+                    <h3 className="text-xl font-black text-[var(--text-primary)] mb-2 tracking-tight group-hover:text-[var(--accent-green)] transition-colors uppercase">{cat.name}</h3>
+                    <p className="text-[var(--text-secondary)] text-sm font-medium mb-8">Click to view all {cat.name} contests.</p>
 
-                    <div className="flex items-center gap-2 text-[#8cc63f] font-black uppercase tracking-widest text-[10px] transform group-hover:translate-x-1 transition-all duration-500">
+                    <div className="flex items-center gap-2 text-[var(--accent-green)] font-black uppercase tracking-widest text-[10px] transform group-hover:translate-x-1 transition-all duration-500">
                       Explore Now
                       <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M14 5l7 7m0 0l-7 7m7-7H3" />
@@ -357,12 +372,12 @@ const Home = () => {
 
       {/* CTA Section */}
       <section className="py-20 px-6">
-        <div className="max-w-6xl mx-auto rounded-[3rem] bg-gradient-to-br from-[#f0f9e6] via-white to-[#f0f9e6] p-12 md:p-20 text-center relative overflow-hidden border border-[#8cc63f]/10 shadow-2xl shadow-green-900/5">
+      <div className="max-w-6xl mx-auto rounded-[3rem] bg-[var(--card-bg)] p-12 md:p-20 text-center relative overflow-hidden border border-[var(--border-primary)] shadow-[var(--card-shadow)] before:absolute before:inset-0 before:bg-gradient-to-br before:from-[var(--bg-secondary)] before:via-[var(--card-bg)] before:to-[var(--bg-secondary)] before:z-0">
           <div className="relative z-10">
-            <h2 className="text-4xl md:text-5xl font-black text-gray-900 mb-6">
+            <h2 className="text-4xl md:text-5xl font-black text-[var(--text-primary)] mb-6 transition-colors">
               Ready to showcase your<br />brilliance?
             </h2>
-            <p className="text-gray-500 mb-12 max-w-2xl mx-auto text-lg leading-relaxed">
+            <p className="text-[var(--text-secondary)] mb-12 max-w-2xl mx-auto text-lg leading-relaxed transition-colors">
               Join 50,000+ specialists who have accelerated their careers through our competitive learning framework.
             </p>
 

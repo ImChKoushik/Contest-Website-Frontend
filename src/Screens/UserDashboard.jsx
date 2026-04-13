@@ -24,6 +24,11 @@ import learningImg from '../assets/images/learning.jpg';
 import contestChallengeImg from '../assets/images/contestchallenge.jpg';
 import contestImg2 from '../assets/images/contest2.jpg';
 import contestBlogImg from '../assets/images/contest-blog-feature.jpg';
+import candidateImg from '../assets/images/1000146438.webp';
+
+// Doodle Images
+import doodle1 from '../assets/images/1000146440.jpg';
+import doodle2 from '../assets/images/1000146438.webp';
 
 export default function UserDashboard() {
   const { user: currentUser } = useAuthContext();
@@ -218,7 +223,17 @@ export default function UserDashboard() {
 
 
   return (
-    <div className="bg-[#fbfcfb] min-h-screen font-sans w-full pb-20">
+    <div className="bg-[var(--bg-primary)] min-h-screen font-sans w-full pb-20 transition-colors duration-300 relative overflow-hidden">
+      {/* Background Doodles */}
+      <div className="absolute top-[10%] -left-[10%] w-96 h-96 opacity-[0.035] dark:opacity-[0.015] pointer-events-none rotate-12 z-0">
+        <img src={doodle1} alt="" className="w-full h-full object-contain rounded-full grayscale" />
+      </div>
+      <div className="absolute top-[45%] -right-[5%] w-80 h-80 opacity-[0.04] dark:opacity-[0.015] pointer-events-none -rotate-45 z-0">
+        <img src={doodle2} alt="" className="w-full h-full object-contain rounded-full grayscale" />
+      </div>
+      <div className="absolute bottom-[10%] -left-[5%] w-72 h-72 opacity-[0.03] dark:opacity-[0.015] pointer-events-none rotate-90 z-0">
+        <img src={doodle2} alt="" className="w-full h-full object-contain rounded-full grayscale" />
+      </div>
 
       {/* 1. Hero Section */}
       <section
@@ -315,8 +330,8 @@ export default function UserDashboard() {
                   </svg>
                 </div>
                 <div>
-                  <h2 className="text-2xl font-black text-gray-900 tracking-tight">Performance & Leaderboard</h2>
-                  <p className="text-sm text-gray-400 font-medium italic">Track your contest achievements and expert feedback</p>
+                  <h2 className="text-2xl font-black text-[var(--text-primary)] tracking-tight transition-colors">Performance & Leaderboard</h2>
+                  <p className="text-sm text-[var(--text-secondary)] font-medium italic transition-colors">Track your contest achievements and expert feedback</p>
                 </div>
               </div>
 
@@ -340,18 +355,18 @@ export default function UserDashboard() {
                       </div>
                     </div>
 
-                    <div className="relative z-10 flex items-end justify-between bg-gray-50/50 p-6 rounded-[32px] border border-gray-100/50">
+                    <div className="relative z-10 flex items-end justify-between bg-[var(--bg-primary)]/50 p-6 rounded-[32px] border border-[var(--border-primary)]">
                       <div className="flex flex-col">
-                        <span className="text-[10px] font-black uppercase tracking-widest text-gray-400 mb-2">Final Score</span>
+                        <span className="text-[10px] font-black uppercase tracking-widest text-[var(--text-secondary)] mb-2">Final Score</span>
                         <div className="flex items-baseline gap-1">
-                          <span className="text-4xl font-black text-gray-900">{result.score}</span>
-                          <span className="text-xs font-bold text-gray-400">/100</span>
+                          <span className="text-4xl font-black text-[var(--text-primary)]">{result.score}</span>
+                          <span className="text-xs font-bold text-[var(--text-secondary)]">/100</span>
                         </div>
                       </div>
-                      <div className="h-10 w-[2px] bg-gray-200/60 hidden sm:block"></div>
+                      <div className="h-10 w-[2px] bg-[var(--border-primary)] hidden sm:block"></div>
                       <div className="flex flex-col items-end">
-                        <span className="text-[10px] font-black uppercase tracking-widest text-gray-400 mb-2">Judged On</span>
-                        <span className="font-bold text-gray-700 text-sm">{new Date(result.createdAt).toLocaleDateString()}</span>
+                        <span className="text-[10px] font-black uppercase tracking-widest text-[var(--text-secondary)] mb-2">Judged On</span>
+                        <span className="font-bold text-[var(--text-primary)] text-sm">{new Date(result.createdAt).toLocaleDateString()}</span>
                       </div>
                     </div>
 
@@ -368,30 +383,29 @@ export default function UserDashboard() {
 
             {/* Visual Quote Card Right Side */}
             <div className="lg:w-1/3 w-full flex flex-col pt-2 md:pt-0">
-               <div className="relative h-full flex flex-col group/quote bg-white rounded-[44px] shadow-2xl overflow-hidden transition-all duration-700 hover:-translate-y-4 hover:rotate-1 border border-gray-100">
-                  <div className="overflow-hidden bg-gray-50 flex items-center justify-center relative h-56">
-                    {impactImages.map((img, idx) => (
-                      <img 
-                        key={idx}
-                        src={img} 
-                        className={`absolute inset-0 w-full h-full object-contain transition-all duration-1000 ease-in-out ${
-                          impactIdx === idx ? "opacity-100 scale-100" : "opacity-0 scale-95"
-                        } group-hover/quote:scale-105`} 
-                        alt="Contest Challenge"
-                      />
-                    ))}
-                  </div>
-                  <div className="p-8 md:p-10 flex flex-col justify-center flex-grow">
-                     <p className="text-gray-800 text-base md:text-lg font-bold leading-relaxed italic tracking-wide group-hover/quote:text-[#8cc63f] transition-colors duration-500">
-                        "Where code meets creativity, design finds purpose, and ideas grow into digital impact"
-                     </p>
-                     <div className="w-12 h-1 bg-[#8cc63f] mt-4 rounded-full group-hover/quote:w-20 transition-all duration-500"></div>
-                  </div>
-                  {/* Decorative tag */}
-                  <div className="absolute top-6 left-6 bg-[#8cc63f] text-white text-[9px] font-black uppercase tracking-[0.2em] px-3 py-1.5 rounded-full shadow-lg z-10">
-                     Featured Challenge
-                  </div>
-               </div>
+              <div className="relative h-full flex flex-col group/quote bg-white rounded-[44px] shadow-2xl overflow-hidden transition-all duration-700 hover:-translate-y-4 hover:rotate-1 border border-gray-100">
+                <div className="overflow-hidden bg-gray-50 flex items-center justify-center relative h-56">
+                  {impactImages.map((img, idx) => (
+                    <img
+                      key={idx}
+                      src={img}
+                      className={`absolute inset-0 w-full h-full object-contain transition-all duration-1000 ease-in-out ${impactIdx === idx ? "opacity-100 scale-100" : "opacity-0 scale-95"
+                        } group-hover/quote:scale-105`}
+                      alt="Contest Challenge"
+                    />
+                  ))}
+                </div>
+                <div className="p-8 md:p-10 flex flex-col justify-center flex-grow">
+                  <p className="text-gray-800 text-base md:text-lg font-bold leading-relaxed italic tracking-wide group-hover/quote:text-[#8cc63f] transition-colors duration-500">
+                    "Where code meets creativity, design finds purpose, and ideas grow into digital impact"
+                  </p>
+                  <div className="w-12 h-1 bg-[#8cc63f] mt-4 rounded-full group-hover/quote:w-20 transition-all duration-500"></div>
+                </div>
+                {/* Decorative tag */}
+                <div className="absolute top-6 left-6 bg-[#8cc63f] text-white text-[9px] font-black uppercase tracking-[0.2em] px-3 py-1.5 rounded-full shadow-lg z-10">
+                  Featured Challenge
+                </div>
+              </div>
             </div>
           </div>
         </section>
@@ -462,9 +476,9 @@ export default function UserDashboard() {
                   <path strokeLinecap="round" strokeLinejoin="round" d="M18 18.72a9.094 9.094 0 003.741-.479 3 3 0 00-4.682-2.72m.94 3.198l.001.031c0 .225-.012.447-.037.666A11.944 11.944 0 0112 21c-2.17 0-4.207-.576-5.963-1.584A6.062 6.062 0 016 18.719m12 0a5.971 5.971 0 00-.941-3.197m0 0A5.995 5.995 0 0012 12.75a5.995 5.995 0 00-5.058 2.772m0 0a5.971 5.971 0 00-.941 3.197m0 0l.001.031c0 .225.012.447.038.666M12 18.75a.75.75 0 100-1.5.75.75 0 000 1.5Z" />
                 </svg>
               </div>
-              <h2 className="text-3xl font-black text-gray-900 tracking-tight">Active Squads</h2>
+              <h2 className="text-3xl font-black text-[var(--text-primary)] tracking-tight transition-colors">Active Squads</h2>
             </div>
-            <p className="text-[#6b7280] font-medium">Manage your participations and collaborate with teammates.</p>
+            <p className="text-[var(--text-secondary)] font-medium transition-colors">Manage your participations and collaborate with teammates.</p>
           </div>
 
           <div className="flex items-center gap-2">
@@ -477,21 +491,19 @@ export default function UserDashboard() {
         {myTeams.length > 0 ? (
           <div className="flex flex-wrap justify-center gap-8">
             {myTeams.map((team) => (
-              <div key={team._id} className="bg-white rounded-[44px] p-8 shadow-[0_12px_45px_rgba(0,0,0,0.03)] border-2 border-gray-50 hover:border-[#8cc63f]/30 hover:shadow-[0_24px_60px_rgba(140,198,63,0.12)] transition-all duration-500 group relative overflow-hidden flex flex-col w-full md:max-w-[400px]">
-
+              <div key={team._id} className="bg-[var(--card-bg)] rounded-[44px] p-8 shadow-[var(--card-shadow)] border-2 border-[var(--border-primary)] hover:border-[var(--accent-green)]/30 transition-all duration-500 group relative overflow-hidden flex flex-col w-full md:max-w-[400px]">
                 <div className="flex items-start justify-between mb-8 relative z-10">
                   <div className="flex flex-col">
                     <div className="flex flex-wrap gap-2 mb-3">
                       <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest w-max ${team.approvalStatus === 'Approved' ? 'bg-green-100 text-green-700' :
-                          team.approvalStatus === 'Rejected' ? 'bg-red-100 text-red-700' :
-                            'bg-[#fcb900]/10 text-[#e6a800]'
+                        team.approvalStatus === 'Rejected' ? 'bg-red-100 text-red-700' :
+                          'bg-[#fcb900]/10 text-[#e6a800]'
                         }`}>
                         <span className={`w-1.5 h-1.5 rounded-full ${team.approvalStatus === 'Approved' ? 'bg-green-500 shadow-[0_0_8px_rgba(34,197,94,0.6)]' :
-                            team.approvalStatus === 'Rejected' ? 'bg-red-500 shadow-[0_0_8px_rgba(239,68,68,0.6)]' : 'bg-[#fcb900] shadow-[0_0_8px_rgba(252,185,0,0.6)]'
+                          team.approvalStatus === 'Rejected' ? 'bg-red-500 shadow-[0_0_8px_rgba(239,68,68,0.6)]' : 'bg-[#fcb900] shadow-[0_0_8px_rgba(252,185,0,0.6)]'
                           }`}></span>
                         Approval: {team.approvalStatus || 'Pending'}
                       </span>
-
                       {team.approvalStatus === 'Approved' && (
                         <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest w-max ${team.submissionStatus === 'Submitted' ? 'bg-blue-100 text-blue-700' : 'bg-gray-100 text-gray-500'
                           }`}>
@@ -653,9 +665,7 @@ export default function UserDashboard() {
                         <span className="w-2 h-2 rounded-full bg-yellow-400 animate-pulse shadow-[0_0_8px_rgba(252,185,0,0.6)]"></span>
                         Awaiting Admin Review
                       </div>
-                    )}
-
-                    {/* Explicitly show Delete Squad for Leader if Pending or Rejected */}
+                    )}                     {/* Explicitly show Delete Squad for Leader if Pending or Rejected */}
                     {String(team.leader?._id || team.leader) === String(currentUser?._id || currentUser?.id) && team.approvalStatus !== 'Approved' && (
                       <button
                         onClick={async () => {
@@ -734,7 +744,7 @@ export default function UserDashboard() {
               onClick={() => navigate(`/contests/category/${cat.slug}`)}
               className="group cursor-pointer"
             >
-              <div className="bg-white rounded-[40px] overflow-hidden border-2 border-gray-50 shadow-sm transition-all duration-500 hover:border-[#8cc63f] hover:shadow-2xl hover:shadow-green-900/5 hover:-translate-y-2 relative flex flex-col h-full">
+               <div className="bg-[var(--card-bg)] rounded-[40px] overflow-hidden border-2 border-[var(--border-primary)] shadow-[var(--card-shadow)] transition-all duration-500 hover:border-[var(--accent-green)] hover:shadow-2xl hover:shadow-green-900/5 hover:-translate-y-2 relative flex flex-col h-full">
                 {/* Card Image Header */}
                 <div className="h-48 w-full relative overflow-hidden">
                   <img
@@ -744,14 +754,14 @@ export default function UserDashboard() {
                     className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 ease-in-out"
                   />
                   <div className={`absolute inset-0 bg-gradient-to-br ${cat.color} opacity-20 mix-blend-multiply`}></div>
-                  <div className="absolute inset-0 bg-gradient-to-t from-white via-transparent to-transparent"></div>
+                  <div className="absolute inset-0 bg-gradient-to-t from-[var(--card-bg)] via-transparent to-transparent"></div>
                 </div>
 
                 <div className="p-8 pt-4 flex flex-col items-center text-center">
-                  <h3 className="text-xl font-black text-gray-900 mb-2 tracking-tight group-hover:text-[#8cc63f] transition-colors uppercase">{cat.name}</h3>
-                  <p className="text-gray-400 text-sm font-medium mb-8">Click to view all {cat.name} contests.</p>
+                  <h3 className="text-xl font-black text-[var(--text-primary)] mb-2 tracking-tight group-hover:text-[var(--accent-green)] transition-colors uppercase">{cat.name}</h3>
+                  <p className="text-[var(--text-secondary)] text-sm font-medium mb-8">Click to view all {cat.name} contests.</p>
 
-                  <div className="flex items-center gap-2 text-[#8cc63f] font-black uppercase tracking-widest text-[10px] transform group-hover:translate-x-1 transition-all duration-500">
+                  <div className="flex items-center gap-2 text-[var(--accent-green)] font-black uppercase tracking-widest text-[10px] transform group-hover:translate-x-1 transition-all duration-500">
                     Explore Now
                     <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M14 5l7 7m0 0l-7 7m7-7H3" />
@@ -760,7 +770,7 @@ export default function UserDashboard() {
                 </div>
 
                 {/* Abstract decoration */}
-                <div className="absolute -bottom-10 -right-10 w-32 h-32 bg-gray-50 rounded-full z-0 group-hover:scale-125 transition-transform duration-700 opacity-50"></div>
+                <div className="absolute -bottom-10 -right-10 w-32 h-32 bg-[var(--accent-green)]/5 rounded-full z-0 group-hover:scale-125 transition-transform duration-700 opacity-50"></div>
               </div>
             </div>
           ))}
@@ -793,17 +803,17 @@ export default function UserDashboard() {
       {/* 3. Bottom CTA Section */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-24">
         {/* Soft floating gradient card block wrapper */}
-        <div className="rounded-[40px] bg-white relative overflow-hidden shadow-[0_10px_40px_rgba(140,198,63,0.06)] border border-gray-50/50 py-20 px-6 sm:px-12 text-center before:absolute before:inset-0 before:bg-gradient-to-br before:from-[#fcfdfa] before:via-white before:to-[#f3fbdf] before:z-0">
+        <div className="rounded-[40px] bg-[var(--card-bg)] relative overflow-hidden shadow-[var(--card-shadow)] border border-[var(--border-primary)] py-20 px-6 sm:px-12 text-center before:absolute before:inset-0 before:bg-gradient-to-br before:from-[var(--bg-secondary)] before:via-[var(--card-bg)] before:to-[var(--bg-secondary)] before:z-0">
 
           {/* Abstract green color blobs for depth matching mock */}
-          <div className="absolute top-0 right-0 w-96 h-96 bg-[#8cc63f]/10 blur-[80px] rounded-full translate-x-1/3 -translate-y-1/3 pointer-events-none z-0"></div>
-          <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-[#fcb900]/5 blur-[80px] rounded-full -translate-x-1/2 translate-y-1/2 pointer-events-none z-0"></div>
+          <div className="absolute top-0 right-0 w-96 h-96 bg-[var(--accent-green)]/10 blur-[80px] rounded-full translate-x-1/3 -translate-y-1/3 pointer-events-none z-0"></div>
+          <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-[var(--accent-yellow)]/5 blur-[80px] rounded-full -translate-x-1/2 translate-y-1/2 pointer-events-none z-0"></div>
 
           <div className="relative z-10 max-w-3xl mx-auto flex flex-col items-center">
-            <h2 className="text-4xl md:text-[44px] font-extrabold text-[#1f2937] leading-[1.1] tracking-tight mb-5">
+            <h2 className="text-4xl md:text-[44px] font-extrabold text-[var(--text-primary)] leading-[1.1] tracking-tight mb-5 transition-colors">
               Ready to showcase your<br />brilliance?
             </h2>
-            <p className="text-[#6b7280] text-lg mb-10 pb-2">
+            <p className="text-[var(--text-secondary)] text-lg mb-10 pb-2 transition-colors">
               Join 50,000+ specialists who have accelerated their careers<br className="hidden sm:block" />
               through our competitive learning framework.
             </p>
@@ -812,9 +822,9 @@ export default function UserDashboard() {
               <input
                 type="email"
                 placeholder="Enter your email"
-                className="flex-grow bg-white border border-gray-200 rounded-full px-7 py-4 outline-none text-[15px] font-medium text-gray-700 shadow-sm focus:border-[#8cc63f] focus:ring-2 focus:ring-[#8cc63f]/20 transition-all placeholder:font-normal placeholder:text-gray-400 text-center sm:text-left"
+                className="flex-grow bg-[var(--input-bg)] border border-[var(--border-primary)] rounded-full px-7 py-4 outline-none text-[15px] font-medium text-[var(--text-primary)] shadow-sm focus:border-[var(--accent-green)] focus:ring-2 focus:ring-[var(--accent-green)]/20 transition-all placeholder:font-normal placeholder:text-[var(--text-secondary)] text-center sm:text-left"
               />
-              <button className="bg-[#8cc63f] hover:bg-[#7db435] text-white rounded-full px-8 py-4 font-bold text-[15px] shadow-sm tracking-wide whitespace-nowrap transition-colors">
+              <button className="bg-[var(--accent-green)] hover:brightness-110 text-white rounded-full px-8 py-4 font-bold text-[15px] shadow-sm tracking-wide whitespace-nowrap transition-all">
                 Start Your Journey
               </button>
             </div>
