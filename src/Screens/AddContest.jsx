@@ -18,6 +18,8 @@ export default function AddContest() {
     projectType: 'Individual',
     teamSize: 1
   });
+  const [imageFile, setImageFile] = useState(null);
+  const [imagePreview, setImagePreview] = useState(null);
 
   const CATEGORY_OPTIONS = ["MERN", "UI/UX DESIGN", "DIGITAL MARKETING", "WEBSITE DESIGNING"];
   const STATUS_OPTIONS = ["Upcoming", "On-Going", "Completed"];
@@ -35,10 +37,27 @@ export default function AddContest() {
     });
   };
 
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setImageFile(file);
+      setImagePreview(URL.createObjectURL(file));
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    const result = await addContest(formData);
+    const dataToSend = new FormData();
+    Object.keys(formData).forEach(key => {
+        dataToSend.append(key, formData[key]);
+    });
+    
+    if (imageFile) {
+        dataToSend.append('contestImage', imageFile);
+    }
+
+    const result = await addContest(dataToSend);
     
     if (result) {
       showToast("Contest Created Successfully!", "success");
@@ -108,6 +127,44 @@ export default function AddContest() {
                 placeholder="Provide a detailed project briefing for participants..."
                 required
               />
+            </div>
+
+            <div className="md:col-span-2">
+              <label className="block text-sm font-bold text-gray-700 mb-4 uppercase tracking-[0.1em]">Contest Cover Image</label>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-center">
+                <div 
+                  className="relative group h-48 rounded-[24px] overflow-hidden bg-gray-100 border-2 border-dashed border-gray-200 hover:border-[#8cc63f] transition-all flex flex-col items-center justify-center cursor-pointer"
+                  onClick={() => document.getElementById('contestImage').click()}
+                >
+                  {imagePreview ? (
+                    <img src={imagePreview} alt="Preview" className="w-full h-full object-cover" />
+                  ) : (
+                    <div className="flex flex-col items-center gap-3 text-gray-400">
+                       <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-10 h-10">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M6.827 6.175A2.31 2.31 0 0 1 5.186 7.23c-.38.054-.757.112-1.134.175C2.999 7.58 2.25 8.507 2.25 9.574V18a2.25 2.25 0 0 0 2.25 2.25h15a2.25 2.25 0 0 0 2.25-2.25V9.574c0-1.067-.75-1.994-1.802-2.169a47.865 47.865 0 0 0-1.134-.175 2.31 2.31 0 0 1-1.64-1.055l-.822-1.316a2.192 2.192 0 0 0-1.736-1.039 48.774 48.774 0 0 0-5.232 0 2.192 2.192 0 0 0-1.736 1.039l-.821 1.316Z" />
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M16.5 12.75a4.5 4.5 0 1 1-9 0 4.5 4.5 0 0 1 9 0ZM18.75 10.5h.008v.008h-.008V10.5Z" />
+                      </svg>
+                      <span className="text-[11px] font-black uppercase tracking-widest text-center px-4">Click to upload premium cover image</span>
+                    </div>
+                  )}
+                  <input 
+                    id="contestImage"
+                    type="file" 
+                    onChange={handleFileChange}
+                    className="hidden" 
+                    accept="image/*"
+                  />
+                </div>
+                <div className="space-y-4">
+                  <div className="p-4 rounded-2xl bg-gray-50 border border-gray-100 italic text-[12px] text-gray-500 leading-relaxed font-medium">
+                     "A high-quality image helps attract more participants. Resolution of 1200x800px is recommended for the best display across devices."
+                  </div>
+                  <div className="flex gap-2">
+                     <span className="px-3 py-1 bg-[#8cc63f]/10 text-[#8cc63f] text-[9px] font-black uppercase rounded-full">JPG / PNG</span>
+                     <span className="px-3 py-1 bg-[#8cc63f]/10 text-[#8cc63f] text-[9px] font-black uppercase rounded-full">Max 5MB</span>
+                  </div>
+                </div>
+              </div>
             </div>
 
             <Input 

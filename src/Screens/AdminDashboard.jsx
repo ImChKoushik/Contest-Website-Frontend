@@ -265,8 +265,8 @@ export default function AdminDashboard() {
           </div>
         </div>
         
-        <div className="h-[300px] w-full">
-          <ResponsiveContainer width="100%" height="100%" minWidth={1} minHeight={1}>
+        <div className="h-[300px] w-full min-h-[300px] relative">
+          <ResponsiveContainer width="100%" height="100%" minHeight={300}>
             <BarChart data={chartData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
               <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f0f0f0" />
               <XAxis 

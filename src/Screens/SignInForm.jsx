@@ -86,7 +86,7 @@ export default function SignInForm() {
       if (authToken) localStorage.setItem('authToken', authToken);
       if (refreshToken) localStorage.setItem('refreshToken', refreshToken);
 
-      login(userData, authToken);
+      login(userData, authToken, refreshToken);
 
       showToast("Login Successful! Welcome back.", "success");
 

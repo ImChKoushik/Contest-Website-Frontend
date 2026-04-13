@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useToast } from '../context/ToastContext';
 import { useNavigate } from 'react-router-dom';
 
@@ -56,15 +56,33 @@ export default function ContestCard({
     if (onApply) onApply();
   };
 
+  // Determine the display image with robust fallbacks
+  const displayImage = useMemo(() => {
+    // 1. Check if it's the new object structure { url: '...' }
+    if (image && typeof image === 'object' && image.url) return image.url;
+    // 2. Check if it's already a string URL
+    if (image && typeof image === 'string') return image;
+    
+    // 3. Fallback to category-based premium imagery
+    const cat = (category || "").toLowerCase();
+    if (cat.includes('mern')) return "https://images.unsplash.com/photo-1633356122544-f134324a6cee?q=80&w=800&auto=format&fit=crop";
+    if (cat.includes('design') || cat.includes('ui')) return "https://images.unsplash.com/photo-1586717791821-3f44a563eb4c?q=80&w=800&auto=format&fit=crop";
+    if (cat.includes('marketing')) return "https://images.unsplash.com/photo-1460925895917-afdab827c52f?q=80&w=800&auto=format&fit=crop";
+    if (cat.includes('web')) return "https://images.unsplash.com/photo-1547658719-da2b51169166?q=80&w=800&auto=format&fit=crop";
+    
+    // 4. Ultimate generic fallback
+    return "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?q=80&w=800&auto=format&fit=crop";
+  }, [image, category]);
+
   return (
-    <div className="bg-white rounded-[24px] overflow-hidden shadow-[0_4px_20px_rgb(0,0,0,0.03)] border border-gray-100 hover:shadow-lg transition-shadow duration-300 flex flex-col h-full">
+    <div className="bg-white rounded-[24px] overflow-hidden shadow-[0_4px_20px_rgb(0,0,0,0.03)] border border-gray-100 hover:shadow-lg transition-transform duration-300 hover:-translate-y-1 flex flex-col h-full">
       {/* Top Image / Graphic Area */}
-      <div className="relative h-48 w-full bg-slate-900 p-2">
+      <div className="relative h-48 w-full bg-slate-900 p-2 overflow-hidden">
         <img
-          src={image}
+          src={displayImage}
           alt={title}
           loading="lazy"
-          className="w-full h-full object-cover rounded-[16px]"
+          className="w-full h-full object-cover rounded-[16px] transition-transform duration-700 group-hover:scale-110"
         />
         {/* Category Pill Tag */}
         <div className="absolute top-5 left-5 bg-white/90 backdrop-blur text-gray-900 px-3 py-1 rounded-full text-[10px] font-extrabold uppercase tracking-wide shadow-sm flex items-center gap-1.5">

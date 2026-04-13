@@ -117,14 +117,7 @@ const CategoryContestPage = () => {
                 deadline={contest.contestDeadLine}
                 entries={`${contest.entryLimit || 100} Slots`}
                 onApply={() => handleApply(contest)}
-                image={displayName === 'MERN'
-                  ? "https://images.unsplash.com/photo-1555066931-4365d14bab8c?q=80&w=2670&auto=format&fit=crop"
-                  : displayName === 'UI/UX'
-                    ? "https://images.unsplash.com/photo-1618761714954-0b8cd0026356?q=80&w=2670&auto=format&fit=crop"
-                    : displayName === 'WEBSITE DESIGNING'
-                      ? "https://images.unsplash.com/photo-1460925895917-afdab827c52f?q=80&w=2426&auto=format&fit=crop"
-                      : "https://images.unsplash.com/photo-1460925895917-afdab827c52f?q=80&w=2426&auto=format&fit=crop"
-                }
+                image={contest.contestImage}
               />
             ))}
           </div>

@@ -50,9 +50,15 @@ const useContests = () => {
     setLoading(true);
     setError(null);
     try {
-      const res = await axiosInstance.post("/contest/add-contest", contestData);
+      // If contestData is NOT FormData, this will still work but won't include files
+      const res = await axiosInstance.post("/contest/add-contest", contestData, {
+        headers: {
+          'Content-Type': contestData instanceof FormData ? 'multipart/form-data' : 'application/json'
+        }
+      });
       if (res.data && res.data.success) {
-        return res.data;
+        showToast("Contest added successfully", "success");
+        return res.data.data;
       } else {
         setError(res.data.message || "Failed to add contest");
         return null;
@@ -62,6 +68,31 @@ const useContests = () => {
       setError(msg);
       showToast(msg, "error");
       return null;
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const updateContestImage = async (contestId, imageFile) => {
+    setLoading(true);
+    try {
+      const formData = new FormData();
+      formData.append('contestImage', imageFile);
+
+      const res = await axiosInstance.put(`/contest/update-contest-image/${contestId}`, formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        }
+      });
+      if (res.data && res.data.success) {
+        showToast("Image updated successfully", "success");
+        return { success: true, data: res.data.data };
+      }
+      return { success: false, message: res.data.message };
+    } catch (err) {
+      const msg = err.response?.data?.message || err.message || "Failed to update image";
+      showToast(msg, "error");
+      return { success: false, message: msg };
     } finally {
       setLoading(false);
     }
@@ -115,7 +146,18 @@ const useContests = () => {
     fetchContests();
   }, [fetchContests]);
 
-  return { data, loading, error, fetchContests, fetchAllContests, addContest, updateContestStatus, updateContest, deleteContest };
+  return { 
+    data, 
+    loading, 
+    error, 
+    fetchContests, 
+    fetchAllContests, 
+    addContest, 
+    updateContestStatus, 
+    updateContest, 
+    updateContestImage,
+    deleteContest 
+  };
 };
 
 export default useContests;

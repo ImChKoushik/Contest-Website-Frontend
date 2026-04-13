@@ -37,7 +37,8 @@ export default function ProtectedRoute({ allowedRoles }) {
 
         const status = err.response?.status;
 
-        if (status === 401 || status === 403) {
+        // Trigger refresh on 401, 403, or 500 (if we have a local session)
+        if (status === 401 || status === 403 || status === 500) {
           // Access token expired — try to refresh silently
           try {
             let refreshRes;
@@ -51,10 +52,10 @@ export default function ProtectedRoute({ allowedRoles }) {
                 throw err;
               }
             }
-            
+
             // Extract new token from refresh response
             const newToken = refreshRes.data?.data?.accessToken || refreshRes.data?.accessToken || refreshRes.data?.token || refreshRes.data?.data?.token || null;
-            
+
             const retryRes = await axiosInstance.get('/user/me');
             const userData = retryRes.data?.user || retryRes.data?.data?.user;
 
@@ -74,7 +75,7 @@ export default function ProtectedRoute({ allowedRoles }) {
             navigate("/signin", { replace: true });
           }
         }
- else {
+        else {
           // Network/server error — stay optimistic, trust local user
           console.warn("Backend unreachable, trusting local session.");
           handleRoleAccess(user);

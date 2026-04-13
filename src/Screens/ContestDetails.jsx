@@ -53,11 +53,23 @@ export default function ContestDetails() {
     setIsTeamModalOpen(true);
   };
 
-  const image = contest?.category?.toLowerCase().includes('mern')
-    ? "https://images.unsplash.com/photo-1555066931-4365d14bab8c?q=80&w=2670&auto=format&fit=crop"
-    : contest?.category?.toLowerCase().includes('design') || contest?.category?.toLowerCase().includes('ui')
-      ? "https://images.unsplash.com/photo-1618761714954-0b8cd0026356?q=80&w=2670&auto=format&fit=crop"
-      : "https://images.unsplash.com/photo-1460925895917-afdab827c52f?q=80&w=2426&auto=format&fit=crop";
+  const image = useMemo(() => {
+    // 1. Priority: Cloudinary Uploaded Image
+    if (contest?.contestImage?.url) return contest.contestImage.url;
+    
+    // 2. Fallback: Category-based Unsplash imagery
+    const cat = contest?.category?.toLowerCase() || "";
+    if (cat.includes('mern'))
+      return "https://images.unsplash.com/photo-1555066931-4365d14bab8c?q=80&w=2670&auto=format&fit=crop";
+    if (cat.includes('design') || cat.includes('ui'))
+      return "https://images.unsplash.com/photo-1618761714954-0b8cd0026356?q=80&w=2670&auto=format&fit=crop";
+    if (cat.includes('marketing'))
+      return "https://images.unsplash.com/photo-1460925895917-afdab827c52f?q=80&w=2426&auto=format&fit=crop";
+    if (cat.includes('web'))
+      return "https://images.unsplash.com/photo-1547658719-da2b51169166?q=80&w=2670&auto=format&fit=crop";
+      
+    return "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?q=80&w=2670&auto=format&fit=crop";
+  }, [contest]);
 
   return (
     <div className="bg-[#f4f7f4] min-h-screen pb-24 font-sans">

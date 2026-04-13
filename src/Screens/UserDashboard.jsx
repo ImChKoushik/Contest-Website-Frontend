@@ -29,6 +29,9 @@ export default function UserDashboard() {
   const { user: currentUser } = useAuthContext();
   const [currentSlide, setCurrentSlide] = useState(0);
   const [impactIdx, setImpactIdx] = useState(0);
+  const [typedText, setTypedText] = useState('');
+  const fullWelcomeText = "Welcome to Desun's Learn and earn contest";
+  const typingSpeed = 100;
   const impactImages = [contestChallengeImg, contestImg2, contestBlogImg];
   const navigate = useNavigate();
 
@@ -128,6 +131,30 @@ export default function UserDashboard() {
     return () => clearInterval(timer);
   }, [impactImages.length]);
 
+  useEffect(() => {
+    let i = 0;
+    let timeoutId;
+    let intervalId;
+
+    const runAnimation = () => {
+      i = 0;
+      intervalId = setInterval(() => {
+        setTypedText(fullWelcomeText.slice(0, i));
+        i++;
+        if (i > fullWelcomeText.length) {
+          clearInterval(intervalId);
+          timeoutId = setTimeout(runAnimation, 2000);
+        }
+      }, typingSpeed);
+    };
+
+    runAnimation();
+    return () => {
+      clearInterval(intervalId);
+      clearTimeout(timeoutId);
+    };
+  }, []);
+
   const [touchStart, setTouchStart] = useState(null);
   const [touchEnd, setTouchEnd] = useState(null);
   const minSwipeDistance = 50;
@@ -224,6 +251,14 @@ export default function UserDashboard() {
             className="bg-[#fcb900] text-gray-900 w-max px-4 py-1.5 rounded-full text-[11px] font-black uppercase tracking-widest shadow-sm mb-8 ring-4 ring-[#fcb900]/20 transition-all duration-300 cursor-pointer hover:scale-105 active:scale-95"
           >
             {slides[currentSlide].badge}
+          </div>
+
+          {/* Welcome Typing Text */}
+          <div className="mb-6 h-[80px] md:h-[100px] flex items-center">
+            <h2 className="text-2xl md:text-3xl font-black bg-gradient-to-r from-orange-400 via-[#8cc63f] to-[#bade90] bg-clip-text text-transparent leading-tight tracking-tight">
+              {typedText}
+              <span className="animate-pulse text-[#8cc63f]">|</span>
+            </h2>
           </div>
 
           <h1 className="text-white text-5xl md:text-[64px] font-extrabold leading-[1.05] tracking-tight mb-6 max-w-3xl transition-all duration-300">

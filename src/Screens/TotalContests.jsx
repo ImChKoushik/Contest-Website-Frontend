@@ -30,7 +30,16 @@ const STATUS_STYLES = {
 };
 
 export default function TotalContests() {
-  const { data, loading, error, fetchAllContests, updateContestStatus, updateContest, deleteContest } = useContests();
+  const { 
+    data, 
+    loading, 
+    error, 
+    fetchAllContests, 
+    updateContestStatus, 
+    updateContest, 
+    updateContestImage,
+    deleteContest 
+  } = useContests();
   const { showToast } = useToast();
   const navigate = useNavigate();
   const [pendingStatus, setPendingStatus] = useState({});
@@ -156,6 +165,7 @@ export default function TotalContests() {
             <thead>
               <tr className="bg-gray-50/50 border-b border-gray-100 text-gray-500 text-[11px] uppercase font-black tracking-[0.1em]">
                 <th className="p-6">Internal ID</th>
+                <th className="p-6">Thumbnail</th>
                 <th className="p-6">Details</th>
                 <th className="p-6">Category</th>
                 <th className="p-6">Type</th>
@@ -181,6 +191,32 @@ export default function TotalContests() {
                       <code className="text-[11px] font-mono bg-gray-100 text-gray-400 px-2 py-1 rounded group-hover:bg-[#8cc63f]/10 group-hover:text-[#8cc63f] transition-colors">
                         {contest._id.slice(-6)}
                       </code>
+                    </td>
+                    <td className="p-6">
+                      <div className="relative group/img h-12 w-20 rounded-lg overflow-hidden border border-gray-100 shadow-sm flex-shrink-0">
+                         <img 
+                          src={contest.contestImage?.url || "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?q=80&w=100&auto=format&fit=crop"} 
+                          alt="Thumb" 
+                          className="w-full h-full object-cover group-hover/img:scale-110 transition-transform duration-500"
+                         />
+                         <label className="absolute inset-0 bg-black/60 opacity-0 group-hover/img:opacity-100 flex items-center justify-center cursor-pointer transition-opacity">
+                            <input 
+                              type="file" 
+                              className="hidden" 
+                              accept="image/*"
+                              onChange={async (e) => {
+                                const file = e.target.files[0];
+                                if (file) {
+                                  const res = await updateContestImage(contest._id, file);
+                                  if (res.success) fetchAllContests();
+                                }
+                              }}
+                            />
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-4 h-4 text-white">
+                              <path strokeLinecap="round" strokeLinejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99" />
+                            </svg>
+                         </label>
+                      </div>
                     </td>
                     <td className="p-6">
                       <div className="max-w-[200px]">

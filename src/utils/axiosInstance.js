@@ -54,9 +54,14 @@ axiosInstance.interceptors.response.use(
   async (error) => {
     const originalRequest = error.config;
 
-    // Only retry on 401, and not for the refresh endpoint itself
+    // Handle 401 (Unauthorized) OR 500 (Internal Server Error - often session-related on this backend)
+    // and not for the refresh or login endpoints themselves
+    const isAuthError = error.response?.status === 401;
+    const isServerError = error.response?.status === 500;
+    const hasLocalUser = !!localStorage.getItem('authUser');
+
     if (
-      error.response?.status === 401 &&
+      (isAuthError || (isServerError && hasLocalUser)) &&
       !originalRequest._retry &&
       !originalRequest.url?.includes('generate-access') &&
       !originalRequest.url?.includes('login-user')
