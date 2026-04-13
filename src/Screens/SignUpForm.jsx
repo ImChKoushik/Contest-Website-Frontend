@@ -195,27 +195,27 @@ export default function SignUpForm() {
 
             {/* Feature 2 */}
             <div className="flex gap-5">
-              <div className="flex-shrink-0 w-12 h-12 bg-orange-100 rounded-full flex items-center justify-center text-orange-500">
+              <div className="flex-shrink-0 w-12 h-12 bg-orange-500/10 rounded-full flex items-center justify-center text-orange-500 transition-colors">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-6 h-6">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M16.5 18.75h-9m9 0a3 3 0 013 3h-15a3 3 0 013-3m9 0v-3.375c0-.621-.503-1.125-1.125-1.125h-.871M7.5 18.75v-3.375c0-.621.504-1.125 1.125-1.125h.872m5.007 0H9.497m5.007 0a7.454 7.454 0 01-.982-3.172M9.497 14.25a7.454 7.454 0 00.981-3.172M5.25 4.236c-.982.143-1.954.317-2.916.52A6.003 6.003 0 007.73 9.728M5.25 4.236V4.5c0 2.108.966 3.99 2.48 5.228M5.25 4.236V2.721C7.456 2.41 9.71 2.25 12 2.25c2.291 0 4.545.16 6.75.47v1.516M7.73 9.728a6.726 6.726 0 002.748 1.35m8.272-6.842V4.5c0 2.108-.966 3.99-2.48 5.228m2.48-5.492a46.32 46.32 0 012.916.52 6.003 6.003 0 01-5.395 4.972m0 0a6.726 6.726 0 01-2.749 1.35m0 0a6.772 6.772 0 01-3.044 0" />
                 </svg>
               </div>
               <div>
-                <h3 className="text-lg font-bold text-gray-900 mb-1">Global Contests</h3>
-                <p className="text-gray-500 text-sm">Compete for high-value rewards and recognition.</p>
+                <h3 className="text-lg font-bold text-[var(--text-primary)] mb-1 transition-colors">Global Contests</h3>
+                <p className="text-[var(--text-secondary)] text-sm transition-colors">Compete for high-value rewards and recognition.</p>
               </div>
             </div>
 
             {/* Feature 3 */}
             <div className="flex gap-5">
-              <div className="flex-shrink-0 w-12 h-12 bg-pink-100 rounded-full flex items-center justify-center text-pink-500">
+              <div className="flex-shrink-0 w-12 h-12 bg-pink-500/10 rounded-full flex items-center justify-center text-pink-500 transition-colors">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-6 h-6">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15m2.25-4.5h10.5m-10.5 9h10.5" />
                 </svg>
               </div>
               <div>
-                <h3 className="text-lg font-bold text-gray-900 mb-1">Specialist Network</h3>
-                <p className="text-gray-500 text-sm">Connect with peers across various disciplines.</p>
+                <h3 className="text-lg font-bold text-[var(--text-primary)] mb-1 transition-colors">Specialist Network</h3>
+                <p className="text-[var(--text-secondary)] text-sm transition-colors">Connect with peers across various disciplines.</p>
               </div>
             </div>
           </div>
@@ -253,7 +253,7 @@ export default function SignUpForm() {
                   onChange={handleImageChange}
                 />
               </label>
-              <span className="text-sm text-gray-500 mt-3 font-medium">Profile Image (Optional)</span>
+              <span className="text-sm text-[var(--text-secondary)] mt-3 font-medium transition-colors">Profile Image (Optional)</span>
             </div>
 
             {error && <div className="mb-4 p-3 bg-red-50 text-red-600 rounded-lg text-sm">{error}</div>}
