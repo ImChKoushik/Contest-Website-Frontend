@@ -70,22 +70,22 @@ export default function TotalInvites() {
           {error}
         </div>
       ) : (
-        <div className="bg-[var(--card-bg)] rounded-2xl shadow-[var(--card-shadow)] border border-[var(--border-primary)] overflow-hidden transition-all">
-          <div className="p-6 border-b border-[var(--border-primary)] flex justify-between items-center transition-colors">
-            <h3 className="font-bold text-lg text-[var(--text-primary)]">
-              Total Invites ({invitesData.length})
+        <div className="bg-[var(--card-bg)] rounded-[2.5rem] shadow-premium border border-[var(--border-primary)] overflow-hidden transition-all">
+          <div className="p-8 border-b border-[var(--border-primary)] flex justify-between items-center transition-colors">
+            <h3 className="font-black text-xl text-[var(--text-primary)] transition-colors uppercase tracking-tight">
+              Total Invites <span className="text-[#8cc63f] opacity-50">/</span> {invitesData.length}
             </h3>
           </div>
           <div className="overflow-x-auto">
             <table className="w-full text-left border-collapse">
-              <thead>
-                <tr className="bg-[var(--bg-primary)] text-[var(--text-secondary)] text-[10px] uppercase font-black tracking-widest border-b border-[var(--border-primary)] transition-colors">
-                  <th className="p-4">Sender</th>
-                  <th className="p-4">Receiver</th>
-                  <th className="p-4">Team</th>
-                  <th className="p-4">Type</th>
-                  <th className="p-4">Status</th>
-                  <th className="p-4 text-right">Actions</th>
+              <thead className="admin-table-header">
+                <tr className="text-[10px] uppercase font-black tracking-widest transition-colors">
+                  <th className="p-5">Sender</th>
+                  <th className="p-5">Receiver</th>
+                  <th className="p-5">Team</th>
+                  <th className="p-5">Type</th>
+                  <th className="p-5">Status</th>
+                  <th className="p-5 text-right">Actions</th>
                 </tr>
               </thead>
               <tbody className="text-sm divide-y divide-[var(--border-primary)] transition-colors">

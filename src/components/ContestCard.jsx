@@ -34,7 +34,7 @@ export default function ContestCard({
       const h = Math.floor((diff / (1000 * 60 * 60)) % 24);
       const m = Math.floor((diff / 1000 / 60) % 60);
       const s = Math.floor((diff / 1000) % 60);
-      
+
       if (d > 0) {
         setTimeLeft(`${d}d ${h}h ${m}m`);
       } else {
@@ -62,14 +62,14 @@ export default function ContestCard({
     if (image && typeof image === 'object' && image.url) return image.url;
     // 2. Check if it's already a string URL
     if (image && typeof image === 'string') return image;
-    
+
     // 3. Fallback to category-based premium imagery
     const cat = (category || "").toLowerCase();
     if (cat.includes('mern')) return "https://images.unsplash.com/photo-1633356122544-f134324a6cee?q=80&w=800&auto=format&fit=crop";
     if (cat.includes('design') || cat.includes('ui')) return "https://images.unsplash.com/photo-1586717791821-3f44a563eb4c?q=80&w=800&auto=format&fit=crop";
     if (cat.includes('marketing')) return "https://images.unsplash.com/photo-1460925895917-afdab827c52f?q=80&w=800&auto=format&fit=crop";
     if (cat.includes('web')) return "https://images.unsplash.com/photo-1547658719-da2b51169166?q=80&w=800&auto=format&fit=crop";
-    
+
     // 4. Ultimate generic fallback
     return "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?q=80&w=800&auto=format&fit=crop";
   }, [image, category]);

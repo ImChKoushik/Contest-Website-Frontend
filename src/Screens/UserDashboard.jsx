@@ -223,7 +223,7 @@ export default function UserDashboard() {
 
 
   return (
-    <div className="bg-[var(--bg-primary)] min-h-screen font-sans w-full pb-20 transition-colors duration-300 relative overflow-hidden">
+    <div className="bg-[var(--bg-primary)] min-h-screen font-sans w-full pb-20 transition-colors duration-300 relative overflow-x-hidden">
       {/* Background Doodles */}
       <div className="absolute top-[10%] -left-[10%] w-96 h-96 opacity-[0.035] dark:opacity-[0.015] pointer-events-none rotate-12 z-0">
         <img src={doodle1} alt="" className="w-full h-full object-contain rounded-full grayscale" />
@@ -237,7 +237,7 @@ export default function UserDashboard() {
 
       {/* 1. Hero Section */}
       <section
-        className="relative w-full h-[600px] md:h-[650px] overflow-hidden"
+        className="relative w-full min-h-[calc(100vh-64px)] flex flex-col overflow-hidden"
         onTouchStart={onTouchStart}
         onTouchMove={onTouchMove}
         onTouchEnd={onTouchEnd}
@@ -259,33 +259,41 @@ export default function UserDashboard() {
           <div className="absolute inset-0 bg-gradient-to-t from-[#fbfcfb]/10 via-transparent to-transparent z-10"></div> {/* Bottom soft fade */}
         </div>
 
-        <div className="relative z-20 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-full flex flex-col justify-center pb-12">
-          {/* Badge */}
-          <div
-            onClick={() => handleHeroBadgeClick(slides[currentSlide].badge)}
-            className="bg-[#fcb900] text-gray-900 w-max px-4 py-1.5 rounded-full text-[11px] font-black uppercase tracking-widest shadow-sm mb-8 ring-4 ring-[#fcb900]/20 transition-all duration-300 cursor-pointer hover:scale-105 active:scale-95"
-          >
-            {slides[currentSlide].badge}
+        <div className="relative z-20 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex-1 flex flex-col justify-start pt-16 md:pt-20 pb-24">
+          {/* Badge — fixed height */}
+          <div className="h-9 flex items-center mb-6">
+            <div
+              onClick={() => handleHeroBadgeClick(slides[currentSlide].badge)}
+              className="bg-[#fcb900] text-gray-900 w-max px-4 py-1.5 rounded-full text-[11px] font-black uppercase tracking-widest shadow-sm ring-4 ring-[#fcb900]/20 transition-all duration-300 cursor-pointer hover:scale-105 active:scale-95"
+            >
+              {slides[currentSlide].badge}
+            </div>
           </div>
 
-          {/* Welcome Typing Text */}
-          <div className="mb-6 h-[80px] md:h-[100px] flex items-center">
+          {/* Welcome Typing Text — fixed height */}
+          <div className="min-h-[60px] md:min-h-[50px] flex items-center mb-4">
             <h2 className="text-2xl md:text-3xl font-black bg-gradient-to-r from-orange-400 via-[#8cc63f] to-[#bade90] bg-clip-text text-transparent leading-tight tracking-tight">
               {typedText}
               <span className="animate-pulse text-[#8cc63f]">|</span>
             </h2>
           </div>
 
-          <h1 className="text-white text-5xl md:text-[64px] font-extrabold leading-[1.05] tracking-tight mb-6 max-w-3xl transition-all duration-300">
-            {slides[currentSlide].titleLine1}<br />
-            <span className="text-[#8cc63f]">{slides[currentSlide].titleLine2}</span>
-          </h1>
+          {/* Title — fixed height */}
+          <div className="min-h-[120px] md:min-h-[175px] mb-6">
+            <h1 className="text-white text-5xl md:text-[64px] font-black leading-[1.1] tracking-tight transition-all duration-300 flex flex-col gap-2">
+              <span className="block">{slides[currentSlide].titleLine1}</span>
+              <span className="text-[#8cc63f] block">{slides[currentSlide].titleLine2}</span>
+            </h1>
+          </div>
 
-          <p className="text-[#a4dfbe] font-medium text-lg md:text-xl max-w-2xl leading-relaxed mb-10 drop-shadow-sm transition-all duration-300 h-24 sm:h-auto">
-            {slides[currentSlide].description}
-          </p>
+          {/* Description — fixed height */}
+          <div className="min-h-[80px] mb-10">
+            <p className="text-[#a4dfbe] font-medium text-lg md:text-xl max-w-2xl leading-relaxed drop-shadow-sm transition-all duration-300">
+              {slides[currentSlide].description}
+            </p>
+          </div>
 
-          <div className="flex flex-col sm:flex-row gap-4 mb-20">
+          <div className="flex flex-col sm:flex-row gap-4">
             <button onClick={() => navigate('/contests')} className="bg-[#8cc63f] hover:bg-[#7eb830] transition-colors text-white font-bold py-3.5 px-8 rounded-full shadow-[0_4px_14px_rgba(140,198,63,0.39)] flex items-center justify-center gap-2 group tracking-wide cursor-pointer relative z-50">
               Explore Contests
               <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-4 h-4 group-hover:translate-x-1 transition-transform">
@@ -744,7 +752,7 @@ export default function UserDashboard() {
               onClick={() => navigate(`/contests/category/${cat.slug}`)}
               className="group cursor-pointer"
             >
-               <div className="bg-[var(--card-bg)] rounded-[40px] overflow-hidden border-2 border-[var(--border-primary)] shadow-[var(--card-shadow)] transition-all duration-500 hover:border-[var(--accent-green)] hover:shadow-2xl hover:shadow-green-900/5 hover:-translate-y-2 relative flex flex-col h-full">
+              <div className="bg-[var(--card-bg)] rounded-[40px] overflow-hidden border-2 border-[var(--border-primary)] shadow-[var(--card-shadow)] transition-all duration-500 hover:border-[var(--accent-green)] hover:shadow-2xl hover:shadow-green-900/5 hover:-translate-y-2 relative flex flex-col h-full">
                 {/* Card Image Header */}
                 <div className="h-48 w-full relative overflow-hidden">
                   <img

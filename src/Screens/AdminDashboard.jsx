@@ -184,10 +184,10 @@ export default function AdminDashboard() {
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full transition-colors duration-300">
       {/* Enhanced Header Section */}
-      <div className="mb-10 bg-gradient-to-r from-[var(--bg-secondary)] to-[var(--bg-primary)] rounded-[2rem] p-8 md:p-12 text-[var(--text-primary)] shadow-2xl relative overflow-hidden border border-[var(--border-primary)] transition-all">
+      <div className="mb-10 bg-[var(--dark-accent)] rounded-[2.5rem] p-8 md:p-12 text-white shadow-premium relative overflow-hidden transition-all group">
         {/* Decorative background elements */}
-        <div className="absolute top-0 right-0 w-64 h-64 bg-[#8cc63f]/10 rounded-full blur-3xl -mr-20 -mt-20"></div>
-        <div className="absolute bottom-0 left-0 w-48 h-48 bg-blue-500/10 rounded-full blur-3xl -ml-20 -mb-20"></div>
+        <div className="absolute top-0 right-0 w-96 h-96 bg-[var(--accent-green)]/20 rounded-full blur-[100px] -mr-32 -mt-32 group-hover:scale-110 transition-transform duration-700"></div>
+        <div className="absolute bottom-0 left-0 w-72 h-72 bg-blue-500/10 rounded-full blur-[80px] -ml-32 -mb-32"></div>
         
         <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
           <div>
@@ -196,20 +196,20 @@ export default function AdminDashboard() {
               <div className="h-px w-8 bg-white/20"></div>
               <span className="text-white/40 text-[10px] font-bold uppercase tracking-widest leading-none">Status: Active</span>
             </div>
-            <h1 className="text-4xl md:text-5xl font-black tracking-tight mb-2 font-display transition-colors">
+            <h1 className="text-4xl md:text-5xl font-black tracking-tight mb-3 font-display transition-colors">
               You're an <span className="text-[var(--accent-green)]">Admin</span>.
             </h1>
-            <p className="text-[var(--text-secondary)] text-lg max-w-xl font-medium leading-relaxed transition-colors">
+            <p className="text-white/70 text-lg max-w-xl font-medium leading-relaxed transition-colors">
               Welcome back, {displayName}. You have full control over contests, participants, and platform results.
             </p>
           </div>
           <div className="flex flex-wrap gap-4">
             <button 
               onClick={() => navigate("/admin-dashboard/total-participants")}
-              className="bg-white text-gray-900 hover:bg-gray-100 px-8 py-4 rounded-2xl font-black text-sm uppercase tracking-wider transition-all shadow-xl hover:-translate-y-1 active:scale-95 flex items-center gap-2 group"
+              className="bg-white/10 backdrop-blur-md border border-white/20 text-white hover:bg-white/20 px-8 py-4 rounded-2xl font-black text-sm uppercase tracking-wider transition-all shadow-xl hover:-translate-y-1 active:scale-95 flex items-center gap-2 group"
             >
               View Teams
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={3} stroke="currentColor" className="w-4 h-4 text-[#8cc63f] group-hover:translate-x-1 transition-transform">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={3} stroke="currentColor" className="w-4 h-4 text-[var(--accent-green)] group-hover:translate-x-1 transition-transform">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
               </svg>
             </button>
@@ -229,7 +229,7 @@ export default function AdminDashboard() {
           <div 
             key={i} 
             onClick={() => stat.link && navigate(stat.link)}
-            className={`bg-gradient-to-br ${stat.color} rounded-2xl p-6 text-white shadow-lg transform transition hover:-translate-y-1 hover:shadow-xl ${stat.link ? 'cursor-pointer' : ''}`}
+            className={`bg-gradient-to-br ${stat.color} rounded-[2rem] p-7 text-white shadow-premium transform transition-all duration-300 hover:-translate-y-1.5 hover:shadow-2xl ${stat.link ? 'cursor-pointer' : ''}`}
           >
             <p className="font-medium text-white/80 mb-2 truncate">{stat.label}</p>
             <div className="flex items-end justify-between">
@@ -243,7 +243,7 @@ export default function AdminDashboard() {
       </div>
 
       {/* Observations Section */}
-      <div className="mb-8 bg-[var(--card-bg)] rounded-2xl shadow-[var(--card-shadow)] border border-[var(--border-primary)] p-6 transition-all">
+      <div className="mb-8 bg-[var(--card-bg)] rounded-[2.5rem] shadow-premium border border-[var(--border-primary)] p-8 transition-all">
         <div className="flex justify-between items-center mb-6">
           <div>
             <h3 className="font-bold text-lg text-[var(--text-primary)] transition-colors">Observations</h3>
@@ -265,8 +265,8 @@ export default function AdminDashboard() {
           </div>
         </div>
         
-        <div className="h-[300px] w-full min-h-[300px] relative">
-          <ResponsiveContainer width="100%" height="100%" minHeight={300}>
+        <div style={{ width: '100%', minHeight: 300, height: 300, position: 'relative' }}>
+          <ResponsiveContainer width="100%" height={300}>
             <BarChart data={chartData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
               <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f0f0f0" />
               <XAxis 
@@ -302,7 +302,7 @@ export default function AdminDashboard() {
       {/* Main Content Area */}
       <div className="grid grid-cols-1 gap-8 mb-8">
         {/* Platform Invitations Database */}
-        <div className="bg-[var(--card-bg)] rounded-2xl shadow-[var(--card-shadow)] border border-[var(--border-primary)] overflow-hidden transition-all">
+        <div className="bg-[var(--card-bg)] rounded-[2rem] shadow-premium border border-[var(--border-primary)] overflow-hidden transition-all">
           <div className="p-6 border-b border-[var(--border-primary)] flex justify-between items-center">
             <h3 className="font-bold text-lg text-[var(--text-primary)] transition-colors">Platform Invitations Database</h3>
             <button 
@@ -312,13 +312,13 @@ export default function AdminDashboard() {
           </div>
           <div className="overflow-x-auto">
             <table className="w-full text-left border-collapse">
-              <thead>
-                <tr className="bg-[var(--bg-primary)] text-[var(--text-secondary)] text-[10px] uppercase tracking-wider transition-colors">
-                  <th className="p-4 font-black">Sender</th>
-                  <th className="p-4 font-black">Receiver</th>
-                  <th className="p-4 font-black">Context Team</th>
-                  <th className="p-4 font-black">Status</th>
-                  <th className="p-4 font-black text-right">Action</th>
+              <thead className="admin-table-header">
+                <tr className="text-[10px] uppercase tracking-widest transition-colors">
+                  <th className="p-5 font-black">Sender</th>
+                  <th className="p-5 font-black">Receiver</th>
+                  <th className="p-5 font-black">Context Team</th>
+                  <th className="p-5 font-black">Status</th>
+                  <th className="p-5 font-black text-right">Action</th>
                 </tr>
               </thead>
               <tbody className="text-sm divide-y divide-[var(--border-primary)]">
@@ -367,7 +367,7 @@ export default function AdminDashboard() {
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         {/* Recent Contests Table - takes up 2 columns */}
-        <div className="lg:col-span-2 bg-[var(--card-bg)] rounded-2xl shadow-[var(--card-shadow)] border border-[var(--border-primary)] overflow-hidden transition-all">
+        <div className="lg:col-span-2 bg-[var(--card-bg)] rounded-[2rem] shadow-premium border border-[var(--border-primary)] overflow-hidden transition-all">
           <div className="p-6 border-b border-[var(--border-primary)] flex justify-between items-center">
             <h3 className="font-bold text-lg text-[var(--text-primary)] transition-colors">Recent Contests</h3>
             <button 
@@ -377,12 +377,12 @@ export default function AdminDashboard() {
           </div>
           <div className="overflow-x-auto">
             <table className="w-full text-left border-collapse">
-              <thead>
-                <tr className="bg-[var(--bg-primary)] text-[var(--text-secondary)] text-[10px] uppercase font-black tracking-wider border-b border-[var(--border-primary)] transition-colors">
-                  <th className="p-4 font-semibold">Contest Name</th>
-                  <th className="p-4 font-semibold">Status</th>
-                  <th className="p-4 font-semibold">Participants</th>
-                  <th className="p-4 font-semibold">Date</th>
+              <thead className="admin-table-header">
+                <tr className="text-[10px] uppercase font-black tracking-widest transition-colors">
+                  <th className="p-5 font-semibold">Contest Name</th>
+                  <th className="p-5 font-semibold">Status</th>
+                  <th className="p-5 font-semibold">Participants</th>
+                  <th className="p-5 font-semibold">Date</th>
                 </tr>
               </thead>
               <tbody className="text-sm divide-y divide-gray-50">
@@ -418,17 +418,17 @@ export default function AdminDashboard() {
         </div>
 
         {/* Dynamic Activity Feed - takes 1 column */}
-        <div className="bg-[var(--card-bg)] rounded-2xl shadow-[var(--card-shadow)] border border-[var(--border-primary)] p-6 transition-all">
-          <h3 className="font-bold text-lg text-[var(--text-primary)] mb-6 font-display transition-colors">Recent Activity</h3>
-          <div className="space-y-6">
+        <div className="bg-[var(--card-bg)] rounded-[2rem] shadow-premium border border-[var(--border-primary)] p-8 transition-all">
+          <h3 className="font-bold text-xl text-[var(--text-primary)] mb-8 font-display transition-colors uppercase tracking-tight">Recent Activity</h3>
+          <div className="space-y-8">
             {activities.length > 0 ? (
               activities.map((activity, idx) => (
-                <div key={activity.id} className="flex gap-4 relative group">
+                <div key={activity.id} className="flex gap-5 relative group">
                   {idx !== activities.length - 1 && (
-                    <div className="absolute top-8 bottom-[-24px] left-[11px] w-[2px] bg-[var(--bg-primary)] group-hover:bg-[var(--accent-green)]/10 transition-colors"></div>
+                    <div className="absolute top-10 bottom-[-32px] left-[11px] w-[3px] bg-[var(--bg-primary)] group-hover:bg-[var(--accent-green)]/30 transition-all rounded-full"></div>
                   )}
-                  <div className="w-6 h-6 rounded-full bg-[var(--accent-green)]/20 flex-shrink-0 flex items-center justify-center relative z-10 border-2 border-[var(--card-bg)] transition-transform group-hover:scale-110">
-                     <div className="w-2 h-2 rounded-full bg-[var(--accent-green)]"></div>
+                  <div className="w-6 h-6 rounded-full bg-[var(--accent-green)]/10 flex-shrink-0 flex items-center justify-center relative z-10 border-2 border-[var(--card-bg)] transition-all group-hover:scale-125 group-hover:bg-[var(--accent-green)] group-hover:shadow-[0_0_15px_rgba(140,198,63,0.5)]">
+                     <div className="w-1.5 h-1.5 rounded-full bg-[var(--accent-green)] group-hover:bg-white transition-colors"></div>
                   </div>
                   <div className="flex-grow">
                     <h4 className="font-bold text-[13px] text-[var(--text-primary)] tracking-tight leading-tight transition-colors">{activity.title}</h4>

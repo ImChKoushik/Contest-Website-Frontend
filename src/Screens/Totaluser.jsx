@@ -92,14 +92,14 @@ export default function Totaluser() {
               placeholder="Search by User ID..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="px-4 py-2 bg-[var(--bg-primary)] border border-[var(--border-primary)] rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#8cc63f] transition-all min-w-[200px] text-[var(--text-primary)]"
+              className="px-5 py-2.5 bg-[var(--bg-primary)] border border-[var(--border-primary)] rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#8cc63f] transition-all min-w-[240px] text-[var(--text-primary)] shadow-sm"
             />
-            <Button type="submit" variant="secondary" className="px-4 py-2 text-sm font-semibold">Search</Button>
+            <Button type="submit" variant="secondary" className="px-5 py-2.5 text-xs font-black uppercase tracking-widest">Search</Button>
             {searchResults && (
-              <Button onClick={() => { setSearchResults(null); setSearchTerm(""); }} variant="outline" className="px-4 py-2 text-sm font-semibold border-gray-300">Clear</Button>
+              <Button onClick={() => { setSearchResults(null); setSearchTerm(""); }} variant="outline" className="px-5 py-2.5 text-xs font-black uppercase tracking-widest border-[var(--border-primary)]">Clear</Button>
             )}
           </form>
-          <Button variant="secondary" className="px-4 py-2 text-sm font-semibold">Export CSV</Button>
+          <Button variant="secondary" className="px-5 py-2.5 text-xs font-black uppercase tracking-widest">Export CSV</Button>
         </div>
       </div>
 
@@ -115,29 +115,29 @@ export default function Totaluser() {
         <div className="space-y-12">
           {/* Admin Segment */}
           {/* Admin Segment */}
-          <div className="bg-[var(--card-bg)] rounded-2xl shadow-[var(--card-shadow)] border border-[var(--border-primary)] overflow-hidden transition-all">
-            <div className="p-6 border-b border-[var(--border-primary)] bg-[var(--bg-secondary)]/30 flex justify-between items-center transition-colors">
-              <div className="flex items-center gap-3">
-                <div className="w-8 h-8 rounded-lg bg-[#fcb900]/10 flex items-center justify-center">
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-[#fcb900]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+          <div className="bg-[var(--card-bg)] rounded-[2.5rem] shadow-premium border border-[var(--border-primary)] overflow-hidden transition-all">
+            <div className="p-8 border-b border-[var(--border-primary)] bg-[var(--bg-secondary)]/30 flex justify-between items-center transition-colors">
+              <div className="flex items-center gap-4">
+                <div className="w-10 h-10 rounded-xl bg-[#fcb900]/10 flex items-center justify-center border border-[#fcb900]/20">
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-[#fcb900]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
                   </svg>
                 </div>
-                <h3 className="font-bold text-lg text-[var(--text-primary)] transition-colors">Administrators ({admins.length})</h3>
+                <h3 className="font-black text-xl text-[var(--text-primary)] transition-colors uppercase tracking-tight">Administrators <span className="text-[#fcb900] opacity-50">/</span> {admins.length}</h3>
               </div>
             </div>
             <div className="overflow-x-auto">
               <table className="w-full text-left border-collapse">
-                <thead>
-                  <tr className="bg-[var(--bg-primary)]/50 text-[var(--text-secondary)] text-[11px] uppercase tracking-widest border-b border-[var(--border-primary)] transition-colors">
-                    <th className="p-4 font-black">User ID</th>
-                    <th className="p-4 font-black">Name</th>
-                    <th className="p-4 font-black">Email</th>
-                    <th className="p-4 font-black">Role</th>
-                    <th className="p-4 font-black">Contact</th>
-                    <th className="p-4 font-black">Gender</th>
-                    <th className="p-4 font-black">Verified</th>
-                    <th className="p-4 font-black">Joined At</th>
+                <thead className="admin-table-header">
+                  <tr className="text-[10px] uppercase tracking-widest transition-colors">
+                    <th className="p-5 font-black">User ID</th>
+                    <th className="p-5 font-black">Name</th>
+                    <th className="p-5 font-black">Email</th>
+                    <th className="p-5 font-black">Role</th>
+                    <th className="p-5 font-black">Contact</th>
+                    <th className="p-5 font-black">Gender</th>
+                    <th className="p-5 font-black">Verified</th>
+                    <th className="p-5 font-black">Joined At</th>
                   </tr>
                 </thead>
                 <tbody className="text-sm divide-y divide-[var(--border-primary)] transition-colors">
@@ -185,30 +185,30 @@ export default function Totaluser() {
 
           {/* Regular Users Segment */}
           {/* Regular Users Segment */}
-          <div className="bg-[var(--card-bg)] rounded-2xl shadow-[var(--card-shadow)] border border-[var(--border-primary)] overflow-hidden transition-all">
-            <div className="p-6 border-b border-[var(--border-primary)] bg-[var(--bg-secondary)]/30 flex justify-between items-center transition-colors">
-              <div className="flex items-center gap-3">
-                <div className="w-8 h-8 rounded-lg bg-[#8cc63f]/10 flex items-center justify-center">
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-[#8cc63f]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+          <div className="bg-[var(--card-bg)] rounded-[2.5rem] shadow-premium border border-[var(--border-primary)] overflow-hidden transition-all">
+            <div className="p-8 border-b border-[var(--border-primary)] bg-[var(--bg-secondary)]/30 flex justify-between items-center transition-colors">
+              <div className="flex items-center gap-4">
+                <div className="w-10 h-10 rounded-xl bg-[#8cc63f]/10 flex items-center justify-center border border-[#8cc63f]/20">
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-[#8cc63f]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
                   </svg>
                 </div>
-                <h3 className="font-bold text-lg text-[var(--text-primary)] transition-colors">Regular Users List ({regularUsers.length})</h3>
+                <h3 className="font-black text-xl text-[var(--text-primary)] transition-colors uppercase tracking-tight">Regular Users <span className="text-[#8cc63f] opacity-50">/</span> {regularUsers.length}</h3>
               </div>
             </div>
             <div className="overflow-x-auto">
               <table className="w-full text-left border-collapse">
-                <thead>
-                  <tr className="bg-[var(--bg-primary)]/50 text-[var(--text-secondary)] text-[11px] uppercase tracking-widest border-b border-[var(--border-primary)] transition-colors">
-                    <th className="p-4 font-black">User ID</th>
-                    <th className="p-4 font-black">Name</th>
-                    <th className="p-4 font-black">Email</th>
-                    <th className="p-4 font-black">Role</th>
-                    <th className="p-4 font-black">Contact</th>
-                    <th className="p-4 font-black">Gender</th>
-                    <th className="p-4 font-black">Verified Status</th>
-                    <th className="p-4 font-black">Joined At</th>
-                    <th className="p-4 font-black text-right">Actions</th>
+                <thead className="admin-table-header">
+                  <tr className="text-[10px] uppercase tracking-widest transition-colors">
+                    <th className="p-5 font-black">User ID</th>
+                    <th className="p-5 font-black">Name</th>
+                    <th className="p-5 font-black">Email</th>
+                    <th className="p-5 font-black">Role</th>
+                    <th className="p-5 font-black">Contact</th>
+                    <th className="p-5 font-black">Gender</th>
+                    <th className="p-5 font-black">Verified Status</th>
+                    <th className="p-5 font-black">Joined At</th>
+                    <th className="p-5 font-black text-right">Actions</th>
                   </tr>
                 </thead>
                 <tbody className="text-sm divide-y divide-[var(--border-primary)] transition-colors">

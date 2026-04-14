@@ -28,6 +28,8 @@ const Home = () => {
   const navigate = useNavigate();
   const { user } = useAuthContext();
   const [currentSlide, setCurrentSlide] = useState(0);
+  const [gallerySlide, setGallerySlide] = useState(0);
+  const galleryImages = [galleryImg1, galleryImg2, galleryImg3, galleryImg4];
   const [typedText, setTypedText] = useState('');
   const fullWelcomeText = "Welcome to Desun's Learn and earn contest";
   const typingSpeed = 100;
@@ -87,6 +89,13 @@ const Home = () => {
     return () => clearInterval(timer);
   }, []);
 
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setGallerySlide((prev) => (prev + 1) % galleryImages.length);
+    }, 3000);
+    return () => clearInterval(timer);
+  }, []);
+
   const categories = [
     { name: 'MERN', slug: 'mern', image: mernImg, color: 'from-blue-500 to-indigo-600' },
     { name: 'UI/UX DESIGN', slug: 'ui-ux', image: uiuxImg, color: 'from-purple-500 to-fuchsia-600' },
@@ -130,7 +139,7 @@ const Home = () => {
   };
 
   return (
-    <div className="flex flex-col min-h-screen bg-[var(--bg-primary)] transition-colors duration-300 relative overflow-hidden">
+    <div className="flex flex-col min-h-screen bg-[var(--bg-primary)] transition-colors duration-300 relative overflow-x-hidden">
       {/* Background Doodles */}
       <div className="absolute top-[15%] -left-[5%] w-64 h-64 opacity-[0.03] dark:opacity-[0.02] pointer-events-none rotate-12 z-0">
         <img src={doodle1} alt="" className="w-full h-full object-contain rounded-full grayscale" />
@@ -144,7 +153,7 @@ const Home = () => {
 
       {/* Hero Section */}
       <section
-        className="relative h-[85vh] flex items-center overflow-hidden"
+        className="relative min-h-[calc(100vh-64px)] flex flex-col overflow-hidden"
         onTouchStart={onTouchStart}
         onTouchMove={onTouchMove}
         onTouchEnd={onTouchEnd}
@@ -166,7 +175,7 @@ const Home = () => {
           <div className="absolute inset-0 bg-gradient-to-t from-[var(--bg-primary)]/10 via-transparent to-transparent z-10"></div> {/* Bottom soft fade */}
         </div>
 
-        <div className="container mx-auto px-6 relative z-10 text-white">
+        <div className="container mx-auto px-6 relative z-10 text-white flex-1 flex flex-col justify-start pt-16 md:pt-20 pb-24">
           <div className="max-w-3xl">
             {/* Magical Live Status (All Slides) */}
             <div className="flex items-center gap-3 mb-6 animate-fade-in">
@@ -183,21 +192,27 @@ const Home = () => {
               </div>
             </div>
 
-            {/* Badge */}
-            <div className="inline-flex items-center px-4 py-1.5 rounded-full bg-[#fca311] text-black text-xs font-bold uppercase tracking-wider mb-8 shadow-lg transition-all duration-300">
-              {slides[currentSlide].badge}
+            {/* Badge — fixed height container so layout never shifts */}
+            <div className="h-9 flex items-center mb-6">
+              <div className="inline-flex items-center px-4 py-1.5 rounded-full bg-[#fca311] text-black text-xs font-bold uppercase tracking-wider shadow-lg transition-all duration-300">
+                {slides[currentSlide].badge}
+              </div>
             </div>
 
-            {/* Title */}
-            <h1 className="text-5xl md:text-7xl font-extrabold leading-tight mb-6 transition-all duration-300">
-              {slides[currentSlide].titleLine1}<br />
-              <span className="text-[#8cc63f]">{slides[currentSlide].titleLine2}</span>
-            </h1>
+            {/* Title — fixed height so different line lengths never shift the layout */}
+            <div className="min-h-[120px] md:min-h-[180px] mb-6">
+              <h1 className="text-5xl md:text-7xl font-black leading-[1.1] transition-all duration-300 flex flex-col gap-2">
+                <span className="block">{slides[currentSlide].titleLine1}</span>
+                <span className="text-[#8cc63f] block">{slides[currentSlide].titleLine2}</span>
+              </h1>
+            </div>
 
-            {/* Subtext */}
-            <p className="text-lg md:text-xl text-gray-100/90 mb-10 max-w-xl leading-relaxed transition-all duration-300">
-              {slides[currentSlide].description}
-            </p>
+            {/* Subtext — fixed height so reflow never happens */}
+            <div className="min-h-[80px] md:min-h-[60px] mb-10">
+              <p className="text-lg md:text-xl text-gray-100/90 max-w-xl leading-relaxed transition-all duration-300">
+                {slides[currentSlide].description}
+              </p>
+            </div>
 
             {/* Buttons */}
             <div className="flex flex-wrap gap-4">
@@ -237,10 +252,10 @@ const Home = () => {
       </section>
 
       {/* New Welcome Gallery Section */}
-      <section className="py-24 bg-[var(--bg-secondary)] overflow-hidden transition-colors">
+      <section className="py-14 bg-[var(--bg-secondary)] overflow-hidden transition-colors">
         <div className="container mx-auto px-6">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
-            
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 items-center">
+
             {/* Left Column: Typing Text */}
             <div className="relative">
               <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-green-100 text-[#8cc63f] text-[10px] font-black uppercase tracking-widest mb-6">
@@ -250,20 +265,20 @@ const Home = () => {
                 </span>
                 Official Announcement
               </div>
-              <h2 className="text-4xl md:text-6xl font-black bg-gradient-to-r from-orange-500 via-[#8cc63f] to-[#5a8624] bg-clip-text text-transparent leading-[1.1] mb-8 min-h-[120px] md:min-h-[180px]">
+              <h2 className="text-3xl md:text-4xl font-black bg-gradient-to-r from-orange-500 via-[#8cc63f] to-[#5a8624] bg-clip-text text-transparent leading-[1.1] mb-6 min-h-[80px] md:min-h-[110px]">
                 {typedText}
                 <span className="animate-pulse text-[#8cc63f]">|</span>
               </h2>
-              
+
               {/* Green Theme Accent (Geometric Shapes) */}
               <div className="relative w-full h-4 bg-gray-100 rounded-full overflow-hidden mb-10">
                 <div className="absolute inset-0 bg-gradient-to-r from-[#8cc63f] to-[#5a8624] w-3/4 rounded-full shadow-[0_0_15px_rgba(140,198,63,0.5)]"></div>
               </div>
-              
+
               <p className="text-gray-500 text-lg font-medium max-w-lg leading-relaxed mb-8">
                 Witness the moments of excellence and collaboration from our recent sessions. Join the community where learning meets earning.
               </p>
-              
+
               <div className="flex items-center gap-6">
                 <div className="flex -space-x-3">
                   <div className="w-12 h-12 rounded-full border-4 border-white bg-gray-200 overflow-hidden shadow-sm">
@@ -284,33 +299,43 @@ const Home = () => {
               </div>
             </div>
 
-            {/* Right Column: Swipeable Gallery */}
+            {/* Right Column: Auto-Fade Image Viewer */}
             <div className="relative">
               {/* Decorative background blur */}
               <div className="absolute -top-20 -right-20 w-64 h-64 bg-[#8cc63f]/10 rounded-full blur-[100px]"></div>
-              
-              <div className="flex gap-6 overflow-x-auto pb-10 pt-4 snap-x snap-mandatory no-scrollbar cursor-grab active:cursor-grabbing">
-                {[galleryImg1, galleryImg2, galleryImg3, galleryImg4].map((img, index) => (
-                  <div 
+
+              {/* Image container — fixed aspect ratio, images fade in/out */}
+              <div className="relative w-full max-w-sm mx-auto aspect-[4/3] rounded-2xl overflow-hidden shadow-xl shadow-green-900/10 border-4 border-white bg-gray-50">
+                {galleryImages.map((img, index) => (
+                  <img
                     key={index}
-                    className="flex-shrink-0 w-[280px] md:w-[350px] aspect-[4/5] rounded-[2.5rem] overflow-hidden shadow-2xl shadow-green-900/10 snap-center transform hover:scale-[1.02] transition-all duration-500 border-4 border-white"
-                  >
-                    <img src={img} alt={`Gallery ${index+1}`} className="w-full h-full object-cover" />
-                  </div>
+                    src={img}
+                    alt={`Gallery ${index + 1}`}
+                    className={`absolute inset-0 w-full h-full object-contain transition-opacity duration-1000 ease-in-out ${gallerySlide === index ? 'opacity-100 z-10' : 'opacity-0 z-0'
+                      }`}
+                  />
                 ))}
-              </div>
-              
-              {/* Swipe Instruction */}
-              <div className="flex justify-center mt-2">
-                <div className="px-6 py-2 rounded-full bg-white border border-gray-100 shadow-sm flex items-center gap-3">
-                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-4 h-4 text-gray-400 animate-bounce-x">
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M6.75 15.75L3 12m0 0l3.75-3.75M3 12h18" />
-                  </svg>
-                  <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Swipe to explore</span>
-                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-4 h-4 text-gray-400 animate-bounce-x-reverse">
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M17.25 8.25L21 12m0 0l-3.75 3.75M21 12H3" />
-                  </svg>
+
+                {/* Indicator dots */}
+                <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2 z-20">
+                  {galleryImages.map((_, idx) => (
+                    <button
+                      key={idx}
+                      onClick={() => setGallerySlide(idx)}
+                      className={`rounded-full transition-all duration-300 ${gallerySlide === idx
+                          ? 'w-6 h-2 bg-[#8cc63f] shadow-[0_0_8px_rgba(140,198,63,0.8)]'
+                          : 'w-2 h-2 bg-black/30 hover:bg-black/50'
+                        }`}
+                    />
+                  ))}
                 </div>
+              </div>
+
+              {/* Image counter */}
+              <div className="flex justify-end mt-3 pr-1">
+                <span className="text-[11px] font-black text-gray-400 uppercase tracking-widest">
+                  {gallerySlide + 1} / {galleryImages.length}
+                </span>
               </div>
             </div>
 
@@ -319,94 +344,82 @@ const Home = () => {
       </section>
 
       {/* Motivation & Rewards Section */}
-      <section className="py-24 relative overflow-hidden transition-colors">
+      <section className="py-16 relative overflow-hidden transition-colors">
         <div className="container mx-auto px-6">
-          <div className="bg-[var(--card-bg)] rounded-[3rem] border border-[var(--border-primary)] shadow-[var(--card-shadow)] overflow-hidden relative group">
-            {/* Background Texture/glow */}
-            <div className="absolute top-0 right-0 w-96 h-96 bg-[var(--accent-green)]/10 rounded-full blur-[100px] -mr-48 -mt-48 transition-transform duration-1000 group-hover:scale-110"></div>
-            <div className="absolute bottom-0 left-0 w-64 h-64 bg-orange-500/10 rounded-full blur-[80px] -ml-32 -mb-32"></div>
+          <div className="relative rounded-[2rem] overflow-hidden shadow-2xl">
 
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center relative z-10">
-              {/* Text Side */}
-              <div className="p-10 md:p-16 text-left">
-                <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-orange-500/10 text-orange-600 border border-orange-500/20 text-[10px] font-black uppercase tracking-widest mb-8 animate-bounce-slow">
-                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-4 h-4">
-                    <path fillRule="evenodd" d="M10.788 3.21c.448-1.077 1.976-1.077 2.424 0l2.082 5.007 5.404.433c1.164.093 1.636 1.545.749 2.305l-4.117 3.527 1.257 5.273c.271 1.136-.964 2.033-1.96 1.425L12 18.354 7.373 21.18c-.996.608-2.231-.29-1.96-1.425l1.257-5.273-4.117-3.527c-.887-.76-.415-2.212.749-2.305l5.404-.433 2.082-5.006z" clipRule="evenodd" />
-                  </svg>
-                  Reward Pools Active
-                </div>
+            {/* Background Image */}
+            <img
+              src={doodle2}
+              alt="Motivation"
+              className="absolute inset-0 w-full h-full object-cover object-center scale-105"
+            />
+            {/* Dark overlay */}
+            <div className="absolute inset-0 bg-gradient-to-b from-[#0a1f0f]/90 via-[#0c2a14]/85 to-[#0a1f0f]/95"></div>
 
-                <h2 className="text-4xl md:text-6xl font-black text-[var(--text-primary)] leading-tight mb-8 transition-colors">
-                  Show your skill, <br />
-                  <span className="text-[var(--accent-green)] italic">Redefine</span> your future.
-                </h2>
+            {/* Content */}
+            <div className="relative z-10 py-16 px-6 md:px-16 flex flex-col items-center text-center">
 
-                <div className="space-y-6 mb-10">
-                  <div className="flex gap-5">
-                    <div className="flex-shrink-0 w-14 h-14 rounded-2xl bg-[#8cc63f] flex items-center justify-center text-white shadow-lg shadow-[#8cc63f]/20">
-                      <span className="text-xl font-black">₹</span>
-                    </div>
-                    <div>
-                      <h4 className="text-xl font-extrabold text-[var(--text-primary)] mb-1">Win up to ₹10,000 Cash</h4>
-                      <p className="text-[var(--text-secondary)] font-medium">Top performers in every specialization win direct prize money credited instantly.</p>
-                    </div>
-                  </div>
-
-                  <div className="flex gap-5">
-                    <div className="flex-shrink-0 w-14 h-14 rounded-2xl bg-[var(--bg-primary)] border border-[var(--border-primary)] flex items-center justify-center text-[var(--accent-green)] shadow-sm">
-                      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-6 h-6">
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M18 18.72a9.094 9.094 0 003.741-.479 3 3 0 00-4.682-2.72m.94 3.198l.001.031c0 .225-.012.447-.037.666A11.944 11.944 0 0112 21c-2.17 0-4.207-.576-5.963-1.584A6.062 6.062 0 016 18.719m12 0a5.971 5.971 0 00-.941-3.197m0 0A5.995 5.995 0 0012 12.75a5.995 5.995 0 00-5.058 2.772m0 0a3 3 0 00-4.681 2.72 8.986 8.986 0 003.74.477m.94-3.197a5.971 5.971 0 00-.94 3.197M15 6.75a3 3 0 11-6 0 3 3 0 016 0zm6 3a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0zm-13.5 0a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0z" />
-                      </svg>
-                    </div>
-                    <div>
-                      <h4 className="text-xl font-extrabold text-[var(--text-primary)] mb-1">Exclusive Interview Scopes</h4>
-                      <p className="text-[var(--text-secondary)] font-medium">Selected projects and runners-up get shortlisted for technical interviews and professional mentorship.</p>
-                    </div>
-                  </div>
-                </div>
-
-                <button 
-                  onClick={() => navigate('/contests')}
-                  className="px-10 py-5 bg-[#8cc63f] hover:bg-[#7ab033] text-white rounded-2xl font-black text-sm uppercase tracking-widest shadow-xl shadow-[#8cc63f]/30 transition-all hover:-translate-y-1 active:scale-95 flex items-center gap-3"
-                >
-                  Submit Your Project
-                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={3} stroke="currentColor" className="w-4 h-4">
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
-                  </svg>
-                </button>
+              {/* Badge */}
+              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-orange-500/20 text-orange-400 border border-orange-500/30 text-[10px] font-black uppercase tracking-widest mb-6">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-3.5 h-3.5">
+                  <path fillRule="evenodd" d="M10.788 3.21c.448-1.077 1.976-1.077 2.424 0l2.082 5.007 5.404.433c1.164.093 1.636 1.545.749 2.305l-4.117 3.527 1.257 5.273c.271 1.136-.964 2.033-1.96 1.425L12 18.354 7.373 21.18c-.996.608-2.231-.29-1.96-1.425l1.257-5.273-4.117-3.527c-.887-.76-.415-2.212.749-2.305l5.404-.433 2.082-5.006z" clipRule="evenodd" />
+                </svg>
+                Reward Pools Active
               </div>
 
-              {/* Image Side */}
-              <div className="relative h-full min-h-[400px] lg:min-h-[600px] bg-gray-900 overflow-hidden">
-                <img 
-                  src={doodle2} 
-                  alt="Motivation" 
-                  className="absolute inset-0 w-full h-full object-cover transform scale-105 group-hover:scale-110 transition-transform duration-1000 ease-out opacity-80"
-                />
-                <div className="absolute inset-0 bg-gradient-to-l from-transparent via-transparent to-[var(--card-bg)]"></div>
-                
-                {/* Floating highlight */}
-                <div className="absolute bottom-12 left-12 right-12 p-8 bg-white/10 backdrop-blur-2xl rounded-[2rem] border border-white/20 animate-float text-left">
-                  <div className="flex items-center gap-4">
-                    <div className="w-12 h-12 rounded-full bg-[#8cc63f] flex items-center justify-center text-white">
-                       <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={3} stroke="currentColor" className="w-6 h-6">
-                         <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
-                       </svg>
-                    </div>
-                    <div>
-                      <p className="text-white font-black text-lg leading-tight tracking-tight">Showcase & Succeed</p>
-                      <p className="text-white/60 text-xs font-bold uppercase tracking-widest mt-1">Join the community of achievers</p>
-                    </div>
+              {/* Heading */}
+              <h2 className="text-3xl md:text-5xl font-black text-white leading-tight mb-3">
+                Show your skill,{' '}
+                <span className="text-[#8cc63f] italic">Redefine</span> your future.
+              </h2>
+              <p className="text-white/60 text-sm md:text-base font-medium max-w-xl mb-10">
+                Top performers win real cash prizes and get shortlisted for exclusive interview opportunities.
+              </p>
+
+              {/* Feature Cards */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 w-full max-w-2xl mb-10">
+                {/* Card 1 */}
+                <div className="bg-white/10 backdrop-blur-xl border border-white/15 rounded-2xl p-6 flex items-center gap-4 text-left hover:bg-white/15 transition-all">
+                  <div className="flex-shrink-0 w-12 h-12 rounded-xl bg-[#8cc63f] flex items-center justify-center text-white shadow-lg shadow-[#8cc63f]/30">
+                    <span className="text-lg font-black">₹</span>
+                  </div>
+                  <div>
+                    <h4 className="text-white font-black text-base leading-tight mb-0.5">Win up to ₹10,000 Cash</h4>
+                    <p className="text-white/55 text-xs font-medium leading-snug">Direct prize money credited instantly.</p>
                   </div>
                 </div>
 
-                {/* Visual accents */}
-                <div className="absolute top-10 right-10 w-24 h-24 border-2 border-white/20 rounded-full animate-spin-slow"></div>
+                {/* Card 2 */}
+                <div className="bg-white/10 backdrop-blur-xl border border-white/15 rounded-2xl p-6 flex items-center gap-4 text-left hover:bg-white/15 transition-all">
+                  <div className="flex-shrink-0 w-12 h-12 rounded-xl bg-white/10 border border-white/20 flex items-center justify-center text-[#8cc63f]">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-5 h-5">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M18 18.72a9.094 9.094 0 003.741-.479 3 3 0 00-4.682-2.72m.94 3.198l.001.031c0 .225-.012.447-.037.666A11.944 11.944 0 0112 21c-2.17 0-4.207-.576-5.963-1.584A6.062 6.062 0 016 18.719m12 0a5.971 5.971 0 00-.941-3.197m0 0A5.995 5.995 0 0012 12.75a5.995 5.995 0 00-5.058 2.772m0 0a3 3 0 00-4.681 2.72 8.986 8.986 0 003.74.477m.94-3.197a5.971 5.971 0 00-.94 3.197M15 6.75a3 3 0 11-6 0 3 3 0 016 0zm6 3a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0zm-13.5 0a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0z" />
+                    </svg>
+                  </div>
+                  <div>
+                    <h4 className="text-white font-black text-base leading-tight mb-0.5">Exclusive Interview Scopes</h4>
+                    <p className="text-white/55 text-xs font-medium leading-snug">Shortlisted for technical interviews & mentorship.</p>
+                  </div>
+                </div>
               </div>
+
+              {/* CTA */}
+              <button
+                onClick={() => navigate('/contests')}
+                className="px-8 py-4 bg-[#8cc63f] hover:bg-[#7ab033] text-white rounded-xl font-black text-sm uppercase tracking-widest shadow-xl shadow-[#8cc63f]/30 transition-all hover:-translate-y-0.5 active:scale-95 flex items-center gap-3"
+              >
+                Submit Your Project
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={3} stroke="currentColor" className="w-4 h-4">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
+                </svg>
+              </button>
             </div>
+
           </div>
         </div>
       </section>
+
 
       {/* Explore Categories Section */}
       <section className="py-20 bg-[var(--bg-primary)] transition-colors">
@@ -460,31 +473,34 @@ const Home = () => {
       </section>
 
       {/* CTA Section */}
-      <section className="py-20 px-6">
-      <div className="max-w-6xl mx-auto rounded-[3rem] bg-[var(--card-bg)] p-12 md:p-20 text-center relative overflow-hidden border border-[var(--border-primary)] shadow-[var(--card-shadow)] before:absolute before:inset-0 before:bg-gradient-to-br before:from-[var(--bg-secondary)] before:via-[var(--card-bg)] before:to-[var(--bg-secondary)] before:z-0">
+      <section className="py-10 px-6">
+        <div className="max-w-3xl mx-auto rounded-2xl bg-[var(--card-bg)] p-8 md:p-12 text-center relative overflow-hidden border border-[var(--border-primary)] shadow-[var(--card-shadow)] before:absolute before:inset-0 before:bg-gradient-to-br before:from-[var(--bg-secondary)] before:via-[var(--card-bg)] before:to-[var(--bg-secondary)] before:z-0">
           <div className="relative z-10">
-            <h2 className="text-4xl md:text-5xl font-black text-[var(--text-primary)] mb-6 transition-colors">
-              Ready to showcase your<br />brilliance?
+            <h2 className="text-2xl md:text-3xl font-black text-[var(--text-primary)] mb-3 transition-colors">
+              Ready to showcase your brilliance?
             </h2>
-            <p className="text-[var(--text-secondary)] mb-12 max-w-2xl mx-auto text-lg leading-relaxed transition-colors">
+            <p className="text-[var(--text-secondary)] mb-8 max-w-md mx-auto text-sm leading-relaxed transition-colors">
               Join 50,000+ specialists who have accelerated their careers through our competitive learning framework.
             </p>
 
-            <div className="flex flex-col md:flex-row gap-4 max-w-lg mx-auto">
+            <div className="flex flex-col sm:flex-row gap-3 max-w-md mx-auto">
               <input
                 type="email"
                 placeholder="Enter your email"
-                className="flex-1 px-8 py-5 rounded-2xl bg-white border border-gray-200 outline-none focus:border-[#8cc63f] transition-all shadow-sm"
+                className="flex-1 px-4 py-3 rounded-xl bg-white border border-gray-200 outline-none focus:border-[#8cc63f] transition-all shadow-sm text-sm text-gray-900 placeholder:text-gray-400"
               />
-              <button className="bg-[#8cc63f] hover:bg-[#7ab033] text-white px-10 py-5 rounded-2xl font-black text-sm uppercase tracking-wider transition-all shadow-xl shadow-[#8cc63f]/30">
+              <button
+                onClick={() => navigate('/contests')}
+                className="bg-[#8cc63f] hover:bg-[#7ab033] text-white px-6 py-3 rounded-xl font-black text-xs uppercase tracking-wider transition-all shadow-lg shadow-[#8cc63f]/30 whitespace-nowrap"
+              >
                 Start Your Journey
               </button>
             </div>
           </div>
 
           {/* Abstract background blobs */}
-          <div className="absolute top-0 right-0 w-64 h-64 bg-[#8cc63f]/5 rounded-full blur-[100px]"></div>
-          <div className="absolute bottom-0 left-0 w-64 h-64 bg-[#fca311]/5 rounded-full blur-[100px]"></div>
+          <div className="absolute top-0 right-0 w-40 h-40 bg-[#8cc63f]/5 rounded-full blur-[80px]"></div>
+          <div className="absolute bottom-0 left-0 w-40 h-40 bg-[#fca311]/5 rounded-full blur-[80px]"></div>
         </div>
       </section>
     </div>

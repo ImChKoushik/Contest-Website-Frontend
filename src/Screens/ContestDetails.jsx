@@ -238,7 +238,8 @@ export default function ContestDetails() {
               </div>
 
               {/* Main Content Area - 8 Cols */}
-              <div className="lg:col-span-8 order-2 lg:order-1 pt-4">
+              <div className="lg:col-span-8 order-2 lg:order-1 pt-4 space-y-6">
+                {/* Challenge Brief Card */}
                 <div className="bg-white rounded-[32px] p-8 md:p-12 border border-gray-100 shadow-[0_20px_40px_-15px_rgb(0,0,0,0.05)]">
                   <div className="flex items-center gap-4 mb-8 border-b border-gray-100 pb-6">
                     <div className="w-12 h-12 bg-[#8cc63f]/10 rounded-2xl flex items-center justify-center text-[#8cc63f]">
@@ -251,15 +252,86 @@ export default function ContestDetails() {
                       <p className="text-gray-400 font-medium text-sm">Everything you need to know about this contest.</p>
                     </div>
                   </div>
-                  
+
                   <div className="prose prose-lg text-gray-600 leading-loose max-w-none prose-headings:font-black prose-headings:text-gray-900 prose-p:font-medium prose-a:text-[#8cc63f] prose-li:marker:text-[#8cc63f]">
                     <p className="whitespace-pre-wrap">{contest.contestDescription}</p>
                   </div>
+
+                  {/* PDF Download */}
+                  {contest.contestPDF?.url && (
+                    <a
+                      href={contest.contestPDF.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="mt-8 flex items-center justify-between w-full p-4 rounded-2xl bg-red-50 border border-red-100 hover:bg-red-100 transition-all group"
+                    >
+                      <div className="flex items-center gap-3">
+                        <div className="w-9 h-9 rounded-xl bg-red-500/10 flex items-center justify-center flex-shrink-0">
+                          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5 text-red-500">
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" />
+                          </svg>
+                        </div>
+                        <div>
+                          <p className="text-xs font-black text-red-700 uppercase tracking-wider">Contest Brief PDF</p>
+                          <p className="text-[10px] text-red-500/70 font-medium truncate max-w-[150px]">
+                            {contest.contestPDF.fileName || 'View / Download Brief'}
+                          </p>
+                        </div>
+                      </div>
+                      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-4 h-4 text-red-500 group-hover:translate-y-0.5 transition-transform">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3" />
+                      </svg>
+                    </a>
+                  )}
+
                 </div>
+
+                {/* Rule Sections Card */}
+                {contest.ruleSections?.length > 0 && (
+                  <div className="bg-white rounded-[32px] p-8 md:p-12 border border-gray-100 shadow-[0_20px_40px_-15px_rgb(0,0,0,0.05)]">
+                    <div className="flex items-center gap-4 mb-8 border-b border-gray-100 pb-6">
+                      <div className="w-12 h-12 bg-[#fcb900]/10 rounded-2xl flex items-center justify-center text-[#fcb900]">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-6 h-6">
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                      </div>
+                      <div>
+                        <h3 className="text-2xl font-black text-gray-900 tracking-tight">Contest Rules</h3>
+                        <p className="text-gray-400 font-medium text-sm">Guidelines and requirements all participants must follow.</p>
+                      </div>
+                    </div>
+
+                    <div className="space-y-8">
+                      {contest.ruleSections.map((section, sIdx) => (
+                        <div key={sIdx}>
+                          <div className="flex items-center gap-3 mb-4">
+                            <span className="w-7 h-7 rounded-full bg-[#8cc63f]/10 text-[#8cc63f] font-black text-[11px] flex items-center justify-center flex-shrink-0">
+                              {sIdx + 1}
+                            </span>
+                            <h4 className="text-lg font-black text-gray-900 tracking-tight">{section.title}</h4>
+                          </div>
+                          <ul className="space-y-3 ml-10">
+                            {section.points?.filter(p => p.trim()).map((point, pIdx) => (
+                              <li key={pIdx} className="flex items-start gap-3 text-gray-600 font-medium">
+                                <span className="w-5 h-5 rounded-full bg-[#8cc63f]/10 border border-[#8cc63f]/30 flex items-center justify-center flex-shrink-0 mt-0.5">
+                                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-3 h-3 text-[#8cc63f]">
+                                    <path fillRule="evenodd" d="M16.704 4.153a.75.75 0 01.143 1.052l-8 10.5a.75.75 0 01-1.127.075l-4.5-4.5a.75.75 0 011.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 011.05-.143z" clipRule="evenodd" />
+                                  </svg>
+                                </span>
+                                <span>{point}</span>
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
               </div>
 
             </div>
           </div>
+
 
           {/* Modal */}
           <TeamSelectionModal

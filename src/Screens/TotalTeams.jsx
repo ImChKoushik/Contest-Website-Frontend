@@ -126,22 +126,22 @@ export default function TotalTeams() {
           {error}
         </div>
       ) : (
-        <div className="bg-[var(--card-bg)] rounded-2xl shadow-[var(--card-shadow)] border border-[var(--border-primary)] overflow-hidden transition-all">
-          <div className="p-6 border-b border-[var(--border-primary)] flex justify-between items-center transition-colors">
-            <h3 className="font-bold text-lg text-[var(--text-primary)]">
-              Active Teams ({teamsData.length})
+        <div className="bg-[var(--card-bg)] rounded-[2.5rem] shadow-premium border border-[var(--border-primary)] overflow-hidden transition-all">
+          <div className="p-8 border-b border-[var(--border-primary)] flex justify-between items-center transition-colors">
+            <h3 className="font-black text-xl text-[var(--text-primary)] transition-colors uppercase tracking-tight">
+              Active Teams <span className="text-[#8cc63f] opacity-50">/</span> {teamsData.length}
             </h3>
           </div>
           <div className="overflow-x-auto">
             <table className="w-full text-left border-collapse">
-              <thead>
-                <tr className="bg-[var(--bg-primary)] text-[var(--text-secondary)] text-[10px] uppercase font-black tracking-widest border-b border-[var(--border-primary)] transition-colors">
-                  <th className="p-4">Team Name</th>
-                  <th className="p-4">Leader</th>
-                  <th className="p-4">Members</th>
-                  <th className="p-4">Contest</th>
-                  <th className="p-4">Status</th>
-                  <th className="p-4 text-right">Actions</th>
+              <thead className="admin-table-header">
+                <tr className="text-[10px] uppercase font-black tracking-widest transition-colors">
+                  <th className="p-5">Team Name</th>
+                  <th className="p-5">Leader</th>
+                  <th className="p-5">Members</th>
+                  <th className="p-5">Contest</th>
+                  <th className="p-5">Status</th>
+                  <th className="p-5 text-right">Actions</th>
                 </tr>
               </thead>
               <tbody className="text-sm divide-y divide-[var(--border-primary)]">
@@ -188,7 +188,7 @@ export default function TotalTeams() {
                       <Button
                         onClick={() => openModal(team)}
                         variant="secondary"
-                        className="px-3 py-1.5 text-[10px] font-black uppercase tracking-wider bg-[var(--bg-primary)] text-[var(--text-secondary)] hover:bg-[var(--bg-primary)]/80 border-[var(--border-primary)]"
+                        className="px-4 py-2 text-[10px] font-black uppercase tracking-wider bg-[#8cc63f]/10 text-[#8cc63f] hover:bg-[#8cc63f] hover:text-white border border-[#8cc63f]/20 transition-all shadow-sm"
                       >
                         {team.submissionStatus === 'Submitted' ? 'Grade Team' : 'View Team'}
                       </Button>
@@ -217,11 +217,10 @@ export default function TotalTeams() {
         </div>
       )}
 
-      {/* Details Modal */}
       {isModalOpen && selectedTeam && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-          <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" onClick={closeModal}></div>
-          <div className="bg-[var(--card-bg)] rounded-[32px] w-full max-w-2xl max-h-[90vh] overflow-y-auto relative z-10 shadow-2xl animate-in fade-in zoom-in duration-200 border border-[var(--border-primary)]">
+          <div className="absolute inset-0 bg-black/60 backdrop-blur-md" onClick={closeModal}></div>
+          <div className="bg-[var(--card-bg)] rounded-[40px] w-full max-w-2xl max-h-[90vh] overflow-y-auto relative z-10 shadow-premium animate-in fade-in zoom-in duration-300 border border-[var(--border-primary)]">
             {/* Modal Header */}
             <div className="p-8 border-b border-[var(--border-primary)] flex justify-between items-start sticky top-0 bg-[var(--card-bg)] z-10">
               <div>

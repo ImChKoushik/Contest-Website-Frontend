@@ -132,17 +132,17 @@ export default function TotalContests() {
           <Button
             variant="secondary"
             onClick={fetchAllContests}
-            className="px-5 py-2.5 text-sm font-bold flex items-center gap-2"
+            className="px-6 py-2.5 text-xs font-black uppercase tracking-widest flex items-center gap-2 bg-[var(--bg-secondary)] border border-[var(--border-primary)] shadow-sm"
           >
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-4 h-4">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={3} stroke="currentColor" className="w-3.5 h-3.5">
               <path strokeLinecap="round" strokeLinejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99" />
             </svg>
-            Refresh Data
+            Refresh
           </Button>
           <Button
             variant="primary"
             onClick={() => navigate("/admin-dashboard/add-contest")}
-            className="px-6 py-2.5 text-sm font-bold shadow-lg shadow-[#8cc63f]/20"
+            className="px-8 py-2.5 text-xs font-black uppercase tracking-widest shadow-lg shadow-[#8cc63f]/20"
           >
             + Create New
           </Button>
@@ -150,7 +150,7 @@ export default function TotalContests() {
       </div>
 
       {/* Main Table Container */}
-      <div className="bg-[var(--card-bg)] rounded-[32px] shadow-[var(--card-shadow)] border border-[var(--border-primary)] overflow-hidden transition-all">
+      <div className="bg-[var(--card-bg)] rounded-[2.5rem] shadow-premium border border-[var(--border-primary)] overflow-hidden transition-all">
         {error && (
           <div className="p-6 bg-red-400/10 text-red-500 border-b border-red-500/20 font-bold text-sm flex items-center gap-2">
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-5 h-5 transition-colors">
@@ -162,13 +162,13 @@ export default function TotalContests() {
 
         <div className="overflow-x-auto min-h-[400px]">
           <table className="w-full text-left border-collapse">
-            <thead>
-              <tr className="bg-[var(--bg-primary)]/50 border-b border-[var(--border-primary)] text-[var(--text-secondary)] text-[10px] uppercase font-black tracking-[0.15em] transition-colors">
+            <thead className="admin-table-header">
+              <tr className="text-[10px] uppercase font-black tracking-[0.15em] transition-colors">
                 <th className="p-6">Internal ID</th>
                 <th className="p-6">Thumbnail</th>
                 <th className="p-6">Details</th>
                 <th className="p-6">Category</th>
-                <th className="p-6">Type</th>
+                <th className="p-6 text-center">Type</th>
                 <th className="p-6">Status</th>
                 <th className="p-6 text-right">Settings</th>
                 <th className="p-6 text-right">Actions</th>
@@ -229,14 +229,14 @@ export default function TotalContests() {
                         {contest.category}
                       </span>
                     </td>
-                    <td className="p-6">
-                      <div className="flex flex-col gap-2">
+                    <td className="p-6 text-center">
+                      <div className="flex flex-col gap-2 items-center">
                         <select
                           value={pendingType[contest._id] || contest.projectType}
                           onChange={(e) => setPendingType(prev => ({ ...prev, [contest._id]: e.target.value }))}
-                          className={`text-[11px] font-black uppercase px-2 py-1 rounded border ${(pendingType[contest._id] || contest.projectType) === 'Team' ? 'text-blue-600 border-blue-100 bg-blue-50' :
-                              (pendingType[contest._id] || contest.projectType) === 'Both' ? 'text-green-600 border-green-100 bg-green-50' :
-                                'text-purple-600 border-purple-100 bg-purple-50'
+                          className={`text-[11px] font-black uppercase px-2.5 py-1.5 rounded-lg border focus:outline-none transition-all cursor-pointer ${(pendingType[contest._id] || contest.projectType) === 'Team' ? 'text-blue-600 border-blue-200 bg-blue-50' :
+                              (pendingType[contest._id] || contest.projectType) === 'Both' ? 'text-green-600 border-green-200 bg-green-50' :
+                                'text-purple-600 border-purple-200 bg-purple-50'
                             }`}
                         >
                           <option value="Individual">Individual</option>
@@ -244,14 +244,14 @@ export default function TotalContests() {
                           <option value="Both">Both</option>
                         </select>
                         {(pendingType[contest._id] || contest.projectType) !== 'Individual' && (
-                          <div className="flex items-center gap-2">
-                            <span className="text-[9px] font-black text-[var(--text-secondary)] opacity-60 uppercase">Max Size:</span>
+                          <div className="flex items-center gap-2 bg-[var(--bg-primary)] px-2 py-1 rounded-lg border border-[var(--border-primary)] shadow-sm">
+                            <span className="text-[9px] font-black text-[var(--text-secondary)] opacity-60 uppercase">Max:</span>
                             <input
                               type="number"
                               min="2"
                               value={pendingSize[contest._id] ?? contest.teamSize ?? 1}
                               onChange={(e) => setPendingSize(prev => ({ ...prev, [contest._id]: e.target.value }))}
-                              className="w-12 text-[10px] font-bold border border-[var(--border-primary)] bg-[var(--bg-primary)] text-[var(--text-primary)] rounded px-1.5 py-0.5 outline-none focus:ring-1 focus:ring-[#8cc63f]/30 transition-all"
+                              className="w-10 text-[10px] font-black bg-transparent text-[var(--text-primary)] outline-none"
                             />
                           </div>
                         )}

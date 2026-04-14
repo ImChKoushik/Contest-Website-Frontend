@@ -3,15 +3,15 @@ import logo from '../assets/images/logo.png';
 
 export default function Footer() {
   return (
-    <footer className="bg-[#0066b2] text-white pt-20 pb-10">
+    <footer className="bg-[#0066b2] text-white pt-12 pb-6">
       <div className="max-w-7xl mx-auto px-6">
-        <div className="grid grid-cols-1 md:grid-cols-12 gap-12 mb-16">
+        <div className="grid grid-cols-1 md:grid-cols-12 gap-8 mb-10">
           {/* Brand Column */}
           <div className="md:col-span-4 lg:col-span-3">
-            <div className="mb-6">
-              <img src={logo} alt="Desun Academy" className="h-12 w-auto bg-white p-2 rounded-lg" />
+            <div className="mb-4">
+              <img src={logo} alt="Desun Academy" className="h-10 w-auto bg-white p-1.5 rounded-lg" />
             </div>
-            <p className="text-blue-50/80 text-sm leading-relaxed mb-8">
+            <p className="text-blue-50/80 text-xs leading-relaxed mb-6">
               Empowering the next generation of specialists through high-stakes competition and elite academic training.
             </p>
             <div className="flex gap-4">
@@ -52,30 +52,30 @@ export default function Footer() {
 
           {/* Platform Column */}
           <div className="md:col-span-2 lg:col-span-2 md:ml-auto">
-            <h3 className="font-bold text-white mb-6">Platform</h3>
-            <ul className="space-y-4">
-              <li><Link to="/contests" className="text-blue-50/70 hover:text-[#8cc63f] text-sm transition-colors">Explore Contests</Link></li>
-              <li><Link to="/leaderboard" className="text-blue-50/70 hover:text-[#8cc63f] text-sm transition-colors">Leaderboard</Link></li>
-              <li><Link to="/success-stories" className="text-blue-50/70 hover:text-[#8cc63f] text-sm transition-colors">Success Stories</Link></li>
-              <li><Link to="/contact" className="text-blue-50/70 hover:text-[#8cc63f] text-sm transition-colors">Support Center</Link></li>
+            <h3 className="font-bold text-white mb-4 text-sm">Platform</h3>
+            <ul className="space-y-2">
+              <li><Link to="/contests" className="text-blue-50/70 hover:text-[#8cc63f] text-xs transition-colors">Explore Contests</Link></li>
+              <li><Link to="/leaderboard" className="text-blue-50/70 hover:text-[#8cc63f] text-xs transition-colors">Leaderboard</Link></li>
+              <li><Link to="/success-stories" className="text-blue-50/70 hover:text-[#8cc63f] text-xs transition-colors">Success Stories</Link></li>
+              <li><Link to="/contact" className="text-blue-50/70 hover:text-[#8cc63f] text-xs transition-colors">Support Center</Link></li>
             </ul>
           </div>
 
           {/* Support Column */}
           <div className="md:col-span-2 lg:col-span-2">
-            <h3 className="font-bold text-white mb-6">Support</h3>
-            <ul className="space-y-4">
-              <li><Link to="/faq" className="text-blue-50/70 hover:text-[#8cc63f] text-sm transition-colors">FAQ</Link></li>
-              <li><Link to="/contact" className="text-blue-50/70 hover:text-[#8cc63f] text-sm transition-colors">Contact Us</Link></li>
-              <li><Link to="/privacy-policy" className="text-blue-50/70 hover:text-[#8cc63f] text-sm transition-colors">Privacy Policy</Link></li>
-              <li><Link to="/terms-of-service" className="text-blue-50/70 hover:text-[#8cc63f] text-sm transition-colors">Terms of Service</Link></li>
+            <h3 className="font-bold text-white mb-4 text-sm">Support</h3>
+            <ul className="space-y-2">
+              <li><Link to="/faq" className="text-blue-50/70 hover:text-[#8cc63f] text-xs transition-colors">FAQ</Link></li>
+              <li><Link to="/contact" className="text-blue-50/70 hover:text-[#8cc63f] text-xs transition-colors">Contact Us</Link></li>
+              <li><Link to="/privacy-policy" className="text-blue-50/70 hover:text-[#8cc63f] text-xs transition-colors">Privacy Policy</Link></li>
+              <li><Link to="/terms-of-service" className="text-blue-50/70 hover:text-[#8cc63f] text-xs transition-colors">Terms of Service</Link></li>
             </ul>
           </div>
 
           {/* Contact Column */}
           <div className="md:col-span-4 lg:col-span-4">
-            <h3 className="font-bold text-white mb-6 uppercase tracking-wider">Contact Us</h3>
-            <div className="space-y-6">
+            <h3 className="font-bold text-white mb-4 uppercase tracking-wider text-sm">Contact Us</h3>
+            <div className="space-y-4">
               <a 
                 href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent("Ambuja Neotia Eco Station Sector V Salt Lake Kolkata")}`}
                 target="_blank"
@@ -115,7 +115,7 @@ export default function Footer() {
         </div>
 
         {/* Bottom Bar */}
-        <div className="pt-10 border-t border-white/10 flex flex-col md:flex-row justify-between items-center gap-6">
+        <div className="pt-6 border-t border-white/10 flex flex-col md:flex-row justify-between items-center gap-4">
           <div className="text-blue-50/50 text-[10px] md:text-[11px] text-center md:text-left space-y-1.5">
             <p className="font-semibold tracking-wide">© 2026 Desun Academy. All Rights Reserved. A unit of DESUN Tech Foundation. All Rights Reserved.</p>
             <p className="font-bold text-blue-50/40">Powered by DESUN Technology PVT LTD.</p>
@@ -130,7 +130,7 @@ export default function Footer() {
         </div>
 
         {/* Credits Section */}
-        <div className="pt-8 mt-8 border-t border-white/5 text-center">
+        <div className="pt-4 mt-4 border-t border-white/5 text-center">
           <p className="text-[10px] md:text-[11px] text-blue-50/20 font-medium tracking-wide leading-relaxed">
             Created and developed by <span className="text-[#8cc63f]/50">MERN Stack Trainees</span> of Desun Academy<br />
             <span className="text-blue-50/40 font-bold">Mr. Koushik Chakraborty</span> & <span className="text-blue-50/40 font-bold">Mr. Arupriya Mondal</span>
