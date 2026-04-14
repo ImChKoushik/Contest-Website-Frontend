@@ -326,16 +326,16 @@ export default function AdminDashboard() {
                   <tr><td colSpan="5" className="p-8 text-center text-gray-400">Loading invites...</td></tr>
                 ) : invitesData.length > 0 ? (
                   invitesData.slice(0, 8).map((invite) => (
-                    <tr key={invite._id} className="hover:bg-gray-50/50 transition-colors">
+                    <tr key={invite._id} className="hover:bg-[var(--bg-primary)]/50 transition-colors">
                       <td className="p-4">
-                        <div className="font-bold text-gray-800 text-xs">{invite.sender?.userName || 'N/A'}</div>
-                        <div className="text-[10px] text-gray-400">{invite.sender?.email}</div>
+                        <div className="font-bold text-[var(--text-primary)] text-xs">{invite.sender?.userName || 'N/A'}</div>
+                        <div className="text-[10px] text-[var(--text-secondary)] opacity-80">{invite.sender?.email}</div>
                       </td>
-                      <td className="p-4 text-gray-600">
-                         <div className="font-bold text-gray-800 text-xs">{invite.receiver?.userName || 'N/A'}</div>
-                         <div className="text-[10px] text-gray-400">{invite.receiver?.email}</div>
+                      <td className="p-4">
+                         <div className="font-bold text-[var(--text-primary)] text-xs">{invite.receiver?.userName || 'N/A'}</div>
+                         <div className="text-[10px] text-[var(--text-secondary)] opacity-80">{invite.receiver?.email}</div>
                       </td>
-                      <td className="p-4 font-bold text-gray-700 text-xs truncate max-w-[150px]">{invite.team?.teamName || 'Deleted Team'}</td>
+                      <td className="p-4 font-bold text-[var(--text-primary)] opacity-90 text-xs truncate max-w-[150px]">{invite.team?.teamName || 'Deleted Team'}</td>
                       <td className="p-4">
                         <span className={`px-2 py-0.5 rounded-full text-[9px] font-black uppercase tracking-tighter ${
                           invite.status === 'Accepted' ? 'bg-green-100 text-green-700' : 
@@ -347,7 +347,7 @@ export default function AdminDashboard() {
                       <td className="p-4 text-right">
                         <button 
                           onClick={() => handleDeleteInvite(invite._id)}
-                          className="p-1.5 rounded-lg text-red-300 hover:text-red-600 hover:bg-red-50 transition-all"
+                          className="p-1.5 rounded-lg text-red-400 hover:text-red-500 hover:bg-red-500/10 transition-all"
                         >
                           <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-4 h-4">
                             <path strokeLinecap="round" strokeLinejoin="round" d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0" />
@@ -378,7 +378,7 @@ export default function AdminDashboard() {
           <div className="overflow-x-auto">
             <table className="w-full text-left border-collapse">
               <thead>
-                <tr className="bg-gray-50 text-gray-500 text-xs uppercase tracking-wider">
+                <tr className="bg-[var(--bg-primary)] text-[var(--text-secondary)] text-[10px] uppercase font-black tracking-wider border-b border-[var(--border-primary)] transition-colors">
                   <th className="p-4 font-semibold">Contest Name</th>
                   <th className="p-4 font-semibold">Status</th>
                   <th className="p-4 font-semibold">Participants</th>
@@ -392,19 +392,19 @@ export default function AdminDashboard() {
                   </tr>
                 ) : Array.isArray(contestsData?.contests) && contestsData.contests.length > 0 ? (
                   contestsData.contests.slice(0, 5).map((item, idx) => (
-                    <tr key={idx} className="hover:bg-gray-50/50 transition-colors">
-                      <td className="p-4 font-medium text-gray-800">{item.contestTitle}</td>
+                    <tr key={idx} className="hover:bg-[var(--bg-primary)]/50 transition-colors">
+                      <td className="p-4 font-bold text-[var(--text-primary)]">{item.contestTitle}</td>
                       <td className="p-4">
                         <span className={`px-2.5 py-1 rounded-full text-xs font-bold ${
                           item.status === 'On-Going' ? 'bg-[#8cc63f]/10 text-[#7ab033]' : 
                           item.status === 'Upcoming' ? 'bg-[#fcb900]/10 text-[#e6a800]' : 
-                          'bg-gray-100 text-gray-500'
+                          'bg-[var(--bg-primary)] text-[var(--text-secondary)] border border-[var(--border-primary)]'
                         }`}>
                           {item.status}
                         </span>
                       </td>
-                      <td className="p-4 text-gray-600">{item.entryLimit} Units</td>
-                      <td className="p-4 text-gray-500">{new Date(item.contestDeadLine).toLocaleDateString()}</td>
+                      <td className="p-4 text-[var(--text-secondary)] font-medium">{item.entryLimit} Units</td>
+                      <td className="p-4 text-[var(--text-secondary)] opacity-80">{new Date(item.contestDeadLine).toLocaleDateString()}</td>
                     </tr>
                   ))
                 ) : (
@@ -434,10 +434,10 @@ export default function AdminDashboard() {
                     <h4 className="font-bold text-[13px] text-[var(--text-primary)] tracking-tight leading-tight transition-colors">{activity.title}</h4>
                     <p className="text-xs text-[var(--text-secondary)] mt-1 font-medium italic opacity-80 leading-relaxed transition-colors">{activity.desc}</p>
                     <div className="flex items-center gap-1.5 mt-1.5">
-                      <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3 text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3 text-[var(--text-secondary)] opacity-50" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                       </svg>
-                      <p className="text-[10px] font-black text-gray-300 uppercase tracking-[0.1em]">{activity.time} ago</p>
+                      <p className="text-[10px] font-black text-[var(--text-secondary)] opacity-70 uppercase tracking-[0.1em]">{activity.time} ago</p>
                     </div>
                   </div>
                 </div>
@@ -449,7 +449,7 @@ export default function AdminDashboard() {
                     <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" />
                   </svg>
                  </div>
-                 <p className="text-gray-400 font-bold text-sm italic">Synchronizing activity feed...</p>
+                 <p className="text-[var(--text-secondary)] font-bold text-sm italic opacity-60">Synchronizing activity feed...</p>
               </div>
             )}
           </div>

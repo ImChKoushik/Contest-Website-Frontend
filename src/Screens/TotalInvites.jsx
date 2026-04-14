@@ -41,22 +41,22 @@ export default function TotalInvites() {
   };
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full transition-colors duration-300">
       {/* Header Section */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between mb-8 pb-5 border-b border-gray-100">
+      <div className="flex flex-col md:flex-row md:items-center justify-between mb-8 pb-5 border-b border-[var(--border-primary)]">
         <div className="flex items-center gap-4">
           <button 
             onClick={() => navigate(-1)}
-            className="w-10 h-10 rounded-full bg-gray-50 flex items-center justify-center text-gray-500 hover:bg-gray-100 transition"
+            className="w-10 h-10 rounded-full bg-[var(--bg-primary)] flex items-center justify-center text-[var(--text-secondary)] hover:bg-[var(--bg-primary)]/80 border border-[var(--border-primary)] transition"
             aria-label="Go back"
           >
-            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M10 19l-7-7 m0 0l7-7m-7 7h18" />
             </svg>
           </button>
           <div>
-            <h1 className="text-3xl font-bold text-gray-900 tracking-tight">Platform Invitations</h1>
-            <p className="text-gray-500 mt-1">Review all squad invites and join requests sent across the platform.</p>
+            <h1 className="text-3xl font-black text-[var(--text-primary)] tracking-tight">Platform Invitations</h1>
+            <p className="text-[var(--text-secondary)] mt-1 font-medium">Review all squad invites and join requests sent across the platform.</p>
           </div>
         </div>
       </div>
@@ -70,36 +70,36 @@ export default function TotalInvites() {
           {error}
         </div>
       ) : (
-        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
-          <div className="p-6 border-b border-gray-50 flex justify-between items-center">
-            <h3 className="font-bold text-lg text-gray-800">
+        <div className="bg-[var(--card-bg)] rounded-2xl shadow-[var(--card-shadow)] border border-[var(--border-primary)] overflow-hidden transition-all">
+          <div className="p-6 border-b border-[var(--border-primary)] flex justify-between items-center transition-colors">
+            <h3 className="font-bold text-lg text-[var(--text-primary)]">
               Total Invites ({invitesData.length})
             </h3>
           </div>
           <div className="overflow-x-auto">
             <table className="w-full text-left border-collapse">
               <thead>
-                <tr className="bg-gray-50 text-gray-500 text-xs uppercase tracking-wider">
-                  <th className="p-4 font-semibold">Sender</th>
-                  <th className="p-4 font-semibold">Receiver</th>
-                  <th className="p-4 font-semibold">Team</th>
-                  <th className="p-4 font-semibold">Type</th>
-                  <th className="p-4 font-semibold">Status</th>
-                  <th className="p-4 font-semibold text-right">Actions</th>
+                <tr className="bg-[var(--bg-primary)] text-[var(--text-secondary)] text-[10px] uppercase font-black tracking-widest border-b border-[var(--border-primary)] transition-colors">
+                  <th className="p-4">Sender</th>
+                  <th className="p-4">Receiver</th>
+                  <th className="p-4">Team</th>
+                  <th className="p-4">Type</th>
+                  <th className="p-4">Status</th>
+                  <th className="p-4 text-right">Actions</th>
                 </tr>
               </thead>
-              <tbody className="text-sm divide-y divide-gray-50">
+              <tbody className="text-sm divide-y divide-[var(--border-primary)] transition-colors">
                 {invitesData.map((invite) => (
-                  <tr key={invite._id} className="hover:bg-gray-50/50 transition-colors">
-                    <td className="p-4">
-                      <div className="font-bold text-gray-900">{invite.sender?.userName || 'N/A'}</div>
-                      <div className="text-[11px] text-gray-400">{invite.sender?.email}</div>
+                  <tr key={invite._id} className="hover:bg-[var(--bg-primary)]/50 transition-all">
+                    <td className="p-4 text-[var(--text-primary)]">
+                      <div className="font-bold text-[var(--text-primary)]">{invite.sender?.userName || 'N/A'}</div>
+                      <div className="text-[11px] text-[var(--text-secondary)] opacity-60 font-medium">{invite.sender?.email}</div>
                     </td>
                     <td className="p-4">
-                      <div className="font-bold text-gray-900">{invite.receiver?.userName || 'N/A'}</div>
-                      <div className="text-[11px] text-gray-400">{invite.receiver?.email}</div>
+                      <div className="font-bold text-[var(--text-primary)]">{invite.receiver?.userName || 'N/A'}</div>
+                      <div className="text-[11px] text-[var(--text-secondary)] opacity-60 font-medium">{invite.receiver?.email}</div>
                     </td>
-                    <td className="p-4 font-medium text-gray-700">
+                    <td className="p-4 font-bold text-[var(--text-primary)] opacity-90 text-xs">
                       {invite.team?.teamName || 'N/A'}
                     </td>
                     <td className="p-4">

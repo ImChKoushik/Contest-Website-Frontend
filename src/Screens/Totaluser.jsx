@@ -67,22 +67,22 @@ export default function Totaluser() {
   const regularUsers = allUsers.filter(u => u.role !== 'Admin');
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full transition-colors duration-300">
       {/* Header Section */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between mb-8 pb-5 border-b border-gray-100">
+      <div className="flex flex-col md:flex-row md:items-center justify-between mb-8 pb-5 border-b border-[var(--border-primary)]">
         <div className="flex items-center gap-4">
           <button
             onClick={() => navigate(-1)}
-            className="w-10 h-10 rounded-full bg-gray-50 flex items-center justify-center text-gray-500 hover:bg-gray-100 transition"
+            className="w-10 h-10 rounded-full bg-[var(--bg-primary)] flex items-center justify-center text-[var(--text-secondary)] hover:bg-[var(--bg-primary)]/80 border border-[var(--border-primary)] transition"
             aria-label="Go back"
           >
-            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
             </svg>
           </button>
           <div>
-            <h1 className="text-3xl font-bold text-gray-900 tracking-tight">User Management</h1>
-            <p className="text-gray-500 mt-1">Manage administrators and platform participants separately.</p>
+            <h1 className="text-3xl font-black text-[var(--text-primary)] tracking-tight">User Management</h1>
+            <p className="text-[var(--text-secondary)] mt-1 font-medium">Manage administrators and platform participants separately.</p>
           </div>
         </div>
         <div className="mt-4 md:mt-0 flex flex-col sm:flex-row gap-3">
@@ -92,7 +92,7 @@ export default function Totaluser() {
               placeholder="Search by User ID..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="px-4 py-2 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#8cc63f] transition-all min-w-[200px]"
+              className="px-4 py-2 bg-[var(--bg-primary)] border border-[var(--border-primary)] rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#8cc63f] transition-all min-w-[200px] text-[var(--text-primary)]"
             />
             <Button type="submit" variant="secondary" className="px-4 py-2 text-sm font-semibold">Search</Button>
             {searchResults && (
@@ -114,51 +114,52 @@ export default function Totaluser() {
       ) : (
         <div className="space-y-12">
           {/* Admin Segment */}
-          <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
-            <div className="p-6 border-b border-gray-50 bg-gray-50/30 flex justify-between items-center">
+          {/* Admin Segment */}
+          <div className="bg-[var(--card-bg)] rounded-2xl shadow-[var(--card-shadow)] border border-[var(--border-primary)] overflow-hidden transition-all">
+            <div className="p-6 border-b border-[var(--border-primary)] bg-[var(--bg-secondary)]/30 flex justify-between items-center transition-colors">
               <div className="flex items-center gap-3">
                 <div className="w-8 h-8 rounded-lg bg-[#fcb900]/10 flex items-center justify-center">
                   <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-[#fcb900]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
                   </svg>
                 </div>
-                <h3 className="font-bold text-lg text-gray-800">Administrators ({admins.length})</h3>
+                <h3 className="font-bold text-lg text-[var(--text-primary)] transition-colors">Administrators ({admins.length})</h3>
               </div>
             </div>
             <div className="overflow-x-auto">
               <table className="w-full text-left border-collapse">
                 <thead>
-                  <tr className="bg-gray-50/50 text-gray-500 text-[11px] uppercase tracking-widest">
-                    <th className="p-4 font-bold">User ID</th>
-                    <th className="p-4 font-bold">Name</th>
-                    <th className="p-4 font-bold">Email</th>
-                    <th className="p-4 font-bold">Role</th>
-                    <th className="p-4 font-bold">Contact</th>
-                    <th className="p-4 font-bold">Gender</th>
-                    <th className="p-4 font-bold">Verified as Admin</th>
-                    <th className="p-4 font-bold">Joined At</th>
+                  <tr className="bg-[var(--bg-primary)]/50 text-[var(--text-secondary)] text-[11px] uppercase tracking-widest border-b border-[var(--border-primary)] transition-colors">
+                    <th className="p-4 font-black">User ID</th>
+                    <th className="p-4 font-black">Name</th>
+                    <th className="p-4 font-black">Email</th>
+                    <th className="p-4 font-black">Role</th>
+                    <th className="p-4 font-black">Contact</th>
+                    <th className="p-4 font-black">Gender</th>
+                    <th className="p-4 font-black">Verified</th>
+                    <th className="p-4 font-black">Joined At</th>
                   </tr>
                 </thead>
-                <tbody className="text-sm divide-y divide-gray-50">
+                <tbody className="text-sm divide-y divide-[var(--border-primary)] transition-colors">
                   {admins.map((admin) => (
-                    <tr key={admin._id} className="hover:bg-amber-50/20 transition-colors">
-                      <td className="p-4 font-mono text-[10px] text-gray-400">{admin._id}</td>
+                    <tr key={admin._id} className="hover:bg-amber-400/5 transition-colors">
+                      <td className="p-4 font-mono text-[10px] text-[var(--text-secondary)] opacity-60">{admin._id}</td>
                       <td className="p-4">
                         <div className="flex items-center gap-3">
-                          <div className="w-8 h-8 rounded-full bg-amber-100 flex items-center justify-center text-xs font-bold text-amber-700 border border-amber-200">
+                          <div className="w-8 h-8 rounded-full bg-amber-100 flex items-center justify-center text-xs font-bold text-amber-900 border border-amber-200">
                              {(admin.userName || 'A').substring(0,2).toUpperCase()}
                           </div>
-                          <span className="font-bold text-gray-800">{admin.userName}</span>
+                          <span className="font-bold text-[var(--text-primary)] transition-colors">{admin.userName}</span>
                         </div>
                       </td>
-                      <td className="p-4 text-gray-600 font-medium">{admin.email}</td>
+                      <td className="p-4 text-[var(--text-secondary)] font-medium transition-colors">{admin.email}</td>
                       <td className="p-4">
                         <span className="px-2.5 py-1 rounded-full text-[10px] font-black uppercase tracking-tight bg-[#fcb900]/10 text-[#e6a800] border border-[#fcb900]/20">
                           {admin.role}
                         </span>
                       </td>
-                      <td className="p-4 text-gray-500">{admin.contact || 'N/A'}</td>
-                      <td className="p-4 text-gray-500 capitalize">{admin.gender || 'N/A'}</td>
+                      <td className="p-4 text-[var(--text-secondary)] opacity-70 font-medium transition-colors">{admin.contact || 'N/A'}</td>
+                      <td className="p-4 text-[var(--text-secondary)] opacity-70 capitalize transition-colors">{admin.gender || 'N/A'}</td>
                       <td className="p-4">
                         <span className="flex items-center gap-1.5 font-bold text-[#8cc63f]">
                           <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
@@ -183,63 +184,64 @@ export default function Totaluser() {
           </div>
 
           {/* Regular Users Segment */}
-          <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
-            <div className="p-6 border-b border-gray-50 bg-gray-50/30 flex justify-between items-center">
+          {/* Regular Users Segment */}
+          <div className="bg-[var(--card-bg)] rounded-2xl shadow-[var(--card-shadow)] border border-[var(--border-primary)] overflow-hidden transition-all">
+            <div className="p-6 border-b border-[var(--border-primary)] bg-[var(--bg-secondary)]/30 flex justify-between items-center transition-colors">
               <div className="flex items-center gap-3">
                 <div className="w-8 h-8 rounded-lg bg-[#8cc63f]/10 flex items-center justify-center">
                   <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-[#8cc63f]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
                   </svg>
                 </div>
-                <h3 className="font-bold text-lg text-gray-800">Regular Users List ({regularUsers.length})</h3>
+                <h3 className="font-bold text-lg text-[var(--text-primary)] transition-colors">Regular Users List ({regularUsers.length})</h3>
               </div>
             </div>
             <div className="overflow-x-auto">
               <table className="w-full text-left border-collapse">
                 <thead>
-                  <tr className="bg-gray-50/50 text-gray-500 text-[11px] uppercase tracking-widest">
-                    <th className="p-4 font-bold">User ID</th>
-                    <th className="p-4 font-bold">Name</th>
-                    <th className="p-4 font-bold">Email</th>
-                    <th className="p-4 font-bold">Role</th>
-                    <th className="p-4 font-bold">Contact</th>
-                    <th className="p-4 font-bold">Gender</th>
-                    <th className="p-4 font-bold">Verified Status</th>
-                    <th className="p-4 font-bold">Joined At</th>
-                    <th className="p-4 font-bold text-right">Actions</th>
+                  <tr className="bg-[var(--bg-primary)]/50 text-[var(--text-secondary)] text-[11px] uppercase tracking-widest border-b border-[var(--border-primary)] transition-colors">
+                    <th className="p-4 font-black">User ID</th>
+                    <th className="p-4 font-black">Name</th>
+                    <th className="p-4 font-black">Email</th>
+                    <th className="p-4 font-black">Role</th>
+                    <th className="p-4 font-black">Contact</th>
+                    <th className="p-4 font-black">Gender</th>
+                    <th className="p-4 font-black">Verified Status</th>
+                    <th className="p-4 font-black">Joined At</th>
+                    <th className="p-4 font-black text-right">Actions</th>
                   </tr>
                 </thead>
-                <tbody className="text-sm divide-y divide-gray-50">
+                <tbody className="text-sm divide-y divide-[var(--border-primary)] transition-colors">
                   {regularUsers.map((user) => (
-                    <tr key={user._id} className="hover:bg-gray-50/50 transition-colors">
-                      <td className="p-4 font-mono text-[10px] text-gray-400">{user._id}</td>
+                    <tr key={user._id} className="hover:bg-[var(--bg-primary)]/50 transition-colors">
+                      <td className="p-4 font-mono text-[10px] text-[var(--text-secondary)] opacity-60 transition-colors">{user._id}</td>
                       <td className="p-4">
                         <div className="flex items-center gap-3">
-                          <div className="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-xs font-bold text-gray-600 border border-gray-200">
+                          <div className="w-8 h-8 rounded-full bg-[var(--bg-primary)] flex items-center justify-center text-xs font-bold text-[var(--text-secondary)] border border-[var(--border-primary)]">
                              {(user.userName || 'U').substring(0,2).toUpperCase()}
                           </div>
                           <div className="flex flex-col">
-                            <span className="font-bold text-gray-800">{user.userName}</span>
-                            <span className="text-[10px] font-medium text-gray-400">User</span>
+                            <span className="font-bold text-[var(--text-primary)] transition-colors">{user.userName}</span>
+                            <span className="text-[10px] font-black text-[var(--text-secondary)] opacity-50 uppercase tracking-tighter">User</span>
                           </div>
                         </div>
                       </td>
-                      <td className="p-4 text-gray-500 font-medium">{user.email}</td>
+                      <td className="p-4 text-[var(--text-secondary)] font-medium transition-colors">{user.email}</td>
                       <td className="p-4">
                         <span className="px-2.5 py-1 rounded-full text-[10px] font-black uppercase tracking-tight bg-[#8cc63f]/10 text-[#7ab033] border border-[#8cc63f]/20">
                           {user.role}
                         </span>
                       </td>
-                      <td className="p-4 text-gray-500">{user.contact || 'N/A'}</td>
-                      <td className="p-4 text-gray-500 capitalize">{user.gender || 'N/A'}</td>
+                      <td className="p-4 text-[var(--text-secondary)] opacity-70 transition-colors">{user.contact || 'N/A'}</td>
+                      <td className="p-4 text-[var(--text-secondary)] opacity-70 capitalize transition-colors">{user.gender || 'N/A'}</td>
                       <td className="p-4">
                         {user.isEmailVerified ? (
-                          <span className="text-[#8cc63f] font-semibold">Yes</span>
+                          <span className="text-[#8cc63f] font-bold">Yes</span>
                         ) : (
-                          <span className="text-gray-400">No</span>
+                          <span className="text-[var(--text-secondary)] opacity-40">No</span>
                         )}
                       </td>
-                      <td className="p-4 text-gray-500 whitespace-nowrap">
+                      <td className="p-4 text-[var(--text-secondary)] opacity-70 whitespace-nowrap transition-colors">
                         {new Date(user.createdAt).toLocaleDateString()}
                       </td>
                       <td className="p-4 text-right">

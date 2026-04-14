@@ -318,6 +318,95 @@ const Home = () => {
         </div>
       </section>
 
+      {/* Motivation & Rewards Section */}
+      <section className="py-24 relative overflow-hidden transition-colors">
+        <div className="container mx-auto px-6">
+          <div className="bg-[var(--card-bg)] rounded-[3rem] border border-[var(--border-primary)] shadow-[var(--card-shadow)] overflow-hidden relative group">
+            {/* Background Texture/glow */}
+            <div className="absolute top-0 right-0 w-96 h-96 bg-[var(--accent-green)]/10 rounded-full blur-[100px] -mr-48 -mt-48 transition-transform duration-1000 group-hover:scale-110"></div>
+            <div className="absolute bottom-0 left-0 w-64 h-64 bg-orange-500/10 rounded-full blur-[80px] -ml-32 -mb-32"></div>
+
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center relative z-10">
+              {/* Text Side */}
+              <div className="p-10 md:p-16 text-left">
+                <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-orange-500/10 text-orange-600 border border-orange-500/20 text-[10px] font-black uppercase tracking-widest mb-8 animate-bounce-slow">
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-4 h-4">
+                    <path fillRule="evenodd" d="M10.788 3.21c.448-1.077 1.976-1.077 2.424 0l2.082 5.007 5.404.433c1.164.093 1.636 1.545.749 2.305l-4.117 3.527 1.257 5.273c.271 1.136-.964 2.033-1.96 1.425L12 18.354 7.373 21.18c-.996.608-2.231-.29-1.96-1.425l1.257-5.273-4.117-3.527c-.887-.76-.415-2.212.749-2.305l5.404-.433 2.082-5.006z" clipRule="evenodd" />
+                  </svg>
+                  Reward Pools Active
+                </div>
+
+                <h2 className="text-4xl md:text-6xl font-black text-[var(--text-primary)] leading-tight mb-8 transition-colors">
+                  Show your skill, <br />
+                  <span className="text-[var(--accent-green)] italic">Redefine</span> your future.
+                </h2>
+
+                <div className="space-y-6 mb-10">
+                  <div className="flex gap-5">
+                    <div className="flex-shrink-0 w-14 h-14 rounded-2xl bg-[#8cc63f] flex items-center justify-center text-white shadow-lg shadow-[#8cc63f]/20">
+                      <span className="text-xl font-black">₹</span>
+                    </div>
+                    <div>
+                      <h4 className="text-xl font-extrabold text-[var(--text-primary)] mb-1">Win up to ₹10,000 Cash</h4>
+                      <p className="text-[var(--text-secondary)] font-medium">Top performers in every specialization win direct prize money credited instantly.</p>
+                    </div>
+                  </div>
+
+                  <div className="flex gap-5">
+                    <div className="flex-shrink-0 w-14 h-14 rounded-2xl bg-[var(--bg-primary)] border border-[var(--border-primary)] flex items-center justify-center text-[var(--accent-green)] shadow-sm">
+                      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-6 h-6">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M18 18.72a9.094 9.094 0 003.741-.479 3 3 0 00-4.682-2.72m.94 3.198l.001.031c0 .225-.012.447-.037.666A11.944 11.944 0 0112 21c-2.17 0-4.207-.576-5.963-1.584A6.062 6.062 0 016 18.719m12 0a5.971 5.971 0 00-.941-3.197m0 0A5.995 5.995 0 0012 12.75a5.995 5.995 0 00-5.058 2.772m0 0a3 3 0 00-4.681 2.72 8.986 8.986 0 003.74.477m.94-3.197a5.971 5.971 0 00-.94 3.197M15 6.75a3 3 0 11-6 0 3 3 0 016 0zm6 3a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0zm-13.5 0a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0z" />
+                      </svg>
+                    </div>
+                    <div>
+                      <h4 className="text-xl font-extrabold text-[var(--text-primary)] mb-1">Exclusive Interview Scopes</h4>
+                      <p className="text-[var(--text-secondary)] font-medium">Selected projects and runners-up get shortlisted for technical interviews and professional mentorship.</p>
+                    </div>
+                  </div>
+                </div>
+
+                <button 
+                  onClick={() => navigate('/contests')}
+                  className="px-10 py-5 bg-[#8cc63f] hover:bg-[#7ab033] text-white rounded-2xl font-black text-sm uppercase tracking-widest shadow-xl shadow-[#8cc63f]/30 transition-all hover:-translate-y-1 active:scale-95 flex items-center gap-3"
+                >
+                  Submit Your Project
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={3} stroke="currentColor" className="w-4 h-4">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
+                  </svg>
+                </button>
+              </div>
+
+              {/* Image Side */}
+              <div className="relative h-full min-h-[400px] lg:min-h-[600px] bg-gray-900 overflow-hidden">
+                <img 
+                  src={doodle2} 
+                  alt="Motivation" 
+                  className="absolute inset-0 w-full h-full object-cover transform scale-105 group-hover:scale-110 transition-transform duration-1000 ease-out opacity-80"
+                />
+                <div className="absolute inset-0 bg-gradient-to-l from-transparent via-transparent to-[var(--card-bg)]"></div>
+                
+                {/* Floating highlight */}
+                <div className="absolute bottom-12 left-12 right-12 p-8 bg-white/10 backdrop-blur-2xl rounded-[2rem] border border-white/20 animate-float text-left">
+                  <div className="flex items-center gap-4">
+                    <div className="w-12 h-12 rounded-full bg-[#8cc63f] flex items-center justify-center text-white">
+                       <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={3} stroke="currentColor" className="w-6 h-6">
+                         <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+                       </svg>
+                    </div>
+                    <div>
+                      <p className="text-white font-black text-lg leading-tight tracking-tight">Showcase & Succeed</p>
+                      <p className="text-white/60 text-xs font-bold uppercase tracking-widest mt-1">Join the community of achievers</p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Visual accents */}
+                <div className="absolute top-10 right-10 w-24 h-24 border-2 border-white/20 rounded-full animate-spin-slow"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
 
       {/* Explore Categories Section */}
       <section className="py-20 bg-[var(--bg-primary)] transition-colors">

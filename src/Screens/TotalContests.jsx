@@ -112,21 +112,21 @@ export default function TotalContests() {
   }, [fetchAllContests]);
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 transition-colors duration-300">
       {/* Header */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-10 pb-6 border-b border-gray-100">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-10 pb-6 border-b border-[var(--border-primary)]">
         <div>
           <button
             onClick={() => navigate("/admin-dashboard")}
-            className="flex items-center gap-2 text-gray-500 hover:text-[#8cc63f] font-bold text-sm mb-4 transition-colors"
+            className="flex items-center gap-2 text-[var(--text-secondary)] hover:text-[#8cc63f] font-black text-[10px] uppercase tracking-widest mb-4 transition-colors"
           >
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-4 h-4">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={3} stroke="currentColor" className="w-3.5 h-3.5">
               <path strokeLinecap="round" strokeLinejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18" />
             </svg>
             Dashboard
           </button>
-          <h1 className="text-3xl font-black text-gray-900 tracking-tight">Full Contest Registry</h1>
-          <p className="text-gray-500 mt-2">Comprehensive view of every specialization challenge in the system.</p>
+          <h1 className="text-3xl font-black text-[var(--text-primary)] tracking-tight">Full Contest Registry</h1>
+          <p className="text-[var(--text-secondary)] mt-2 font-medium">Comprehensive view of every specialization challenge in the system.</p>
         </div>
         <div className="flex gap-3">
           <Button
@@ -150,10 +150,10 @@ export default function TotalContests() {
       </div>
 
       {/* Main Table Container */}
-      <div className="bg-white rounded-[32px] shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-gray-100 overflow-hidden">
+      <div className="bg-[var(--card-bg)] rounded-[32px] shadow-[var(--card-shadow)] border border-[var(--border-primary)] overflow-hidden transition-all">
         {error && (
-          <div className="p-6 bg-red-50 text-red-600 border-b border-red-100 font-medium text-sm flex items-center gap-2">
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-5 h-5">
+          <div className="p-6 bg-red-400/10 text-red-500 border-b border-red-500/20 font-bold text-sm flex items-center gap-2">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-5 h-5 transition-colors">
               <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z" />
             </svg>
             Error loading contests: {error}
@@ -163,7 +163,7 @@ export default function TotalContests() {
         <div className="overflow-x-auto min-h-[400px]">
           <table className="w-full text-left border-collapse">
             <thead>
-              <tr className="bg-gray-50/50 border-b border-gray-100 text-gray-500 text-[11px] uppercase font-black tracking-[0.1em]">
+              <tr className="bg-[var(--bg-primary)]/50 border-b border-[var(--border-primary)] text-[var(--text-secondary)] text-[10px] uppercase font-black tracking-[0.15em] transition-colors">
                 <th className="p-6">Internal ID</th>
                 <th className="p-6">Thumbnail</th>
                 <th className="p-6">Details</th>
@@ -174,7 +174,7 @@ export default function TotalContests() {
                 <th className="p-6 text-right">Actions</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-50">
+            <tbody className="divide-y divide-[var(--border-primary)] transition-colors">
               {loading ? (
                 <tr>
                   <td colSpan="7" className="p-20 text-center">
@@ -186,9 +186,9 @@ export default function TotalContests() {
                 </tr>
               ) : data?.contests?.length > 0 ? (
                 data.contests.map((contest, i) => (
-                  <tr key={contest._id} className="hover:bg-gray-50/30 transition-colors group">
+                  <tr key={contest._id} className="hover:bg-[var(--bg-primary)]/50 transition-colors group">
                     <td className="p-6">
-                      <code className="text-[11px] font-mono bg-gray-100 text-gray-400 px-2 py-1 rounded group-hover:bg-[#8cc63f]/10 group-hover:text-[#8cc63f] transition-colors">
+                      <code className="text-[11px] font-mono bg-[var(--bg-primary)] text-[var(--text-secondary)] opacity-60 px-2.5 py-1.5 rounded-lg group-hover:bg-[#8cc63f]/10 group-hover:text-[#8cc63f] group-hover:opacity-100 transition-all border border-[var(--border-primary)]">
                         {contest._id.slice(-6)}
                       </code>
                     </td>
@@ -220,12 +220,12 @@ export default function TotalContests() {
                     </td>
                     <td className="p-6">
                       <div className="max-w-[200px]">
-                        <h4 className="font-bold text-gray-900 text-[14px] mb-0.5 truncate">{contest.contestTitle}</h4>
-                        <p className="text-[10px] text-gray-400 font-bold uppercase">{new Date(contest.contestDeadLine).toLocaleDateString()}</p>
+                        <h4 className="font-bold text-[var(--text-primary)] text-[15px] mb-1 truncate transition-colors">{contest.contestTitle}</h4>
+                        <p className="text-[10px] text-[var(--text-secondary)] opacity-60 font-black uppercase tracking-tight">{new Date(contest.contestDeadLine).toLocaleDateString()}</p>
                       </div>
                     </td>
                     <td className="p-6">
-                      <span className="text-[11px] font-black uppercase tracking-wider text-gray-600 bg-gray-100 px-2.5 py-1 rounded-md border border-gray-200">
+                      <span className="text-[11px] font-black uppercase tracking-widest text-[var(--text-secondary)] bg-[var(--bg-primary)] px-3 py-1.5 rounded-xl border border-[var(--border-primary)] transition-all">
                         {contest.category}
                       </span>
                     </td>
@@ -245,13 +245,13 @@ export default function TotalContests() {
                         </select>
                         {(pendingType[contest._id] || contest.projectType) !== 'Individual' && (
                           <div className="flex items-center gap-2">
-                            <span className="text-[9px] font-black text-gray-400 uppercase">Max Size:</span>
+                            <span className="text-[9px] font-black text-[var(--text-secondary)] opacity-60 uppercase">Max Size:</span>
                             <input
                               type="number"
                               min="2"
                               value={pendingSize[contest._id] ?? contest.teamSize ?? 1}
                               onChange={(e) => setPendingSize(prev => ({ ...prev, [contest._id]: e.target.value }))}
-                              className="w-12 text-[10px] font-bold border border-gray-200 rounded px-1 py-0.5"
+                              className="w-12 text-[10px] font-bold border border-[var(--border-primary)] bg-[var(--bg-primary)] text-[var(--text-primary)] rounded px-1.5 py-0.5 outline-none focus:ring-1 focus:ring-[#8cc63f]/30 transition-all"
                             />
                           </div>
                         )}
@@ -270,7 +270,7 @@ export default function TotalContests() {
                             <select
                               value={selected}
                               onChange={(e) => handleStatusChange(contest._id, e.target.value)}
-                              className="text-[11px] border border-gray-200 rounded-lg px-2 py-1.5 bg-gray-50 text-gray-700 font-bold focus:outline-none focus:ring-2 focus:ring-[#8cc63f]/30 cursor-pointer"
+                              className="text-[11px] border border-[var(--border-primary)] rounded-lg px-2.5 py-1.5 bg-[var(--bg-primary)] text-[var(--text-primary)] font-bold focus:outline-none focus:ring-2 focus:ring-[#8cc63f]/30 cursor-pointer transition-all"
                             >
                               {STATUS_OPTIONS.map(s => (
                                 <option key={s} value={s}>{s}</option>
@@ -289,10 +289,10 @@ export default function TotalContests() {
                         );
                       })()}
                     </td>
-                    <td className="p-6 text-right">
+                    <td className="p-6 text-right transition-colors">
                       <div className="flex flex-col items-end">
-                        <span className="text-[12px] font-black text-gray-800">{contest.entryLimit}</span>
-                        <span className="text-[9px] text-gray-400 font-bold uppercase tracking-widest">Limit</span>
+                        <span className="text-[14px] font-black text-[var(--text-primary)]">{contest.entryLimit}</span>
+                        <span className="text-[9px] text-[var(--text-secondary)] font-black uppercase tracking-[0.2em] opacity-50">Limit</span>
                       </div>
                     </td>
                     <td className="p-6 text-right">
@@ -323,10 +323,10 @@ export default function TotalContests() {
               ) : (
                 <tr>
                   <td colSpan="7" className="p-20 text-center">
-                    <div className="flex flex-col items-center gap-3">
-                      <h3 className="text-lg font-bold text-gray-900">No contests found</h3>
-                      <p className="text-gray-500 text-sm">The registry appears to be empty.</p>
-                      <Button variant="primary" onClick={() => navigate("/admin-dashboard/add-contest")} className="mt-4 px-8">Create First Contest</Button>
+                    <div className="flex flex-col items-center gap-4">
+                      <h3 className="text-xl font-black text-[var(--text-primary)] tracking-tight">No contests found</h3>
+                      <p className="text-[var(--text-secondary)] text-sm font-medium">The registry appears to be empty.</p>
+                      <Button variant="primary" onClick={() => navigate("/admin-dashboard/add-contest")} className="mt-4 px-10 py-3 shadow-xl shadow-[#8cc63f]/20">Create First Contest</Button>
                     </div>
                   </td>
                 </tr>

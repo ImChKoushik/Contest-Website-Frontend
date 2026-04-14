@@ -20,14 +20,14 @@ export const useLogout = () => {
       contextLogout();
       
       // Optional: navigate home or to sign in
-      navigate("/");
+      navigate("/signin");
       
       return response.data;
     } catch (err) {
       console.error("Logout failed:", err);
       // Even if the server fails, clear local context so they aren't stuck logged in
       contextLogout();
-      navigate("/");
+      navigate("/signin");
       setError(err.response?.data?.message || "An error occurred during logout");
     } finally {
       setLoading(false);

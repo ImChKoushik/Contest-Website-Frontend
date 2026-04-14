@@ -158,33 +158,37 @@ export default function Navbar() {
             {/* Desktop Auth */}
             <div className="hidden md:flex items-center space-x-4">
               {tokenExpired ? (
-                <div className="flex items-center gap-3 animate-in fade-in slide-in-from-right-4 duration-500">
-                  <div className="flex flex-col items-end">
+                <div className="flex items-center gap-3 animate-in fade-in slide-in-from-right-4 duration-500 pr-2">
+                  <div className="flex flex-col items-end mr-1">
                     <span className="text-[10px] text-amber-600 font-black uppercase tracking-widest leading-none mb-1">Session Expired</span>
-                    <span className="text-[11px] text-gray-400 font-bold leading-none">Please re-authenticate</span>
+                    <span className="text-[11px] text-[var(--text-secondary)] font-bold leading-none opacity-60">Re-auth Required</span>
                   </div>
-                  <button
-                    onClick={handleSilentReAuth}
-                    disabled={refreshing}
-                    className="group relative flex items-center justify-center h-11 px-6 bg-gradient-to-r from-[#fcb900] to-[#ff9900] text-white rounded-2xl transition-all duration-300 shadow-[0_4px_15px_rgba(252,185,0,0.3)] hover:shadow-[0_8px_25px_rgba(252,185,0,0.4)] hover:-translate-y-0.5 active:scale-95 disabled:opacity-50"
-                  >
-                    <div className="absolute inset-0 bg-white/20 opacity-0 group-hover:opacity-100 transition-opacity rounded-2xl"></div>
-                    <span className="relative flex items-center gap-2 text-[13px] font-black uppercase tracking-wider">
-                      {refreshing ? (
-                        <>
+                  <div className="flex items-center gap-2 px-3 py-1.5 bg-amber-500/5 border border-amber-500/20 rounded-2xl">
+                    <button
+                      onClick={handleSilentReAuth}
+                      disabled={refreshing}
+                      className="group relative flex items-center justify-center h-10 px-5 bg-gradient-to-r from-[#fcb900] to-[#ff9900] text-white rounded-xl transition-all duration-300 shadow-[0_4px_12px_rgba(252,185,0,0.2)] hover:shadow-[0_6px_20px_rgba(252,185,0,0.3)] hover:-translate-y-0.5 active:scale-95 disabled:opacity-50"
+                    >
+                      <span className="relative flex items-center gap-2 text-[12px] font-black uppercase tracking-wider">
+                        {refreshing ? (
                           <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
-                          Syncing...
-                        </>
-                      ) : (
-                        <>
-                          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-4 h-4 animate-pulse">
-                            <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15m3 0l3-3m0 0l-3-3m3 3H9" />
+                        ) : (
+                          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-4 h-4">
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99" />
                           </svg>
-                          Login Again
-                        </>
-                      )}
-                    </span>
-                  </button>
+                        )}
+                        {refreshing ? 'Syncing' : 'Login Again'}
+                      </span>
+                    </button>
+                    <div className="w-px h-6 bg-amber-500/20 mx-1"></div>
+                    <button
+                      onClick={handleLogout}
+                      disabled={loading}
+                      className="h-10 px-4 text-[12px] font-black text-red-500 hover:bg-red-500 hover:text-white rounded-xl transition-all duration-300 uppercase tracking-wider"
+                    >
+                      {loading ? '...' : 'Logout'}
+                    </button>
+                  </div>
                 </div>
               ) : user ? (
                 <div className="flex items-center gap-4">
@@ -312,25 +316,39 @@ export default function Navbar() {
 
           <div className="pt-6 border-t border-[var(--border-primary)] flex flex-col gap-4">
             {tokenExpired ? (
-              <button
-                onClick={handleSilentReAuth}
-                disabled={refreshing}
-                className="w-full py-4 text-[14px] font-black bg-gradient-to-r from-[#fcb900] to-[#ff9900] text-white rounded-2xl shadow-lg shadow-amber-200 uppercase tracking-wider flex items-center justify-center gap-3 active:scale-[0.98] transition-transform"
-              >
-                {refreshing ? (
-                  <>
-                    <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
-                    Syncing Session...
-                  </>
-                ) : (
-                  <>
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-5 h-5">
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15m3 0l3-3m0 0l-3-3m3 3H9" />
-                    </svg>
-                    Login Again
-                  </>
-                )}
-              </button>
+              <div className="space-y-4 animate-in fade-in slide-in-from-bottom-4 duration-500">
+                <div className="p-5 bg-amber-500/5 border-2 border-amber-500/20 rounded-3xl text-center">
+                  <span className="text-[11px] font-black text-amber-600 uppercase tracking-[0.2em] mb-3 block">Security Alert: Session Expired</span>
+                  <div className="grid grid-cols-1 gap-3">
+                    <button
+                      onClick={handleSilentReAuth}
+                      disabled={refreshing}
+                      className="w-full py-4 text-[14px] font-black bg-gradient-to-r from-[#fcb900] to-[#ff9900] text-white rounded-2xl shadow-lg shadow-amber-200 uppercase tracking-wider flex items-center justify-center gap-3 active:scale-[0.98] transition-transform"
+                    >
+                      {refreshing ? (
+                        <>
+                          <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                          Syncing Session...
+                        </>
+                      ) : (
+                        <>
+                          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-5 h-5">
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15m3 0l3-3m0 0l-3-3m3 3H9" />
+                          </svg>
+                          Login Again
+                        </>
+                      )}
+                    </button>
+                    <button
+                      onClick={handleLogout}
+                      disabled={loading}
+                      className="w-full py-4 text-[14px] font-black bg-red-50 text-red-600 rounded-2xl border-2 border-red-100 uppercase tracking-wider flex items-center justify-center gap-2"
+                    >
+                      {loading ? 'Logging out...' : 'Logout Everywhere'}
+                    </button>
+                  </div>
+                </div>
+              </div>
             ) : user ? (
               <div className="space-y-4">
                 <div className="flex items-center justify-between p-4 bg-[var(--bg-primary)] rounded-2xl border border-[var(--border-primary)] group transition-colors">

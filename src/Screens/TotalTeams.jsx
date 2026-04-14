@@ -97,22 +97,22 @@ export default function TotalTeams() {
   };
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full transition-colors duration-300">
       {/* Header Section */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between mb-8 pb-5 border-b border-gray-100">
+      <div className="flex flex-col md:flex-row md:items-center justify-between mb-8 pb-5 border-b border-[var(--border-primary)]">
         <div className="flex items-center gap-4">
           <button
             onClick={() => navigate(-1)}
-            className="w-10 h-10 rounded-full bg-gray-50 flex items-center justify-center text-gray-500 hover:bg-gray-100 transition"
+            className="w-10 h-10 rounded-full bg-[var(--bg-primary)] flex items-center justify-center text-[var(--text-secondary)] hover:bg-[var(--bg-primary)]/80 border border-[var(--border-primary)] transition"
             aria-label="Go back"
           >
-            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M10 19l-7-7 m0 0l7-7m-7 7h18" />
             </svg>
           </button>
           <div>
-            <h1 className="text-3xl font-bold text-gray-900 tracking-tight">Team Submissions</h1>
-            <p className="text-gray-500 mt-1">Manage contest teams and evaluate their project submissions.</p>
+            <h1 className="text-3xl font-black text-[var(--text-primary)] tracking-tight">Team Submissions</h1>
+            <p className="text-[var(--text-secondary)] mt-1 font-medium">Manage contest teams and evaluate their project submissions.</p>
           </div>
         </div>
       </div>
@@ -126,50 +126,50 @@ export default function TotalTeams() {
           {error}
         </div>
       ) : (
-        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
-          <div className="p-6 border-b border-gray-50 flex justify-between items-center">
-            <h3 className="font-bold text-lg text-gray-800">
+        <div className="bg-[var(--card-bg)] rounded-2xl shadow-[var(--card-shadow)] border border-[var(--border-primary)] overflow-hidden transition-all">
+          <div className="p-6 border-b border-[var(--border-primary)] flex justify-between items-center transition-colors">
+            <h3 className="font-bold text-lg text-[var(--text-primary)]">
               Active Teams ({teamsData.length})
             </h3>
           </div>
           <div className="overflow-x-auto">
             <table className="w-full text-left border-collapse">
               <thead>
-                <tr className="bg-gray-50 text-gray-500 text-xs uppercase tracking-wider">
-                  <th className="p-4 font-semibold">Team Name</th>
-                  <th className="p-4 font-semibold">Leader</th>
-                  <th className="p-4 font-semibold">Members</th>
-                  <th className="p-4 font-semibold">Contest</th>
-                  <th className="p-4 font-semibold">Status</th>
-                  <th className="p-4 font-semibold text-right">Actions</th>
+                <tr className="bg-[var(--bg-primary)] text-[var(--text-secondary)] text-[10px] uppercase font-black tracking-widest border-b border-[var(--border-primary)] transition-colors">
+                  <th className="p-4">Team Name</th>
+                  <th className="p-4">Leader</th>
+                  <th className="p-4">Members</th>
+                  <th className="p-4">Contest</th>
+                  <th className="p-4">Status</th>
+                  <th className="p-4 text-right">Actions</th>
                 </tr>
               </thead>
-              <tbody className="text-sm divide-y divide-gray-50">
+              <tbody className="text-sm divide-y divide-[var(--border-primary)]">
                 {teamsData.map((team) => (
-                  <tr key={team._id} className="hover:bg-gray-50/50 transition-colors">
+                  <tr key={team._id} className="hover:bg-[var(--bg-primary)]/50 transition-colors">
                     <td className="p-4">
                       <button
                         onClick={() => openModal(team)}
-                        className="font-bold text-gray-900 hover:text-[#8cc63f] transition-all text-left"
+                        className="font-bold text-[var(--text-primary)] hover:text-[#8cc63f] transition-all text-left"
                       >
                         {team.teamName}
                       </button>
-                      <div className="text-[10px] text-gray-400 font-mono">{team._id}</div>
+                      <div className="text-[10px] text-[var(--text-secondary)] opacity-60 font-mono">{team._id}</div>
                     </td>
                     <td className="p-4">
-                      <div className="font-medium text-gray-800">{team.leader?.userName || 'N/A'}</div>
-                      <div className="text-[11px] text-gray-400">{team.leader?.email}</div>
+                      <div className="font-bold text-[var(--text-primary)] text-xs">{team.leader?.userName || 'N/A'}</div>
+                      <div className="text-[11px] text-[var(--text-secondary)] opacity-80">{team.leader?.email}</div>
                     </td>
                     <td className="p-4">
                       <div className="flex -space-x-2">
                         {team.members?.map((m, i) => (
-                          <div key={i} title={m.userName} className="w-7 h-7 rounded-full bg-gray-100 border border-white flex items-center justify-center text-[10px] font-black text-gray-400">
+                          <div key={i} title={m.userName} className="w-7 h-7 rounded-full bg-[var(--bg-primary)] border border-[var(--border-primary)] flex items-center justify-center text-[10px] font-black text-[var(--text-secondary)]">
                             {(m.userName || 'U').charAt(0).toUpperCase()}
                           </div>
                         ))}
                       </div>
                     </td>
-                    <td className="p-4 font-medium text-gray-700">{team.contest?.contestTitle || 'N/A'}</td>
+                    <td className="p-4 font-bold text-[var(--text-primary)] opacity-90 text-xs">{team.contest?.contestTitle || 'N/A'}</td>
                     <td className="p-4">
                       <div className="flex flex-col gap-1.5 justify-center">
                         <span className={`w-max px-2.5 py-1 rounded-full text-[10px] font-bold tracking-wider uppercase ${team.approvalStatus === 'Approved' ? 'bg-green-100 text-green-700 border border-green-200' :
@@ -188,7 +188,7 @@ export default function TotalTeams() {
                       <Button
                         onClick={() => openModal(team)}
                         variant="secondary"
-                        className="px-3 py-1.5 text-xs bg-gray-100 text-gray-600 hover:bg-gray-200 border-none"
+                        className="px-3 py-1.5 text-[10px] font-black uppercase tracking-wider bg-[var(--bg-primary)] text-[var(--text-secondary)] hover:bg-[var(--bg-primary)]/80 border-[var(--border-primary)]"
                       >
                         {team.submissionStatus === 'Submitted' ? 'Grade Team' : 'View Team'}
                       </Button>
@@ -221,16 +221,16 @@ export default function TotalTeams() {
       {isModalOpen && selectedTeam && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
           <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" onClick={closeModal}></div>
-          <div className="bg-white rounded-[32px] w-full max-w-2xl max-h-[90vh] overflow-y-auto relative z-10 shadow-2xl animate-in fade-in zoom-in duration-200">
+          <div className="bg-[var(--card-bg)] rounded-[32px] w-full max-w-2xl max-h-[90vh] overflow-y-auto relative z-10 shadow-2xl animate-in fade-in zoom-in duration-200 border border-[var(--border-primary)]">
             {/* Modal Header */}
-            <div className="p-8 border-b border-gray-100 flex justify-between items-start sticky top-0 bg-white z-10">
+            <div className="p-8 border-b border-[var(--border-primary)] flex justify-between items-start sticky top-0 bg-[var(--card-bg)] z-10">
               <div>
-                <h2 className="text-2xl font-black text-gray-900 tracking-tight">Team Overview</h2>
+                <h2 className="text-2xl font-black text-[var(--text-primary)] tracking-tight">Team Overview</h2>
                 <p className="text-sm text-[#8cc63f] font-mono mt-1">Ref: {selectedTeam._id}</p>
               </div>
               <button
                 onClick={closeModal}
-                className="w-10 h-10 rounded-full bg-gray-50 flex items-center justify-center text-gray-400 hover:bg-gray-100 transition"
+                className="w-10 h-10 rounded-full bg-[var(--bg-primary)] flex items-center justify-center text-[var(--text-secondary)] hover:bg-[var(--bg-primary)]/80 transition shadow-sm border border-[var(--border-primary)]"
               >
                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
                   <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
@@ -244,11 +244,11 @@ export default function TotalTeams() {
               <section>
                 <div className="flex items-center gap-2 mb-4">
                   <div className="w-8 h-8 rounded-lg bg-[#8cc63f]/10 flex items-center justify-center text-[#8cc63f] font-bold text-lg">C</div>
-                  <h3 className="font-bold text-gray-800">Contest Information</h3>
+                  <h3 className="font-bold text-[var(--text-primary)]">Contest Information</h3>
                 </div>
-                <div className="bg-gray-50/50 p-6 rounded-2xl border border-gray-100">
-                  <p className="text-[10px] uppercase font-black text-gray-400 tracking-widest mb-1">Active Contest</p>
-                  <p className="font-bold text-gray-800 text-lg">{selectedTeam.contest?.contestTitle || 'N/A'}</p>
+                <div className="bg-[var(--bg-primary)]/50 p-6 rounded-2xl border border-[var(--border-primary)]">
+                  <p className="text-[10px] uppercase font-black text-[var(--text-secondary)] opacity-60 tracking-widest mb-1">Active Contest</p>
+                  <p className="font-bold text-[var(--text-primary)] text-lg">{selectedTeam.contest?.contestTitle || 'N/A'}</p>
                 </div>
               </section>
 
@@ -256,30 +256,30 @@ export default function TotalTeams() {
               <section>
                 <div className="flex items-center gap-2 mb-4">
                   <div className="w-8 h-8 rounded-lg bg-blue-500/10 flex items-center justify-center text-blue-600 font-bold text-lg">T</div>
-                  <h3 className="font-bold text-gray-800">Team Structure</h3>
+                  <h3 className="font-bold text-[var(--text-primary)]">Team Structure</h3>
                 </div>
-                <div className="bg-gray-50/50 p-6 rounded-2xl border border-gray-100 space-y-6">
+                <div className="bg-[var(--bg-primary)]/50 p-6 rounded-2xl border border-[var(--border-primary)] space-y-6">
                   <div>
-                    <p className="text-[10px] uppercase font-black text-gray-400 tracking-widest mb-1">Team Name</p>
-                    <p className="font-bold text-gray-800 text-xl">{selectedTeam.teamName}</p>
+                    <p className="text-[10px] uppercase font-black text-[var(--text-secondary)] opacity-60 tracking-widest mb-1">Team Name</p>
+                    <p className="font-bold text-[var(--text-primary)] text-xl">{selectedTeam.teamName}</p>
                   </div>
 
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
-                      <p className="text-[10px] uppercase font-black text-gray-400 tracking-widest mb-2">Leader</p>
-                      <div className="bg-white p-3 rounded-xl border border-gray-100 flex items-center gap-3">
+                      <p className="text-[10px] uppercase font-black text-[var(--text-secondary)] opacity-60 tracking-widest mb-2">Leader</p>
+                      <div className="bg-[var(--card-bg)] p-3 rounded-xl border border-[var(--border-primary)] flex items-center gap-3">
                         <div className="w-10 h-10 rounded-full bg-[#8cc63f] text-white flex items-center justify-center font-bold">L</div>
                         <div>
-                          <p className="text-sm font-bold text-gray-800">{selectedTeam.leader?.userName}</p>
-                          <p className="text-[10px] text-gray-400">{selectedTeam.leader?.email}</p>
+                          <p className="text-sm font-bold text-[var(--text-primary)]">{selectedTeam.leader?.userName}</p>
+                          <p className="text-[10px] text-[var(--text-secondary)]">{selectedTeam.leader?.email}</p>
                         </div>
                       </div>
                     </div>
                     <div>
-                      <p className="text-[10px] uppercase font-black text-gray-400 tracking-widest mb-2">Members ({selectedTeam.members?.length})</p>
+                      <p className="text-[10px] uppercase font-black text-[var(--text-secondary)] opacity-60 tracking-widest mb-2">Members ({selectedTeam.members?.length})</p>
                       <div className="flex flex-wrap gap-2">
                         {selectedTeam.members?.map((m, i) => (
-                          <div key={i} className="px-3 py-1.5 bg-white rounded-lg border border-gray-100 text-[11px] font-bold text-gray-600">
+                          <div key={i} className="px-3 py-1.5 bg-[var(--bg-primary)] rounded-lg border border-[var(--border-primary)] text-[11px] font-bold text-[var(--text-secondary)]">
                             {m.userName}
                           </div>
                         ))}
@@ -293,11 +293,11 @@ export default function TotalTeams() {
               <section>
                 <div className="flex items-center gap-2 mb-4">
                   <div className="w-8 h-8 rounded-lg bg-teal-500/10 flex items-center justify-center text-teal-600 font-bold text-lg">A</div>
-                  <h3 className="font-bold text-gray-800">Admin Approval</h3>
+                  <h3 className="font-bold text-[var(--text-primary)]">Admin Approval</h3>
                 </div>
-                <div className="bg-gray-50/50 p-6 rounded-2xl border border-gray-100 flex flex-col md:flex-row md:items-center justify-between gap-4">
+                <div className="bg-[var(--bg-primary)]/50 p-6 rounded-2xl border border-[var(--border-primary)] flex flex-col md:flex-row md:items-center justify-between gap-4">
                   <div>
-                    <p className="text-[10px] uppercase font-black text-gray-400 tracking-widest mb-1">Current Status</p>
+                    <p className="text-[10px] uppercase font-black text-[var(--text-secondary)] opacity-60 tracking-widest mb-1">Current Status</p>
                     <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-black uppercase tracking-widest ${selectedTeam.approvalStatus === 'Approved' ? 'bg-green-100 text-green-700' :
                         selectedTeam.approvalStatus === 'Rejected' ? 'bg-red-100 text-red-700' : 'bg-[#fcb900]/10 text-[#fcb900]'
                       }`}>
@@ -319,8 +319,8 @@ export default function TotalTeams() {
                       onClick={() => handleApprovalChange(selectedTeam._id, 'Rejected')}
                       disabled={selectedTeam.approvalStatus === 'Rejected'}
                       className={`px-4 py-2 text-xs font-black uppercase tracking-wider rounded-xl transition-all ${selectedTeam.approvalStatus === 'Rejected'
-                          ? 'bg-gray-100 text-gray-400 cursor-not-allowed border border-gray-200'
-                          : 'bg-white border-2 border-red-100 text-red-500 hover:bg-red-50 hover:border-red-200 active:scale-95'
+                          ? 'bg-[var(--bg-primary)] text-[var(--text-secondary)] opacity-50 cursor-not-allowed border border-[var(--border-primary)]'
+                          : 'bg-[var(--card-bg)] border-2 border-red-500/20 text-red-500 hover:bg-red-500/10 active:scale-95'
                         }`}
                     >
                       Reject Team
@@ -333,11 +333,11 @@ export default function TotalTeams() {
               <section>
                 <div className="flex items-center gap-2 mb-4">
                   <div className="w-8 h-8 rounded-lg bg-orange-500/10 flex items-center justify-center text-orange-600 font-bold text-lg">S</div>
-                  <h3 className="font-bold text-gray-800">Team Submission</h3>
+                  <h3 className="font-bold text-[var(--text-primary)]">Team Submission</h3>
                 </div>
-                <div className="bg-gray-50/50 p-6 rounded-2xl border border-gray-100 space-y-6">
+                <div className="bg-[var(--bg-primary)]/50 p-6 rounded-2xl border border-[var(--border-primary)] space-y-6">
                   <div className="flex items-center justify-between">
-                    <span className={`px-3 py-1 rounded-full text-xs font-black uppercase ${selectedTeam.submissionStatus === 'Submitted' ? 'bg-green-500 text-white' : 'bg-gray-200 text-gray-500'
+                    <span className={`px-3 py-1 rounded-full text-xs font-black uppercase ${selectedTeam.submissionStatus === 'Submitted' ? 'bg-green-500 text-white' : 'bg-[var(--bg-primary)] text-[var(--text-secondary)] border border-[var(--border-primary)]'
                       }`}>
                       {selectedTeam.submissionStatus || 'Open'}
                     </span>
@@ -345,7 +345,7 @@ export default function TotalTeams() {
 
                   {selectedTeam.submissionLink && (
                     <div>
-                      <p className="text-[10px] uppercase font-black text-gray-400 tracking-widest mb-1">Shared Link</p>
+                      <p className="text-[10px] uppercase font-black text-[var(--text-secondary)] opacity-60 tracking-widest mb-1">Shared Link</p>
                       <a href={selectedTeam.submissionLink} target="_blank" rel="noopener noreferrer" className="text-blue-500 hover:underline font-bold break-all">
                         {selectedTeam.submissionLink}
                       </a>
@@ -359,43 +359,43 @@ export default function TotalTeams() {
                 <section className="animate-in slide-in-from-bottom duration-500">
                   <div className="flex items-center gap-2 mb-4">
                     <div className="w-8 h-8 rounded-lg bg-purple-500/10 flex items-center justify-center text-purple-600 font-bold text-lg">R</div>
-                    <h3 className="font-bold text-gray-800">Team Grading</h3>
+                    <h3 className="font-bold text-[var(--text-primary)]">Team Grading</h3>
                   </div>
-                  <form onSubmit={handleResultSubmit} className="bg-purple-50/30 p-6 rounded-2xl border border-purple-100 space-y-6">
+                  <form onSubmit={handleResultSubmit} className="bg-purple-500/5 p-6 rounded-2xl border border-purple-500/10 space-y-6">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                       <div className="flex flex-col">
-                        <label className="text-[10px] uppercase font-black text-gray-400 tracking-widest mb-2">Award Rank</label>
+                        <label className="text-[10px] uppercase font-black text-[var(--text-secondary)] opacity-60 tracking-widest mb-2">Award Rank</label>
                         <select
                           value={resultForm.rank}
                           onChange={(e) => setResultForm({ ...resultForm, rank: e.target.value })}
-                          className="w-full px-4 py-3 rounded-xl border border-purple-100 bg-white shadow-sm focus:outline-none focus:ring-2 focus:ring-purple-200 text-sm font-bold text-gray-700"
+                          className="w-full px-4 py-3 rounded-xl border border-[var(--border-primary)] bg-[var(--bg-primary)] focus:outline-none focus:ring-2 focus:ring-[#8cc63f]/20 text-sm font-bold text-[var(--text-primary)] transition-all"
                         >
-                          <option value="1st">🥇 1st Place</option>
-                          <option value="2nd">🥈 2nd Place</option>
-                          <option value="3rd">🥉 3rd Place</option>
-                          <option value="Participant">🏆 Participant</option>
+                          <option value="1st" className="bg-[var(--card-bg)]">🥇 1st Place</option>
+                          <option value="2nd" className="bg-[var(--card-bg)]">🥈 2nd Place</option>
+                          <option value="3rd" className="bg-[var(--card-bg)]">🥉 3rd Place</option>
+                          <option value="Participant" className="bg-[var(--card-bg)]">🏆 Participant</option>
                         </select>
                       </div>
                       <div className="flex flex-col">
-                        <label className="text-[10px] uppercase font-black text-gray-400 tracking-widest mb-2">Team Score (0-100)</label>
+                        <label className="text-[10px] uppercase font-black text-[var(--text-secondary)] opacity-60 tracking-widest mb-2">Team Score (0-100)</label>
                         <input
                           type="number"
                           min="0"
                           max="100"
                           value={resultForm.score}
                           onChange={(e) => setResultForm({ ...resultForm, score: parseInt(e.target.value) })}
-                          className="w-full px-4 py-3 rounded-xl border border-purple-100 bg-white shadow-sm focus:outline-none focus:ring-2 focus:ring-purple-200 text-sm font-bold text-gray-700"
+                          className="w-full px-4 py-3 rounded-xl border border-[var(--border-primary)] bg-[var(--bg-primary)] focus:outline-none focus:ring-2 focus:ring-[#8cc63f]/20 text-sm font-bold text-[var(--text-primary)] transition-all"
                           required
                         />
                       </div>
                     </div>
                     <div className="flex flex-col">
-                      <label className="text-[10px] uppercase font-black text-gray-400 tracking-widest mb-2">Feedback for Team</label>
+                      <label className="text-[10px] uppercase font-black text-[var(--text-secondary)] opacity-60 tracking-widest mb-2">Feedback for Team</label>
                       <textarea
                         value={resultForm.remarks}
                         onChange={(e) => setResultForm({ ...resultForm, remarks: e.target.value })}
                         placeholder="Add some team-specific feedback..."
-                        className="w-full px-4 py-3 rounded-xl border border-purple-100 bg-white shadow-sm focus:outline-none focus:ring-2 focus:ring-purple-200 text-sm font-medium text-gray-700 min-h-[100px] resize-none"
+                        className="w-full px-4 py-3 rounded-xl border border-[var(--border-primary)] bg-[var(--bg-primary)] focus:outline-none focus:ring-2 focus:ring-[#8cc63f]/20 text-sm font-medium text-[var(--text-primary)] min-h-[100px] resize-none transition-all"
                       />
                     </div>
                     <Button
@@ -411,8 +411,8 @@ export default function TotalTeams() {
             </div>
 
             {/* Modal Footer */}
-            <div className="p-8 border-t border-gray-50 flex justify-end gap-3 sticky bottom-0 bg-white/80 backdrop-blur-md">
-              <Button onClick={closeModal} variant="outline" className="px-6 border-gray-200">Close Panel</Button>
+            <div className="p-8 border-t border-[var(--border-primary)] flex justify-end gap-3 sticky bottom-0 bg-[var(--card-bg)]/80 backdrop-blur-md">
+              <Button onClick={closeModal} variant="outline" className="px-6 border-[var(--border-primary)] text-[var(--text-primary)]">Close Panel</Button>
             </div>
           </div>
         </div>
