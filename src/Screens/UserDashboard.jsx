@@ -750,19 +750,20 @@ export default function UserDashboard() {
             <div
               key={cat.slug}
               onClick={() => navigate(`/contests/category/${cat.slug}`)}
-              className="group cursor-pointer"
+              className="group cursor-pointer select-none outline-none focus:outline-none"
+              style={{ WebkitTapHighlightColor: 'transparent' }}
             >
-              <div className="bg-[var(--card-bg)] rounded-[40px] overflow-hidden border-2 border-[var(--border-primary)] shadow-[var(--card-shadow)] transition-all duration-500 hover:border-[var(--accent-green)] hover:shadow-2xl hover:shadow-green-900/5 hover:-translate-y-2 relative flex flex-col h-full">
+              <div className="bg-[var(--card-bg)] rounded-[40px] overflow-hidden border-2 border-[var(--border-primary)] shadow-[var(--card-shadow)] transition-[transform,box-shadow,border-color] duration-500 hover:border-[var(--accent-green)] hover:shadow-2xl hover:shadow-green-900/5 hover:-translate-y-2 relative flex flex-col h-full outline-none focus:outline-none">
                 {/* Card Image Header */}
-                <div className="h-48 w-full relative overflow-hidden">
+                <div className="h-48 w-full relative overflow-hidden isolate outline-none">
                   <img
                     src={cat.image}
                     alt={cat.name}
                     loading="lazy"
-                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 ease-in-out"
+                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 ease-in-out transform-gpu pointer-events-none"
                   />
-                  <div className={`absolute inset-0 bg-gradient-to-br ${cat.color} opacity-20 mix-blend-multiply`}></div>
-                  <div className="absolute inset-0 bg-gradient-to-t from-[var(--card-bg)] via-transparent to-transparent"></div>
+                  <div className={`absolute inset-0 bg-gradient-to-br ${cat.color} opacity-20 mix-blend-multiply pointer-events-none`}></div>
+                  <div className="absolute inset-0 bg-gradient-to-t from-[var(--card-bg)] via-transparent to-transparent pointer-events-none"></div>
                 </div>
 
                 <div className="p-8 pt-4 flex flex-col items-center text-center">

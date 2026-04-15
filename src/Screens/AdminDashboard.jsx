@@ -206,16 +206,16 @@ export default function AdminDashboard() {
           <div className="flex flex-wrap gap-4">
             <button 
               onClick={() => navigate("/admin-dashboard/total-participants")}
-              className="bg-white/10 backdrop-blur-md border border-white/20 text-white hover:bg-white/20 px-8 py-4 rounded-2xl font-black text-sm uppercase tracking-wider transition-all shadow-xl hover:-translate-y-1 active:scale-95 flex items-center gap-2 group"
+              className="bg-white/10 backdrop-blur-md border border-white/20 text-white hover:bg-white/20 px-5 py-2.5 rounded-xl font-bold text-xs uppercase tracking-wider transition-all shadow-lg hover:-translate-y-0.5 active:scale-95 flex items-center gap-1.5 group"
             >
               View Teams
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={3} stroke="currentColor" className="w-4 h-4 text-[var(--accent-green)] group-hover:translate-x-1 transition-transform">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={3} stroke="currentColor" className="w-3.5 h-3.5 text-[var(--accent-green)] group-hover:translate-x-1 transition-transform">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
               </svg>
             </button>
             <button 
               onClick={() => navigate("/admin-dashboard/add-contest")}
-              className="bg-[#8cc63f] hover:bg-[#7ab033] text-white px-8 py-4 rounded-2xl font-black text-sm uppercase tracking-wider transition-all shadow-xl shadow-[#8cc63f]/20 hover:-translate-y-1 active:scale-95 flex items-center gap-2"
+              className="bg-[#8cc63f] hover:bg-[#7ab033] text-white px-5 py-2.5 rounded-xl font-bold text-xs uppercase tracking-wider transition-all shadow-lg shadow-[#8cc63f]/20 hover:-translate-y-0.5 active:scale-95 flex items-center gap-1.5"
             >
               + New Contest
             </button>

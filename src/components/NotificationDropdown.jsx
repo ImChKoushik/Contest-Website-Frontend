@@ -29,6 +29,18 @@ export default function NotificationDropdown({ isOpen, onClose }) {
 
   const [notifications, setNotifications] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [dismissedIds, setDismissedIds] = useState([]);
+
+  useEffect(() => {
+    const saved = localStorage.getItem('dismissed_notification_ids');
+    if (saved) {
+      try {
+        setDismissedIds(JSON.parse(saved));
+      } catch (e) {
+        setDismissedIds([]);
+      }
+    }
+  }, []);
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -165,8 +177,25 @@ export default function NotificationDropdown({ isOpen, onClose }) {
 
     // Sort by latest and remove duplicates (by ID)
     const uniqueNotifications = Array.from(new Map(list.map(item => [item.id, item])).values());
-    setNotifications(uniqueNotifications.sort((a, b) => b.rawDate - a.rawDate).slice(0, 15));
+    
+    // Filter out dismissed notifications
+    const visibleNotifications = uniqueNotifications
+      .filter(n => !dismissedIds.includes(n.id))
+      .sort((a, b) => b.rawDate - a.rawDate)
+      .slice(0, 15);
+
+    setNotifications(visibleNotifications);
     setLoading(false);
+  };
+
+  const handleClearAll = (e) => {
+    e.stopPropagation();
+    if (notifications.length === 0) return;
+    
+    const newDismissedIds = [...new Set([...dismissedIds, ...notifications.map(n => n.id)])];
+    setDismissedIds(newDismissedIds);
+    localStorage.setItem('dismissed_notification_ids', JSON.stringify(newDismissedIds));
+    setNotifications([]);
   };
 
   useEffect(() => {
@@ -245,7 +274,7 @@ export default function NotificationDropdown({ isOpen, onClose }) {
         )}
       </div>
 
-      <div className="p-4 bg-gray-50/50 border-t border-gray-50 text-center">
+      <div className="p-4 bg-gray-50/50 border-t border-gray-50 flex flex-col gap-3">
          <button 
            onClick={() => {
              navigate(user.role === 'Admin' ? '/admin-dashboard' : '/dashboard');
@@ -255,6 +284,15 @@ export default function NotificationDropdown({ isOpen, onClose }) {
          >
            View Activity Dashboard
          </button>
+         
+         {notifications.length > 0 && (
+           <button 
+             onClick={handleClearAll}
+             className="text-[10px] font-black text-red-400 uppercase tracking-[0.2em] hover:text-red-600 transition-colors pt-2 border-t border-gray-100"
+           >
+             Clear Histories ...
+           </button>
+         )}
       </div>
     </div>
   );

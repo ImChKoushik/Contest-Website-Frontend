@@ -75,7 +75,10 @@ export default function ContestCard({
   }, [image, category]);
 
   return (
-    <div className="bg-white rounded-[24px] overflow-hidden shadow-[0_4px_20px_rgb(0,0,0,0.03)] border border-gray-100 hover:shadow-lg transition-transform duration-300 hover:-translate-y-1 flex flex-col h-full">
+    <div
+      onClick={() => navigate(`/contests/details/${id}`)}
+      className="bg-white rounded-[24px] overflow-hidden shadow-[0_4px_20px_rgb(0,0,0,0.03)] border border-gray-100 hover:shadow-lg transition-transform duration-300 hover:-translate-y-1 flex flex-col h-full cursor-pointer group"
+    >
       {/* Top Image / Graphic Area */}
       <div className="relative h-48 w-full bg-slate-900 p-2 overflow-hidden">
         <img
@@ -131,6 +134,7 @@ export default function ContestCard({
           {status === 'Upcoming' ? (
             <button
               disabled
+              onClick={(e) => e.stopPropagation()}
               className="flex-1 bg-[#fcb900]/10 text-[#e6a800] border border-[#fcb900]/30 py-2.5 rounded-full font-bold text-[13px] tracking-wide cursor-not-allowed flex items-center justify-center gap-1.5"
             >
               <span className="w-1.5 h-1.5 rounded-full bg-[#fcb900] inline-block"></span>
@@ -138,7 +142,7 @@ export default function ContestCard({
             </button>
           ) : status === 'On-Going' ? (
             <button
-              onClick={handleApply}
+              onClick={(e) => { e.stopPropagation(); handleApply(); }}
               className="flex-1 bg-[#8cc63f] hover:bg-[#7db435] text-white py-2.5 rounded-full font-bold text-[13px] tracking-wide transition-colors shadow-sm"
             >
               Apply
@@ -146,13 +150,17 @@ export default function ContestCard({
           ) : (
             <button
               disabled
+              onClick={(e) => e.stopPropagation()}
               className="flex-1 bg-gray-100 text-gray-400 border border-gray-200 py-2.5 rounded-full font-bold text-[13px] tracking-wide cursor-not-allowed"
             >
               Closed
             </button>
           )}
-          <button onClick={() => navigate(`/contests/details/${id}`)} className="flex-1 bg-gray-50 hover:bg-gray-100 text-gray-600 border border-gray-200 py-2.5 rounded-full font-bold text-[13px] tracking-wide transition-colors shadow-sm">
-            Details
+          <button
+            onClick={(e) => { e.stopPropagation(); navigate(`/contests/details/${id}`); }}
+            className="flex-1 bg-gray-50 hover:bg-gray-100 text-gray-600 border border-gray-200 py-2.5 rounded-full font-bold text-[13px] tracking-wide transition-colors shadow-sm"
+          >
+            View Details
           </button>
         </div>
       </div>

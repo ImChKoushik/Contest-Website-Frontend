@@ -25,6 +25,11 @@ export default function ParticipantsModal({ isOpen, onClose, title, data, loadin
               <span className="w-2 h-2 rounded-full bg-[#8cc63f]"></span>
               <p className="text-gray-500 text-[10px] uppercase tracking-[0.2em] font-black">
                 {type === 'contest' ? 'Squad Registry' : 'Participation History'}
+                {!loading && data && type === 'contest' && (
+                  <span className="ml-2 bg-[#8cc63f]/10 text-[#7ab033] px-2 py-0.5 rounded-full text-[9px]">
+                    {data.teams?.length || 0} registered
+                  </span>
+                )}
               </p>
             </div>
           </div>
@@ -50,28 +55,29 @@ export default function ParticipantsModal({ isOpen, onClose, title, data, loadin
               <table className="w-full text-left border-collapse">
                 <thead>
                   <tr className="bg-gray-50/80 text-gray-500 text-[10px] uppercase font-black tracking-widest border-b border-gray-100">
-                    <th className="p-6">{type === 'contest' ? 'Team Details' : 'Contest Context'}</th>
-                    <th className="p-6">{type === 'contest' ? 'Leader Info' : 'Participant Role'}</th>
-                    <th className="p-6">{type === 'contest' ? 'Squad Composition' : 'Approval Status'}</th>
-                    <th className="p-6 text-right">Registered On</th>
+                    <th className="p-5">{type === 'contest' ? 'Team Details' : 'Contest Context'}</th>
+                    <th className="p-5">{type === 'contest' ? 'Leader Info' : 'Participant Role'}</th>
+                    <th className="p-5">{type === 'contest' ? 'Squad Members' : 'Approval Status'}</th>
+                    {type === 'contest' && <th className="p-5">Status</th>}
+                    <th className="p-5 text-right">Registered On</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-50 text-sm">
                   {type === 'contest' ? (
                     data.teams.map((team) => (
                       <tr key={team._id} className="hover:bg-gray-50/50 transition-colors group">
-                        <td className="p-6">
+                        <td className="p-5">
                           <span className="font-bold text-gray-900 block group-hover:text-[#8cc63f] transition-colors">{team.teamName}</span>
-                          <span className="text-[10px] text-gray-400 font-mono tracking-tighter uppercase">{team._id.slice(-12)}</span>
+                          <span className="text-[10px] text-gray-400 font-mono tracking-tighter uppercase">{team._id?.slice(-10)}</span>
                         </td>
-                        <td className="p-6">
+                        <td className="p-5">
                           <div className="flex flex-col">
                             <span className="font-bold text-gray-800 text-xs">{team.leader?.userName || 'Anonymous'}</span>
-                            <span className="text-[10px] text-gray-400 font-medium">{team.leader?.email}</span>
+                            <span className="text-[10px] text-gray-400 font-medium">{team.leader?.email || '—'}</span>
                           </div>
                         </td>
-                        <td className="p-6">
-                          <div className="flex flex-wrap gap-1.5 max-w-[200px]">
+                        <td className="p-5">
+                          <div className="flex flex-wrap gap-1.5 max-w-[180px]">
                             {team.members?.length > 0 ? (
                               team.members.map((m, i) => (
                                 <span key={i} className="px-2 py-1 bg-gray-100 text-gray-600 rounded-lg text-[10px] font-bold border border-gray-200">
@@ -83,8 +89,25 @@ export default function ParticipantsModal({ isOpen, onClose, title, data, loadin
                             )}
                           </div>
                         </td>
-                        <td className="p-6 text-right text-gray-500 font-bold text-xs uppercase tracking-tighter">
-                          {new Date(team.createdAt).toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' })}
+                        <td className="p-5">
+                          <div className="flex flex-col gap-1.5">
+                            <span className={`w-max px-2.5 py-1 rounded-full text-[9px] font-black uppercase tracking-widest border ${
+                              team.approvalStatus === 'Approved' ? 'bg-green-50 text-green-700 border-green-200' :
+                              team.approvalStatus === 'Rejected' ? 'bg-red-50 text-red-700 border-red-200' :
+                              'bg-yellow-50 text-yellow-700 border-yellow-200'
+                            }`}>
+                              {team.approvalStatus || 'Pending'}
+                            </span>
+                            <span className={`w-max px-2.5 py-1 rounded-full text-[9px] font-black uppercase tracking-widest border ${
+                              team.submissionStatus === 'Submitted' ? 'bg-blue-50 text-blue-700 border-blue-200' :
+                              'bg-gray-50 text-gray-500 border-gray-200'
+                            }`}>
+                              {team.submissionStatus || 'Draft'}
+                            </span>
+                          </div>
+                        </td>
+                        <td className="p-5 text-right text-gray-500 font-bold text-xs uppercase tracking-tighter">
+                          {team.createdAt ? new Date(team.createdAt).toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' }) : '—'}
                         </td>
                       </tr>
                     ))

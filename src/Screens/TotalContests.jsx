@@ -58,8 +58,23 @@ export default function TotalContests() {
     setSelectedContestName(title);
     setIsParticipantsModalOpen(true);
     setParticipantsLoading(true);
+    setParticipantsData(null);
     const { success, data } = await getContestParticipants(contestId);
-    if (success) setParticipantsData(data);
+    if (success) {
+      // Normalize whatever the backend returns into { teams: [...] }
+      // so ParticipantsModal can always find data.teams
+      let teams = [];
+      if (Array.isArray(data)) {
+        teams = data;
+      } else if (Array.isArray(data?.teams)) {
+        teams = data.teams;
+      } else if (Array.isArray(data?.participants)) {
+        teams = data.participants;
+      } else if (Array.isArray(data?.data)) {
+        teams = data.data;
+      }
+      setParticipantsData({ teams });
+    }
     setParticipantsLoading(false);
   };
 
