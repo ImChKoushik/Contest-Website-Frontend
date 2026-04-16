@@ -14,7 +14,6 @@ export default function AddContest() {
   const [formData, setFormData] = useState({
     contestTitle: '',
     contestDescription: '',
-    projectBriefing: '',
     contestDeadLine: '',
     status: 'Upcoming',
     category: 'MERN',
@@ -161,15 +160,9 @@ export default function AddContest() {
                   <label className={labelClass}>Contest Title</label>
                   <input className={inputClass} type="text" name="contestTitle" value={formData.contestTitle} onChange={handleChange} placeholder="e.g., Frontend Master Challenge 2026" required />
                 </div>
-
                 <div className="md:col-span-2">
                   <label className={labelClass}>Contest Description</label>
                   <textarea name="contestDescription" value={formData.contestDescription} onChange={handleChange} className={`${inputClass} min-h-[120px] resize-none`} placeholder="Briefly describe the contest objectives..." required />
-                </div>
-
-                <div className="md:col-span-2">
-                  <label className={labelClass}>Project Briefing</label>
-                  <textarea name="projectBriefing" value={formData.projectBriefing} onChange={handleChange} className={`${inputClass} min-h-[180px] resize-none`} placeholder="Provide a detailed project briefing for participants..." required />
                 </div>
               </div>
             </div>
