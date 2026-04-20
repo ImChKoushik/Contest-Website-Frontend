@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate, Link, useLocation } from 'react-router-dom';
 import Button from './Button';
 import { useAuthContext } from '../context/AuthContext';
@@ -24,6 +24,38 @@ export default function Navbar() {
   const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
   const [isNotifOpen, setIsNotifOpen] = useState(false);
 
+  const [timeLeft, setTimeLeft] = useState(15 * 60);
+
+  useEffect(() => {
+    if (!user || tokenExpired) return;
+    
+    const updateTimer = () => {
+      const loginTime = parseInt(localStorage.getItem('loginTime') || '0', 10);
+      if (!loginTime) {
+        setTimeLeft(15 * 60);
+        return;
+      }
+      const elapsed = Math.floor((Date.now() - loginTime) / 1000);
+      const remaining = Math.max(0, 15 * 60 - elapsed);
+      setTimeLeft(remaining);
+
+      // Auto-expire session precisely when timer hits 0
+      if (remaining === 0) {
+        window.dispatchEvent(new CustomEvent('auth:expired'));
+      }
+    };
+
+    updateTimer();
+    const timerId = setInterval(updateTimer, 1000);
+    return () => clearInterval(timerId);
+  }, [user, tokenExpired]);
+
+  const formatTime = (secs) => {
+    const m = Math.floor(secs / 60);
+    const s = secs % 60;
+    return `${m}:${s < 10 ? '0' : ''}${s}`;
+  };
+
   const handleLogout = () => {
     logout();
     setIsMenuOpen(false);
@@ -36,13 +68,13 @@ export default function Navbar() {
   const handleSilentReAuth = async () => {
     if (refreshing) return;
     setRefreshing(true);
-    
+
     try {
       console.log("--- ATOMIC RENEWAL START ---");
-      
+
       // 1. Activate Crisis Lock & Clear stale state
       localStorage.setItem('session_crisis', 'true');
-      localStorage.removeItem('authToken'); 
+      localStorage.removeItem('authToken');
 
       const refreshToken = localStorage.getItem('refreshToken');
       if (!refreshToken) {
@@ -57,7 +89,7 @@ export default function Navbar() {
       // 2. Use NATIVE FETCH for isolation
       const BASE_URL = 'https://contest-backend-td3m.onrender.com/api/v1';
       const timestamp = Date.now();
-      
+
       const response = await window.fetch(`${BASE_URL}/user/generate-access?t=${timestamp}`, {
         method: 'GET',
         headers: {
@@ -71,11 +103,11 @@ export default function Navbar() {
 
       if (!response.ok) {
         if (response.status === 401) {
-            showToast("Session fully expired. Please log in again.", "error");
-            handleLogout();
-            navigate('/signin');
+          showToast("Session fully expired. Please log in again.", "error");
+          handleLogout();
+          navigate('/signin');
         } else {
-            showToast(data.message || "Renewal failed.", "warning");
+          showToast(data.message || "Renewal failed.", "warning");
         }
         return;
       }
@@ -95,7 +127,7 @@ export default function Navbar() {
       // 4. Sync User Profile (Crisis is over, can use axiosInstance now)
       const res = await axiosInstance.get(`/user/me?t=${timestamp}`);
       const userData = res.data?.user || res.data?.data?.user;
-      
+
       if (userData) {
         login(userData, newToken, newRefreshToken || refreshToken);
         showToast("Session renewed! Welcome back.", "success");
@@ -226,6 +258,14 @@ export default function Navbar() {
                 </div>
               ) : user ? (
                 <div className="flex items-center gap-4">
+                  {/* JWT Countdown Badge */}
+                  <div className={`hidden md:flex items-center gap-1.5 px-3 py-1.5 rounded-xl border ${timeLeft < 60 ? 'bg-red-500/10 border-red-500/30 text-red-500 animate-pulse' : 'bg-[#8cc63f]/10 border-[#8cc63f]/30 text-[#8cc63f]'} shadow-sm transition-colors duration-300`}>
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-4 h-4">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+                    </svg>
+                    <span className="text-[12px] font-black tracking-widest">{formatTime(timeLeft)}</span>
+                  </div>
+
                   {/* Notification Bell */}
                   <div className="relative">
                     <button
@@ -349,6 +389,21 @@ export default function Navbar() {
           )}
 
           <div className="pt-6 border-t border-[var(--border-primary)] flex flex-col gap-4">
+            {!tokenExpired && user && (
+              <div className={`flex items-center justify-between p-3.5 rounded-2xl border ${timeLeft < 60 ? 'bg-red-500/10 border-red-500/30 text-red-500 animate-pulse' : 'bg-[#8cc63f]/10 border-[#8cc63f]/30 text-[#8cc63f]'} shadow-sm transition-colors duration-300`}>
+                <div className="flex flex-col">
+                  <span className="text-[11px] font-black uppercase tracking-wider">Active Session</span>
+                  <span className="text-[10px] font-bold opacity-80">Time until protection lock</span>
+                </div>
+                <div className="flex items-center gap-1.5">
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-5 h-5">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+                  </svg>
+                  <span className="text-[15px] font-black tracking-widest">{formatTime(timeLeft)}</span>
+                </div>
+              </div>
+            )}
+            
             {tokenExpired ? (
               <div className="space-y-4 animate-in fade-in slide-in-from-bottom-4 duration-500">
                 <div className="p-5 bg-amber-500/5 border-2 border-amber-500/20 rounded-3xl text-center">

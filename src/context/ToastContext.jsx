@@ -16,9 +16,9 @@ export const ToastProvider = ({ children }) => {
     const showToast = useCallback((message, type = "success", duration = 4000) => {
         const id = Math.random().toString(36).substring(2, 9);
         
-        // Suppress toast for JWT expiry — the Navbar handles this with
-        // the 'Login Again' + 'Logout' button pair instead
-        if (message?.toString().toLowerCase().includes("jwt expired")) return;
+        // Suppress toast for JWT expiry and Auth Lock events (handled gracefully by Navbar)
+        const lowerMsg = message?.toString().toLowerCase() || "";
+        if (lowerMsg.includes("jwt expired") || lowerMsg.includes("auth lock")) return;
 
         setToasts((prev) => [...prev, { id, message, type, duration }]);
 

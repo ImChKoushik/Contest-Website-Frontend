@@ -53,6 +53,9 @@ export const AuthProvider = ({ children }) => {
       // Mark this as an active browser session (cleared on browser close)
       sessionStorage.setItem('sessionActive', 'true');
       
+      // Record login time to power the 15-minute JWT Countdown Timer
+      localStorage.setItem('loginTime', Date.now().toString());
+
       if (authToken) {
         setToken(authToken);
         localStorage.setItem('authToken', authToken);
@@ -67,7 +70,7 @@ export const AuthProvider = ({ children }) => {
       } else if (refreshToken === null) {
         localStorage.removeItem('refreshToken');
       }
-      
+
       setTokenExpired(false);
     }
   }, []);

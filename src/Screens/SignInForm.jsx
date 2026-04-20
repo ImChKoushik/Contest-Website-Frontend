@@ -79,8 +79,8 @@ export default function SignInForm() {
 
     if (result) {
       const userData = result.data?.user || result.user;
-      const authToken = result.data?.accessToken || result.accessToken || null;
-      const refreshToken = result.data?.refreshToken || result.refreshToken || null;
+      const authToken = result.data?.data?.accessToken || result.data?.accessToken || result.accessToken;
+      const refreshToken = result.data?.data?.refreshToken || result.data?.refreshToken || result.refreshToken;
 
       // Store tokens in localStorage so they persist across browser restarts
       if (authToken) localStorage.setItem('authToken', authToken);

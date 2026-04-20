@@ -19,12 +19,16 @@ axiosInstance.interceptors.request.use(
     const accessToken = localStorage.getItem('authToken');
     const isCrisis = localStorage.getItem('session_crisis') === 'true';
 
+    const isAuthEndpoint = 
+      config.url?.includes('login-user') || 
+      config.url?.includes('register-user') || 
+      config.url?.includes('logout-user');
+
     // 2. BLOCK background requests during a session crisis or if no token exists
-    // This prevents background tasks from firing 401s/500s 
-    // and invalidating the refresh token while we wait for the user.
-    if (!isRefreshCall && (isCrisis || !accessToken)) {
+    // We exempt auth endpoints so you can always log out or log in freely!
+    if (!isRefreshCall && !isAuthEndpoint && (isCrisis || !accessToken)) {
       const cancelError = new Error('Auth Lock: Request frozen to prevent session conflict.');
-      cancelError.isAuthBlock = true; 
+      cancelError.isAuthBlock = true;
       return Promise.reject(cancelError);
     }
 
@@ -53,15 +57,15 @@ axiosInstance.interceptors.request.use(
 axiosInstance.interceptors.response.use(
   (response) => response,
   (error) => {
-    const originalRequest = error.config;
+    const originalRequest = error.config || {};
     const isAuthError = error.response?.status === 401;
-    
+
     // Check if the request is to a sensitive auth endpoint
     const url = originalRequest.url || '';
-    const isAuthEndpoint = 
-      url.includes('generate-access') || 
-      url.includes('refresh-token') || 
-      url.includes('login-user') || 
+    const isAuthEndpoint =
+      url.includes('generate-access') ||
+      url.includes('refresh-token') ||
+      url.includes('login-user') ||
       url.includes('logout-user') ||
       url.includes('user/me'); // /user/me is used during refresh check
 
