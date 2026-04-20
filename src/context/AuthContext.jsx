@@ -27,11 +27,20 @@ export const AuthProvider = ({ children }) => {
     return null;
   });
 
-  const [tokenExpired, setTokenExpired] = useState(false);
+  const [tokenExpired, setTokenExpired] = useState(() => {
+    // If we have a user but NO authToken in localStorage, assume session needs syncing
+    return !!localStorage.getItem('authUser') && !localStorage.getItem('authToken');
+  });
 
   // listen for global session expiry signals (e.g. from axiosInstance)
   useEffect(() => {
-    const handleAuthExpired = () => setTokenExpired(true);
+    const handleAuthExpired = () => {
+      // Ignore the event if the user intentionally logged out.
+      // The logout flow sets this flag to prevent the 401 from the
+      // logout endpoint incorrectly showing the "Login Again" button.
+      if (sessionStorage.getItem('intentionalLogout')) return;
+      setTokenExpired(true);
+    };
     window.addEventListener('auth:expired', handleAuthExpired);
     return () => window.removeEventListener('auth:expired', handleAuthExpired);
   }, []);
@@ -41,6 +50,8 @@ export const AuthProvider = ({ children }) => {
     if (userData.role || userData.email || userData._id) {
       setUser(userData);
       localStorage.setItem('authUser', JSON.stringify(userData));
+      // Mark this as an active browser session (cleared on browser close)
+      sessionStorage.setItem('sessionActive', 'true');
       
       if (authToken) {
         setToken(authToken);
@@ -65,7 +76,10 @@ export const AuthProvider = ({ children }) => {
     if (userData && (userData.role || userData.email || userData._id)) {
       setUser(userData);
       localStorage.setItem('authUser', JSON.stringify(userData));
-      setTokenExpired(false);
+      // Only clear the "Login Again" state if we actually have a token now
+      if (localStorage.getItem('authToken')) {
+        setTokenExpired(false);
+      }
     }
   }, []);
 
@@ -76,6 +90,7 @@ export const AuthProvider = ({ children }) => {
     localStorage.removeItem('authUser');
     localStorage.removeItem('authToken');
     localStorage.removeItem('refreshToken');
+    sessionStorage.removeItem('sessionActive');
   }, []);
 
   const markTokenExpired = useCallback(() => {

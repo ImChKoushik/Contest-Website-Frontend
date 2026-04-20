@@ -72,22 +72,22 @@ export default function ContestDetails() {
   }, [contest]);
 
   return (
-    <div className="bg-[#f4f7f4] min-h-screen pb-24 font-sans">
+    <div className="bg-[var(--bg-primary)] min-h-screen pb-24 font-sans transition-colors duration-300">
       {loading ? (
         <div className="flex flex-col items-center justify-center py-40">
           <div className="w-12 h-12 border-4 border-[#8cc63f]/20 border-t-[#8cc63f] rounded-full animate-spin mb-4"></div>
-          <p className="text-gray-400 font-bold uppercase tracking-widest text-xs">Loading Challenge...</p>
+          <p className="text-[var(--text-secondary)] font-bold uppercase tracking-widest text-xs">Loading Challenge...</p>
         </div>
       ) : error || !contest ? (
         <div className="flex flex-col items-center justify-center py-40 max-w-lg mx-auto text-center px-6">
-          <div className="w-20 h-20 bg-gray-50 rounded-full flex items-center justify-center mb-6">
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-10 w-10 text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <div className="w-20 h-20 bg-[var(--bg-secondary)] rounded-full flex items-center justify-center mb-6">
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-10 w-10 text-[var(--border-primary)]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
             </svg>
           </div>
-          <h2 className="text-2xl font-black text-gray-900 mb-2">Contest Not Found</h2>
-          <p className="text-gray-500 mb-8">{error || "The contest you are looking for does not exist or has been removed."}</p>
-          <button onClick={() => navigate(-1)} className="px-8 py-3 bg-[#8cc63f] text-white rounded-full font-bold shadow-sm hover:bg-[#7ab033] transition-colors">
+          <h2 className="text-2xl font-black text-[var(--text-primary)] mb-2 uppercase tracking-tight">Contest Not Found</h2>
+          <p className="text-[var(--text-secondary)] mb-8 font-medium">{error || "The contest you are looking for does not exist or has been removed."}</p>
+          <button onClick={() => navigate(-1)} className="px-8 py-3 bg-[#8cc63f] text-white rounded-full font-black uppercase tracking-widest text-xs shadow-sm hover:bg-[#7ab033] transition-all active:scale-95">
             Go Back
           </button>
         </div>
@@ -99,12 +99,12 @@ export default function ContestDetails() {
             
             {/* Glossy Gradient Overlays */}
             <div className="absolute inset-0 bg-gradient-to-tr from-[#063327] via-transparent to-[#8cc63f]/20"></div>
-            <div className="absolute inset-0 bg-gradient-to-t from-[#f4f7f4] via-transparent to-transparent opacity-90 h-full"></div>
+            <div className="absolute inset-0 bg-gradient-to-t from-[var(--bg-primary)] via-transparent to-transparent opacity-90 h-full"></div>
 
             {/* Back Button */}
             <button
               onClick={() => navigate(-1)}
-              className="absolute top-8 left-6 md:left-12 flex items-center gap-2 text-white hover:text-[#8cc63f] transition-all font-bold text-sm uppercase tracking-widest z-20 bg-white/10 backdrop-blur-md px-5 py-2.5 rounded-full border border-white/20 hover:bg-white/20 hover:scale-105"
+              className="absolute top-8 left-6 md:left-12 flex items-center gap-2 text-white hover:text-[#8cc63f] transition-all font-bold text-sm uppercase tracking-widest z-20 bg-white/10 dark:bg-black/20 backdrop-blur-md px-5 py-2.5 rounded-full border border-white/20 hover:bg-white/20 dark:hover:bg-black/40 hover:scale-105"
             >
               <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M15 19l-7-7 7-7" />
@@ -118,7 +118,7 @@ export default function ContestDetails() {
                 <span className={`w-2 h-2 rounded-full shadow-[0_0_10px_currentColor] ${contest.projectType === 'Team' ? 'bg-[#3b82f6] text-[#3b82f6]' : contest.projectType === 'Both' ? 'bg-orange-500 text-orange-500' : 'bg-[#8cc63f] text-[#8cc63f]'}`}></span>
                 {contest.projectType === 'Both' ? 'Solo & Team' : contest.projectType || 'Individual'}
               </div>
-              <div className="bg-white/10 backdrop-blur-md border border-white/20 text-white px-5 py-2 rounded-full text-xs font-black uppercase tracking-widest">
+              <div className="bg-white/10 dark:bg-black/20 backdrop-blur-md border border-white/20 text-white px-5 py-2 rounded-full text-xs font-black uppercase tracking-widest">
                 {contest.category}
               </div>
             </div>
@@ -147,18 +147,18 @@ export default function ContestDetails() {
               <div className="lg:col-span-4 space-y-6 order-1 lg:order-2">
                 
                 {/* Premium Live Timer Card */}
-                <div className="bg-white rounded-[32px] p-8 border border-gray-100 shadow-[0_20px_40px_-15px_rgb(0,0,0,0.05)] relative overflow-hidden">
+                <div className="bg-[var(--card-bg)] rounded-[32px] p-8 border border-[var(--border-primary)] shadow-[var(--card-shadow)] relative overflow-hidden transition-colors">
                   <div className="absolute top-0 right-0 w-32 h-32 bg-[#8cc63f]/10 rounded-full blur-3xl"></div>
                   
                   <div className="text-center mb-8 relative z-10">
-                    <span className="text-xs font-black uppercase text-gray-400 tracking-[0.2em] mb-1 block">Time Remaining</span>
-                    <h2 className="text-2xl font-black text-gray-900 tracking-tight">
+                    <span className="text-xs font-black uppercase text-[var(--text-secondary)] tracking-[0.2em] mb-1 block">Time Remaining</span>
+                    <h2 className="text-2xl font-black text-[var(--text-primary)] tracking-tight">
                       {timeLeft.closed ? 'Contest Ended' : 'Hurry up!'}
                     </h2>
                   </div>
 
                   {!timeLeft.closed ? (
-                    <div className="grid grid-cols-4 gap-3 text-center mb-8 relative z-10">
+                    <div className="grid grid-cols-4 gap-3 text-center mb-8 relative z-10 transition-colors">
                       {[
                         { label: 'DAYS', value: timeLeft.d },
                         { label: 'HOURS', value: timeLeft.h },
@@ -169,12 +169,12 @@ export default function ContestDetails() {
                           <div className="w-full aspect-square bg-[#063327] rounded-2xl flex items-center justify-center text-white font-black text-2xl shadow-inner border border-green-900/50 tabular-nums">
                             {time.value}
                           </div>
-                          <span className="text-[9px] font-black text-gray-400 uppercase tracking-widest mt-2">{time.label}</span>
+                          <span className="text-[9px] font-black text-[var(--text-secondary)] uppercase tracking-widest mt-2">{time.label}</span>
                         </div>
                       ))}
                     </div>
                   ) : (
-                    <div className="bg-rose-50 text-rose-500 font-bold p-6 rounded-2xl text-center mb-8 border border-rose-100">
+                    <div className="bg-rose-50 dark:bg-rose-900/20 text-rose-500 dark:text-rose-400 font-bold p-6 rounded-2xl text-center mb-8 border border-rose-100 dark:border-rose-900/30">
                       The deadline has passed for this contest. Keep an eye out for future events!
                     </div>
                   )}
@@ -192,7 +192,7 @@ export default function ContestDetails() {
                         </svg>
                       </button>
                     ) : (
-                      <button disabled className="w-full py-4.5 bg-gray-100 text-gray-400 rounded-full font-black text-sm uppercase tracking-widest cursor-not-allowed">
+                      <button disabled className="w-full py-4.5 bg-[var(--bg-primary)] text-[var(--text-secondary)] rounded-full font-black text-sm uppercase tracking-widest cursor-not-allowed">
                         {contest.status === 'Upcoming' ? 'Opening Soon' : 'Submissions Closed'}
                       </button>
                     )}
@@ -200,35 +200,35 @@ export default function ContestDetails() {
                 </div>
 
                 {/* Details Card */}
-                <div className="bg-white rounded-[32px] p-8 border border-gray-100 shadow-[0_20px_40px_-15px_rgb(0,0,0,0.05)]">
-                  <h3 className="text-sm font-black text-gray-900 mb-6 uppercase tracking-widest border-b border-gray-100 pb-4">Key Information</h3>
+                <div className="bg-[var(--card-bg)] rounded-[32px] p-8 border border-[var(--border-primary)] shadow-[var(--card-shadow)] transition-colors">
+                  <h3 className="text-sm font-black text-[var(--text-primary)] mb-6 uppercase tracking-widest border-b border-[var(--border-primary)] pb-4">Key Information</h3>
                   
                   <div className="space-y-6">
                     <div className="flex items-center justify-between">
-                      <span className="text-xs font-bold text-gray-400 uppercase tracking-wider flex items-center gap-2">
+                      <span className="text-xs font-bold text-[var(--text-secondary)] uppercase tracking-wider flex items-center gap-2">
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-4 h-4"><path strokeLinecap="round" strokeLinejoin="round" d="M15 19.128a9.38 9.38 0 0 0 2.625.372 9.337 9.337 0 0 0 4.121-.952 4.125 4.125 0 0 0-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 0 1 8.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0 1 11.964-3.07M12 6.375a3.375 3.375 0 1 1-6.75 0 3.375 3.375 0 0 1 6.75 0Zm8.25 2.25a2.625 2.625 0 1 1-5.25 0 2.625 2.625 0 0 1 5.25 0Z" /></svg>
                         Capacity
                       </span>
-                      <span className="text-sm font-black text-gray-900">{contest.entryLimit || 100} Slots</span>
+                      <span className="text-sm font-black text-[var(--text-primary)]">{contest.entryLimit || 100} Slots</span>
                     </div>
 
                     <div className="flex items-center justify-between">
-                      <span className="text-xs font-bold text-gray-400 uppercase tracking-wider flex items-center gap-2">
+                      <span className="text-xs font-bold text-[var(--text-secondary)] uppercase tracking-wider flex items-center gap-2">
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-4 h-4"><path strokeLinecap="round" strokeLinejoin="round" d="M18 18.72a9.094 9.094 0 003.741-.479 3 3 0 00-4.682-2.72m.94 3.198l.001.031c0 .225-.012.447-.037.666A11.944 11.944 0 0112 21c-2.17 0-4.207-.576-5.963-1.584A6.062 6.062 0 016 18.719m12 0a5.971 5.971 0 00-.941-3.197m0 0A5.995 5.995 0 0012 12.75a5.995 5.995 0 00-5.058 2.772m0 0a5.971 5.971 0 00-.941 3.197m0 0l.001.031c0 .225.012.447.038.666M12 18.75a.75.75 0 100-1.5.75.75 0 000 1.5zM12 12.75a.75.75 0 100-1.5.75.75 0 000 1.5zM12 6.75a.75.75 0 100-1.5.75.75 0 000 1.5z" /></svg>
                         Model
                       </span>
-                      <span className="text-sm font-black text-gray-900">
+                      <span className="text-sm font-black text-[var(--text-primary)]">
                         {contest.projectType === 'Both' ? 'Hybrid (Solo + Team)' : contest.projectType} 
                         {['Team', 'Both'].includes(contest.projectType) && ` (Max ${contest.teamSize})`}
                       </span>
                     </div>
                     
                     <div className="flex items-start justify-between">
-                      <span className="text-xs font-bold text-gray-400 uppercase tracking-wider flex items-center gap-2">
+                      <span className="text-xs font-bold text-[var(--text-secondary)] uppercase tracking-wider flex items-center gap-2">
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-4 h-4"><path strokeLinecap="round" strokeLinejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 11.25v7.5" /></svg>
                         End Date
                       </span>
-                      <span className="text-sm font-black text-gray-900 text-right max-w-[120px]">
+                      <span className="text-sm font-black text-[var(--text-primary)] text-right max-w-[120px]">
                         {new Date(contest.contestDeadLine).toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' })}
                       </span>
                     </div>
@@ -240,20 +240,20 @@ export default function ContestDetails() {
               {/* Main Content Area - 8 Cols */}
               <div className="lg:col-span-8 order-2 lg:order-1 pt-4 space-y-6">
                 {/* Challenge Brief Card */}
-                <div className="bg-white rounded-[32px] p-8 md:p-12 border border-gray-100 shadow-[0_20px_40px_-15px_rgb(0,0,0,0.05)]">
-                  <div className="flex items-center gap-4 mb-8 border-b border-gray-100 pb-6">
+                <div className="bg-[var(--card-bg)] rounded-[32px] p-8 md:p-12 border border-[var(--border-primary)] shadow-[var(--card-shadow)] transition-colors">
+                  <div className="flex items-center gap-4 mb-8 border-b border-[var(--border-primary)] pb-6">
                     <div className="w-12 h-12 bg-[#8cc63f]/10 rounded-2xl flex items-center justify-center text-[#8cc63f]">
                       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-6 h-6">
                         <path fillRule="evenodd" d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25ZM12.75 6a.75.75 0 0 0-1.5 0v6c0 .414.336.75.75.75h4.5a.75.75 0 0 0 0-1.5h-3.75V6Z" clipRule="evenodd" />
                       </svg>
                     </div>
                     <div>
-                      <h3 className="text-2xl font-black text-gray-900 tracking-tight">Challenge Brief</h3>
-                      <p className="text-gray-400 font-medium text-sm">Everything you need to know about this contest.</p>
+                      <h3 className="text-2xl font-black text-[var(--text-primary)] tracking-tight">Challenge Brief</h3>
+                      <p className="text-[var(--text-secondary)] font-medium text-sm">Everything you need to know about this contest.</p>
                     </div>
                   </div>
 
-                  <div className="prose prose-lg text-gray-600 leading-loose max-w-none prose-headings:font-black prose-headings:text-gray-900 prose-p:font-medium prose-a:text-[#8cc63f] prose-li:marker:text-[#8cc63f]">
+                  <div className="prose prose-lg text-[var(--text-secondary)] leading-loose max-w-none prose-headings:font-black prose-headings:text-[var(--text-primary)] prose-p:font-medium prose-a:text-[#8cc63f] prose-li:marker:text-[#8cc63f]">
                     <p className="whitespace-pre-wrap">{contest.contestDescription}</p>
                   </div>
 
@@ -263,7 +263,7 @@ export default function ContestDetails() {
                       href={contest.contestPDF.url}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="mt-8 flex items-center justify-between w-full p-4 rounded-2xl bg-red-50 border border-red-100 hover:bg-red-100 transition-all group"
+                      className="mt-8 flex items-center justify-between w-full p-4 rounded-2xl bg-red-50 dark:bg-red-900/10 border border-red-100 dark:border-red-900/30 hover:bg-red-100 dark:hover:bg-red-900/20 transition-all group"
                     >
                       <div className="flex items-center gap-3">
                         <div className="w-9 h-9 rounded-xl bg-red-500/10 flex items-center justify-center flex-shrink-0">
@@ -272,7 +272,7 @@ export default function ContestDetails() {
                           </svg>
                         </div>
                         <div>
-                          <p className="text-xs font-black text-red-700 uppercase tracking-wider">Contest Brief PDF</p>
+                          <p className="text-xs font-black text-red-700 dark:text-red-400 uppercase tracking-wider">Contest Brief PDF</p>
                           <p className="text-[10px] text-red-500/70 font-medium truncate max-w-[150px]">
                             {contest.contestPDF.fileName || 'View / Download Brief'}
                           </p>
@@ -288,16 +288,16 @@ export default function ContestDetails() {
 
                 {/* Rule Sections Card */}
                 {contest.ruleSections?.length > 0 && (
-                  <div className="bg-white rounded-[32px] p-8 md:p-12 border border-gray-100 shadow-[0_20px_40px_-15px_rgb(0,0,0,0.05)]">
-                    <div className="flex items-center gap-4 mb-8 border-b border-gray-100 pb-6">
+                  <div className="bg-[var(--card-bg)] rounded-[32px] p-8 md:p-12 border border-[var(--border-primary)] shadow-[var(--card-shadow)] transition-colors">
+                    <div className="flex items-center gap-4 mb-8 border-b border-[var(--border-primary)] pb-6">
                       <div className="w-12 h-12 bg-[#fcb900]/10 rounded-2xl flex items-center justify-center text-[#fcb900]">
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-6 h-6">
                           <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                         </svg>
                       </div>
                       <div>
-                        <h3 className="text-2xl font-black text-gray-900 tracking-tight">Contest Rules</h3>
-                        <p className="text-gray-400 font-medium text-sm">Guidelines and requirements all participants must follow.</p>
+                        <h3 className="text-2xl font-black text-[var(--text-primary)] tracking-tight">Contest Rules</h3>
+                        <p className="text-[var(--text-secondary)] font-medium text-sm">Guidelines and requirements all participants must follow.</p>
                       </div>
                     </div>
 
@@ -308,11 +308,11 @@ export default function ContestDetails() {
                             <span className="w-7 h-7 rounded-full bg-[#8cc63f]/10 text-[#8cc63f] font-black text-[11px] flex items-center justify-center flex-shrink-0">
                               {sIdx + 1}
                             </span>
-                            <h4 className="text-lg font-black text-gray-900 tracking-tight">{section.title}</h4>
+                            <h4 className="text-lg font-black text-[var(--text-primary)] tracking-tight transition-colors">{section.title}</h4>
                           </div>
                           <ul className="space-y-3 ml-10">
                             {section.points?.filter(p => p.trim()).map((point, pIdx) => (
-                              <li key={pIdx} className="flex items-start gap-3 text-gray-600 font-medium">
+                              <li key={pIdx} className="flex items-start gap-3 text-[var(--text-secondary)] font-medium transition-colors">
                                 <span className="w-5 h-5 rounded-full bg-[#8cc63f]/10 border border-[#8cc63f]/30 flex items-center justify-center flex-shrink-0 mt-0.5">
                                   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-3 h-3 text-[#8cc63f]">
                                     <path fillRule="evenodd" d="M16.704 4.153a.75.75 0 01.143 1.052l-8 10.5a.75.75 0 01-1.127.075l-4.5-4.5a.75.75 0 011.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 011.05-.143z" clipRule="evenodd" />

@@ -4,6 +4,8 @@ import Button from './Button';
 import { useAuthContext } from '../context/AuthContext';
 import { useLogout } from '../hooks/useLogout';
 import axiosInstance from '../utils/axiosInstance';
+import axios from 'axios';
+import { useToast } from '../context/ToastContext';
 import logo from '../assets/images/logo.png';
 import DefaultProfile from '../assets/images/DefaultProfile.png';
 import UpdateProfileModal from './UpdateProfileModal';
@@ -16,6 +18,7 @@ export default function Navbar() {
   const location = useLocation();
   const { user, tokenExpired, login } = useAuthContext();
   const { logout, loading } = useLogout();
+  const { showToast } = useToast();
   const [refreshing, setRefreshing] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
@@ -31,51 +34,80 @@ export default function Navbar() {
 
   // Silently refresh access token and re-login
   const handleSilentReAuth = async () => {
+    if (refreshing) return;
     setRefreshing(true);
+    
     try {
-      let refreshRes;
-      try {
-        // Backend defines this as GET; axiosInstance sends Bearer + x-refresh-token header automatically
-        refreshRes = await axiosInstance.get('/user/generate-access');
-      } catch (err) {
-        // Fallback to refresh-token if generate-access 404s
-        if (err.response?.status === 404) {
-          refreshRes = await axiosInstance.get('/user/refresh-token');
-        } else {
-          throw err;
-        }
+      console.log("--- ATOMIC RENEWAL START ---");
+      
+      // 1. Activate Crisis Lock & Clear stale state
+      localStorage.setItem('session_crisis', 'true');
+      localStorage.removeItem('authToken'); 
+
+      const refreshToken = localStorage.getItem('refreshToken');
+      if (!refreshToken) {
+        showToast("Storage error: Refresh token missing.", "error");
+        handleLogout();
+        navigate('/signin');
+        return;
       }
 
-      const newToken =
-        refreshRes.data?.data?.accessToken ||
-        refreshRes.data?.accessToken ||
-        refreshRes.data?.token ||
-        refreshRes.data?.data?.token ||
-        null;
+      console.log(`DIAGNOSTIC: Attempting renewal...`);
 
-      const newRefreshToken =
-        refreshRes.data?.data?.refreshToken ||
-        refreshRes.data?.refreshToken ||
-        null;
-
-      const res = await axiosInstance.get('/user/me');
-      const userData = res.data?.user || res.data?.data?.user;
-
-      if (userData) {
-        // Update user, access token, and refresh token in localStorage via AuthContext
-        login(userData, newToken, newRefreshToken);
-        if (userData.role === 'Admin') {
-          navigate('/admin-dashboard');
-        } else {
-          navigate('/dashboard');
+      // 2. Use NATIVE FETCH for isolation
+      const BASE_URL = 'https://contest-backend-td3m.onrender.com/api/v1';
+      const timestamp = Date.now();
+      
+      const response = await window.fetch(`${BASE_URL}/user/generate-access?t=${timestamp}`, {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${refreshToken}`,
+          'Accept': 'application/json'
         }
+      });
+
+      const data = await response.json();
+      console.log("DIAGNOSTIC: SERVER RESPONSE:", data);
+
+      if (!response.ok) {
+        if (response.status === 401) {
+            showToast("Session fully expired. Please log in again.", "error");
+            handleLogout();
+            navigate('/signin');
+        } else {
+            showToast(data.message || "Renewal failed.", "warning");
+        }
+        return;
+      }
+
+      const newToken = data?.data?.accessToken || data?.accessToken;
+      const newRefreshToken = data?.data?.refreshToken || data?.refreshToken;
+
+      if (!newToken) throw new Error("No access token received.");
+
+      // 3. SAVE IMMEDIATELY & Clear Crisis Lock
+      localStorage.setItem('authToken', newToken);
+      if (newRefreshToken) localStorage.setItem('refreshToken', newRefreshToken);
+      localStorage.removeItem('session_crisis');
+
+      console.log("RENEWAL SUCCESS: Syncing profile...");
+
+      // 4. Sync User Profile (Crisis is over, can use axiosInstance now)
+      const res = await axiosInstance.get(`/user/me?t=${timestamp}`);
+      const userData = res.data?.user || res.data?.data?.user;
+      
+      if (userData) {
+        login(userData, newToken, newRefreshToken || refreshToken);
+        showToast("Session renewed! Welcome back.", "success");
       }
     } catch (err) {
-      // Refresh token also expired — redirect to sign in
-      navigate('/signin');
+      console.error("RENEWAL EXCEPTION:", err.message);
+      showToast("System error during renewal.", "warning");
     } finally {
       setRefreshing(false);
+      localStorage.removeItem('session_crisis'); // Safety fallback
       closeMenu();
+      console.log("--- ATOMIC RENEWAL END ---");
     }
   };
 
@@ -111,21 +143,23 @@ export default function Navbar() {
           <Link
             to="/"
             onClick={closeMenu}
-            className="flex flex-col items-center justify-center transition-all hover:scale-[1.02] active:scale-[0.98] lg:static absolute left-1/2 -translate-x-1/2 lg:left-0 lg:translate-x-0 group"
+            className="flex items-center gap-2 group relative z-50 transition-all hover:scale-[1.02] active:scale-[0.98]"
           >
-            <img src={logo} alt="Desun Academy" className="h-[30px] md:h-[34px] w-auto object-contain" />
-            <div className="flex items-center gap-1 mt-[-2px]">
-              <span className="text-[11px] md:text-[12px] font-black bg-gradient-to-r from-[#8cc63f] to-[#5a8624] bg-clip-text text-transparent tracking-tighter drop-shadow-sm">
-                Desun's LearnAndEarn
-              </span>
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-[14px] h-[14px] text-[#fcb900] drop-shadow-sm mb-[2px]">
-                <path fillRule="evenodd" d="M5.166 2.621v.92h13.668v-.92c0-.218-.02-.43-.053-.639C18.666 1.053 17.842 0 16.984 0H7.016C6.158 0 5.334 1.053 5.219 1.982a3.97 3.97 0 0 0-.053.639Zm14.165 2.67H4.669a2.25 2.25 0 0 0-2.25 2.25v2.625a6.002 6.002 0 0 0 5.438 5.972l.4 5.8H6.5a.75.75 0 0 0 0 1.5h11a.75.75 0 0 0 0-1.5h-1.772l.4-5.8a6.002 6.002 0 0 0 5.438-5.972V6.79a2.25 2.25 0 0 0-2.25-2.25Zm-1.5 2.25v2.625a4.5 4.5 0 0 1-3.69 4.426l-.37 5.37H10.24l-.37-5.37a4.5 4.5 0 0 1-3.69-4.426V6.79h11.281Z" clipRule="evenodd" />
-              </svg>
+            <div className="flex flex-col items-start lg:items-center">
+              <img src={logo} alt="Desun Academy" className="h-[28px] md:h-[32px] lg:h-[34px] w-auto object-contain" />
+              <div className="flex items-center gap-1 mt-[-2px]">
+                <span className="text-[10px] md:text-[11px] lg:text-[12px] font-black bg-gradient-to-r from-[#8cc63f] to-[#5a8624] bg-clip-text text-transparent tracking-tighter drop-shadow-sm">
+                  Desun's LearnAndEarn
+                </span>
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-[12px] h-[12px] md:w-[14px] text-[#fcb900] drop-shadow-sm mb-[2px]">
+                  <path fillRule="evenodd" d="M5.166 2.621v.92h13.668v-.92c0-.218-.02-.43-.053-.639C18.666 1.053 17.842 0 16.984 0H7.016C6.158 0 5.334 1.053 5.219 1.982a3.97 3.97 0 0 0-.053.639Zm14.165 2.67H4.669a2.25 2.25 0 0 0-2.25 2.25v2.625a6.002 6.002 0 0 0 5.438 5.972l.4 5.8H6.5a.75.75 0 0 0 0 1.5h11a.75.75 0 0 0 0-1.5h-1.772l.4-5.8a6.002 6.002 0 0 0 5.438-5.972V6.79a2.25 2.25 0 0 0-2.25-2.25Zm-1.5 2.25v2.625a4.5 4.5 0 0 1-3.69 4.426l-.37 5.37H10.24l-.37-5.37a4.5 4.5 0 0 1-3.69-4.426V6.79h11.281Z" clipRule="evenodd" />
+                </svg>
+              </div>
             </div>
           </Link>
 
           {/* Navigation Links - Desktop */}
-          <nav className="hidden lg:flex items-center space-x-6 xl:space-x-9">
+          <nav className="hidden lg:flex items-center space-x-6 xl:space-x-8 px-4">
             {navLinks.map((link) => {
               const isActive = location.pathname === link.path;
               return (
@@ -154,14 +188,14 @@ export default function Navbar() {
           )}
 
           {/* Auth/Profile & Hamburger Section */}
-          <div className="flex items-center space-x-4 ml-auto lg:ml-0">
+          <div className="flex items-center space-x-2 md:space-x-4">
             {/* Desktop Auth */}
             <div className="hidden md:flex items-center space-x-4">
               {tokenExpired ? (
                 <div className="flex items-center gap-3 animate-in fade-in slide-in-from-right-4 duration-500 pr-2">
                   <div className="flex flex-col items-end mr-1">
                     <span className="text-[10px] text-amber-600 font-black uppercase tracking-widest leading-none mb-1">Session Expired</span>
-                    <span className="text-[11px] text-[var(--text-secondary)] font-bold leading-none opacity-60">Re-auth Required</span>
+                    <span className="text-[11px] text-[var(--text-secondary)] font-bold leading-none opacity-60">Restore Access Now</span>
                   </div>
                   <div className="flex items-center gap-2 px-3 py-1.5 bg-amber-500/5 border border-amber-500/20 rounded-2xl">
                     <button
@@ -177,7 +211,7 @@ export default function Navbar() {
                             <path strokeLinecap="round" strokeLinejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99" />
                           </svg>
                         )}
-                        {refreshing ? 'Syncing' : 'Login Again'}
+                        {refreshing ? 'Renewing...' : 'Renew Session'}
                       </span>
                     </button>
                     <div className="w-px h-6 bg-amber-500/20 mx-1"></div>
@@ -271,7 +305,7 @@ export default function Navbar() {
 
       {/* Mobile Navigation Overlay */}
       <div
-        className={`fixed inset-x-0 top-[70px] bg-[var(--bg-secondary)]/95 backdrop-blur-2xl border-b border-[var(--accent-green)]/20 transition-all duration-500 ease-in-out z-40 lg:hidden overflow-y-auto ${isMenuOpen ? 'h-[calc(100vh-70px)] opacity-100' : 'h-0 opacity-0 pointer-events-none'}`}
+        className={`fixed inset-x-0 top-[64px] md:top-[70px] bg-[var(--bg-secondary)]/95 backdrop-blur-2xl border-b border-[var(--accent-green)]/20 transition-all duration-500 ease-in-out z-40 lg:hidden overflow-y-auto ${isMenuOpen ? 'h-[calc(100vh-64px)] md:h-[calc(100vh-70px)] opacity-100' : 'h-0 opacity-0 pointer-events-none'}`}
       >
         <div className="px-6 py-8 space-y-6">
           <nav className="flex flex-col space-y-4">
@@ -296,10 +330,10 @@ export default function Navbar() {
             })}
 
             {/* Theme Toggle in Mobile Menu */}
-            <div className="flex items-center justify-between p-4 bg-[var(--bg-primary)] rounded-2xl border border-[var(--border-primary)] transition-colors mt-4">
+            <div className="flex items-center justify-between p-3.5 bg-[var(--bg-primary)] rounded-2xl border border-[var(--border-primary)] transition-colors mt-2">
               <div className="flex flex-col">
-                <span className="text-[12px] font-black text-[var(--text-primary)] uppercase tracking-wider">Appearance</span>
-                <span className="text-[11px] text-[var(--text-secondary)] font-bold">Switch between light & dark</span>
+                <span className="text-[11px] font-black text-[var(--text-primary)] uppercase tracking-wider">Interface Mode</span>
+                <span className="text-[10px] text-[var(--text-secondary)] font-bold">Light or Dark vision</span>
               </div>
               <ThemeToggle />
             </div>
@@ -319,41 +353,41 @@ export default function Navbar() {
               <div className="space-y-4 animate-in fade-in slide-in-from-bottom-4 duration-500">
                 <div className="p-5 bg-amber-500/5 border-2 border-amber-500/20 rounded-3xl text-center">
                   <span className="text-[11px] font-black text-amber-600 uppercase tracking-[0.2em] mb-3 block">Security Alert: Session Expired</span>
-                  <div className="grid grid-cols-1 gap-3">
+                  <div className="grid grid-cols-1 gap-2.5">
                     <button
                       onClick={handleSilentReAuth}
                       disabled={refreshing}
-                      className="w-full py-4 text-[14px] font-black bg-gradient-to-r from-[#fcb900] to-[#ff9900] text-white rounded-2xl shadow-lg shadow-amber-200 uppercase tracking-wider flex items-center justify-center gap-3 active:scale-[0.98] transition-transform"
+                      className="w-full py-3.5 text-[13px] font-black bg-gradient-to-r from-[#fcb900] to-[#ff9900] text-white rounded-2xl shadow-lg shadow-amber-200 uppercase tracking-wider flex items-center justify-center gap-3 active:scale-[0.98] transition-all"
                     >
                       {refreshing ? (
                         <>
-                          <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
-                          Syncing Session...
+                          <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                          Syncing...
                         </>
                       ) : (
                         <>
-                          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-5 h-5">
-                            <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15m3 0l3-3m0 0l-3-3m3 3H9" />
+                          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-4.5 h-4.5">
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99" />
                           </svg>
-                          Login Again
+                          Renew Session
                         </>
                       )}
                     </button>
                     <button
                       onClick={handleLogout}
                       disabled={loading}
-                      className="w-full py-4 text-[14px] font-black bg-red-50 text-red-600 rounded-2xl border-2 border-red-100 uppercase tracking-wider flex items-center justify-center gap-2"
+                      className="w-full py-3 text-[13px] font-black bg-red-50 text-red-600 rounded-2xl border border-red-100 uppercase tracking-wider flex items-center justify-center gap-2"
                     >
-                      {loading ? 'Logging out...' : 'Logout Everywhere'}
+                      {loading ? '...' : 'Logout'}
                     </button>
                   </div>
                 </div>
               </div>
             ) : user ? (
-              <div className="space-y-4">
-                <div className="flex items-center justify-between p-4 bg-[var(--bg-primary)] rounded-2xl border border-[var(--border-primary)] group transition-colors">
-                  <div className="flex items-center gap-4">
-                    <div className="w-12 h-12 rounded-full overflow-hidden shadow-md border-2 border-[var(--accent-green)]/30">
+              <div className="space-y-3">
+                <div className="flex items-center justify-between p-3.5 bg-[var(--bg-primary)] rounded-2xl border border-[var(--border-primary)] group transition-colors">
+                  <div className="flex items-center gap-3">
+                    <div className="w-11 h-11 rounded-full overflow-hidden shadow-md border-2 border-[var(--accent-green)]/30">
                       <img
                         src={user?.profileImage?.url || DefaultProfile}
                         alt={displayName}
@@ -362,31 +396,22 @@ export default function Navbar() {
                       />
                     </div>
                     <div className="flex flex-col text-left">
-                      <span className="text-[11px] font-bold text-[var(--accent-green)] uppercase tracking-widest leading-none mb-1">Authenticated</span>
-                      <span className="font-extrabold text-[var(--text-primary)] text-base transition-colors">{displayName}</span>
+                      <span className="text-[10px] font-bold text-[var(--accent-green)] uppercase tracking-widest leading-none mb-1">Signed In</span>
+                      <span className="font-extrabold text-[var(--text-primary)] text-sm transition-colors">{displayName}</span>
                     </div>
                   </div>
                   <div className="flex items-center gap-2">
                     <div className="relative">
                       <button
-                        onClick={() => setIsNotifOpen(!isNotifOpen)}
-                        className={`w-9 h-9 rounded-full flex items-center justify-center transition-all ${isNotifOpen ? 'bg-[#8cc63f] text-white' : 'bg-white border border-gray-200 text-gray-400'
+                        onClick={() => setIsNotifOpen((prev) => !prev)}
+                        className={`w-9 h-9 rounded-full flex items-center justify-center transition-all ${isNotifOpen ? 'bg-[#8cc63f] text-white shadow-md' : 'bg-white border border-gray-200 text-gray-400'
                           }`}
                       >
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-5 h-5">
                           <path strokeLinecap="round" strokeLinejoin="round" d="M14.857 17.082a23.848 23.848 0 0 0 5.454-1.31A8.967 8.967 0 0 1 18 9.75V9A6 6 0 0 0 6 9v.75a8.967 8.967 0 0 1-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 0 1-5.714 0m5.714 0a3 3 0 1 1-5.714 0" />
                         </svg>
-                        <span className="absolute top-1 right-1 w-2.5 h-2.5 bg-red-500 border-2 border-white rounded-full animate-bounce"></span>
+                        <span className="absolute top-1 right-1 w-2 h-2 bg-red-500 border border-white rounded-full animate-bounce"></span>
                       </button>
-
-                      {isNotifOpen && (
-                        <div className="absolute right-0 mt-2 z-[60]">
-                          <NotificationDropdown
-                            isOpen={isNotifOpen}
-                            onClose={() => setIsNotifOpen(false)}
-                          />
-                        </div>
-                      )}
                     </div>
                     <button
                       onClick={() => { setIsProfileModalOpen(true); closeMenu(); }}
@@ -400,9 +425,9 @@ export default function Navbar() {
                 </div>
                 <button
                   onClick={handleLogout}
-                  className="w-full py-4 text-[14px] font-black bg-red-50 text-red-600 rounded-2xl border-2 border-red-100 hover:bg-red-500 hover:text-white transition-all uppercase tracking-wider"
+                  className="w-full py-3.5 text-[13px] font-black bg-red-50 text-red-600 rounded-2xl border border-red-100 hover:bg-red-500 hover:text-white transition-all uppercase tracking-wider"
                 >
-                  Logout
+                  Sign Out
                 </button>
               </div>
             ) : (

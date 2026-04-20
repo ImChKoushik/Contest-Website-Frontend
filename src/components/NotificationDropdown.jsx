@@ -207,7 +207,7 @@ export default function NotificationDropdown({ isOpen, onClose }) {
   return (
     <div 
       ref={dropdownRef}
-      className="absolute top-16 right-0 w-[320px] md:w-[380px] bg-white rounded-3xl shadow-[0_20px_50px_rgba(0,0,0,0.15)] border border-gray-100 overflow-hidden z-[100] animate-in fade-in zoom-in-95 duration-200"
+      className="absolute top-16 right-[-10px] md:right-0 w-[calc(100vw-1.5rem)] xs:w-[340px] md:w-[380px] bg-white rounded-3xl shadow-[0_20px_50px_rgba(0,0,0,0.15)] border border-gray-100 overflow-hidden z-[100] animate-in fade-in zoom-in-95 duration-200"
     >
       <div className="p-5 border-b border-gray-50 bg-gray-50/50 flex items-center justify-between">
         <div>

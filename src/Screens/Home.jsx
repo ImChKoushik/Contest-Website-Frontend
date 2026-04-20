@@ -305,7 +305,7 @@ const Home = () => {
               <div className="absolute -top-20 -right-20 w-64 h-64 bg-[#8cc63f]/10 rounded-full blur-[100px]"></div>
 
               {/* Image container — fixed aspect ratio, images fade in/out */}
-              <div className="relative w-full max-w-sm mx-auto aspect-[4/3] rounded-2xl overflow-hidden shadow-xl shadow-green-900/10 border-4 border-white bg-gray-50">
+              <div className="relative w-full max-w-sm mx-auto aspect-[4/3] rounded-2xl overflow-hidden shadow-xl shadow-green-900/10 border-4 border-[var(--bg-primary)] bg-[var(--bg-primary)] transition-colors">
                 {galleryImages.map((img, index) => (
                   <img
                     key={index}
@@ -333,7 +333,7 @@ const Home = () => {
 
               {/* Image counter */}
               <div className="flex justify-end mt-3 pr-1">
-                <span className="text-[11px] font-black text-gray-400 uppercase tracking-widest">
+                <span className="text-[11px] font-black text-[var(--text-secondary)] uppercase tracking-widest transition-colors">
                   {gallerySlide + 1} / {galleryImages.length}
                 </span>
               </div>
@@ -453,7 +453,7 @@ const Home = () => {
 
                   <div className="p-8 pt-4 flex flex-col items-center text-center">
                     <h3 className="text-xl font-black text-[var(--text-primary)] mb-2 tracking-tight group-hover:text-[var(--accent-green)] transition-colors uppercase">{cat.name}</h3>
-                    <p className="text-[var(--text-secondary)] text-sm font-medium mb-8">Click to view all {cat.name} contests.</p>
+                    <p className="text-[var(--text-secondary)] text-sm font-medium mb-8 transition-colors">Click to view all {cat.name} contests.</p>
 
                     <div className="flex items-center gap-2 text-[var(--accent-green)] font-black uppercase tracking-widest text-[10px] transform group-hover:translate-x-1 transition-all duration-500">
                       Explore Now
@@ -464,7 +464,7 @@ const Home = () => {
                   </div>
 
                   {/* Abstract decoration */}
-                  <div className="absolute -bottom-10 -right-10 w-32 h-32 bg-gray-50 rounded-full z-0 group-hover:scale-125 transition-transform duration-700 opacity-50"></div>
+                  <div className="absolute -bottom-10 -right-10 w-32 h-32 bg-[var(--bg-primary)] rounded-full z-0 group-hover:scale-125 transition-transform duration-700 opacity-50"></div>
                 </div>
               </div>
             ))}
@@ -487,7 +487,7 @@ const Home = () => {
               <input
                 type="email"
                 placeholder="Enter your email"
-                className="flex-1 px-4 py-3 rounded-xl bg-white border border-gray-200 outline-none focus:border-[#8cc63f] transition-all shadow-sm text-sm text-gray-900 placeholder:text-gray-400"
+                className="flex-1 px-4 py-3 rounded-xl bg-[var(--input-bg)] border border-[var(--border-primary)] outline-none focus:border-[#8cc63f] transition-all shadow-sm text-sm text-[var(--text-primary)] placeholder:text-[var(--text-secondary)]"
               />
               <button
                 onClick={() => navigate('/contests')}

@@ -14,18 +14,30 @@ const axiosInstance = axios.create({
 //   req.cookies?.refreshToken || req.header("Authorization")?.replace("Bearer ", "")
 axiosInstance.interceptors.request.use(
   (config) => {
-    const isRefreshCall = config.url?.includes('generate-access');
+    // 1. Check if this is a refresh call
+    const isRefreshCall = config.url?.includes('generate-access') || config.url?.includes('refresh-token');
+    const accessToken = localStorage.getItem('authToken');
+    const isCrisis = localStorage.getItem('session_crisis') === 'true';
+
+    // 2. BLOCK background requests during a session crisis or if no token exists
+    // This prevents background tasks from firing 401s/500s 
+    // and invalidating the refresh token while we wait for the user.
+    if (!isRefreshCall && (isCrisis || !accessToken)) {
+      const cancelError = new Error('Auth Lock: Request frozen to prevent session conflict.');
+      cancelError.isAuthBlock = true; 
+      return Promise.reject(cancelError);
+    }
 
     if (isRefreshCall) {
-      // Send the refresh token as Bearer for this endpoint
+      // For refresh calls, use ONLY the refreshToken. Clear any existing Auth header first.
+      delete config.headers['Authorization'];
       const refreshToken = localStorage.getItem('refreshToken');
       if (refreshToken) {
         config.headers['Authorization'] = `Bearer ${refreshToken}`;
       }
     } else {
-      // Send the access token as Bearer for all other endpoints
-      const accessToken = localStorage.getItem('authToken');
-      if (accessToken) {
+      // 3. For ALL other calls, use the fresh authToken if available
+      if (!config.headers['Authorization'] && accessToken) {
         config.headers['Authorization'] = `Bearer ${accessToken}`;
       }
     }
@@ -36,113 +48,26 @@ axiosInstance.interceptors.request.use(
 );
 
 // ─── RESPONSE INTERCEPTOR ────────────────────────────────────────
-// On 401 from any endpoint (except the refresh itself), try to silently
-// refresh the access token using the stored refresh token, then retry.
-let isRefreshing = false;
-let failedQueue = [];
-
-const processQueue = (error, token = null) => {
-  failedQueue.forEach((prom) => {
-    if (error) prom.reject(error);
-    else prom.resolve(token);
-  });
-  failedQueue = [];
-};
-
+// On 401: do NOT auto-refresh. Just notify the UI to show "Login Again".
+// The only silent refresh happens when the user manually clicks "Login Again".
 axiosInstance.interceptors.response.use(
   (response) => response,
-  async (error) => {
+  (error) => {
     const originalRequest = error.config;
-
-    // Handle 401 (Unauthorized) OR 500 (Internal Server Error - often session-related on this backend)
-    // and not for the refresh or login endpoints themselves
     const isAuthError = error.response?.status === 401;
-    const isServerError = error.response?.status === 500;
-    const hasLocalUser = !!localStorage.getItem('authUser');
+    
+    // Check if the request is to a sensitive auth endpoint
+    const url = originalRequest.url || '';
+    const isAuthEndpoint = 
+      url.includes('generate-access') || 
+      url.includes('refresh-token') || 
+      url.includes('login-user') || 
+      url.includes('logout-user') ||
+      url.includes('user/me'); // /user/me is used during refresh check
 
-    if (
-      (isAuthError || (isServerError && hasLocalUser)) &&
-      !originalRequest._retry &&
-      !originalRequest.url?.includes('generate-access') &&
-      !originalRequest.url?.includes('login-user')
-    ) {
-      if (isRefreshing) {
-        return new Promise((resolve, reject) => {
-          failedQueue.push({ resolve, reject });
-        })
-          .then((token) => {
-            originalRequest.headers['Authorization'] = `Bearer ${token}`;
-            return axiosInstance(originalRequest);
-          })
-          .catch((err) => Promise.reject(err));
-      }
-
-      originalRequest._retry = true;
-      isRefreshing = true;
-
-      const refreshToken = localStorage.getItem('refreshToken');
-
-      // ── Case 1: No refresh token stored (old session / not yet logged in fresh) ──
-      // If a user is stored in localStorage, their session has expired → signal the UI.
-      // If there's no user at all, they were never logged in — just reject silently.
-      if (!refreshToken) {
-        isRefreshing = false;
-        processQueue(error, null);
-        const hasUser = localStorage.getItem('authUser');
-        if (hasUser) {
-          // Clear stale access token but keep user data so Navbar shows the greeting
-          localStorage.removeItem('authToken');
-          window.dispatchEvent(new CustomEvent('auth:expired'));
-        }
-        return Promise.reject(error);
-      }
-
-      // ── Case 2: Refresh token exists — try to get a new access token ──
-      try {
-        // axiosInstance request interceptor will attach Bearer <refreshToken> automatically
-        const refreshRes = await axiosInstance.get('/user/generate-access');
-
-        const newAccessToken =
-          refreshRes.data?.data?.accessToken ||
-          refreshRes.data?.accessToken ||
-          null;
-
-        const newRefreshToken =
-          refreshRes.data?.data?.refreshToken ||
-          refreshRes.data?.refreshToken ||
-          null;
-
-        if (newAccessToken) localStorage.setItem('authToken', newAccessToken);
-        if (newRefreshToken) localStorage.setItem('refreshToken', newRefreshToken);
-
-        processQueue(null, newAccessToken);
-
-        originalRequest.headers['Authorization'] = `Bearer ${newAccessToken}`;
-        return axiosInstance(originalRequest);
-      } catch (refreshError) {
-        // Refresh token was present but server rejected it — user must re-login
-        processQueue(refreshError, null);
-        
-        // Dispatch global event for AuthContext to show "Login Again"
-        window.dispatchEvent(new CustomEvent('auth:expired'));
-        
-        // Clear tokens but KEEP authUser so Navbar can still show the greeting
-        localStorage.removeItem('authToken');
-        localStorage.removeItem('refreshToken');
-        
-        return Promise.reject(refreshError);
-      } finally {
-        isRefreshing = false;
-      }
-    }
-
-    // Dispatch auth:expired for 500 errors on protected routes to allow the "Login Again" silent re-auth
-    if (
-      error.response?.status === 500 && 
-      localStorage.getItem('authUser') &&
-      !originalRequest.url?.includes('generate-access') &&
-      !originalRequest.url?.includes('login-user')
-    ) {
+    if (isAuthError && !isAuthEndpoint) {
+      // Signal UI to show "Renew Session" button
+      localStorage.setItem('session_crisis', 'true');
       window.dispatchEvent(new CustomEvent('auth:expired'));
     }
 
@@ -151,3 +76,4 @@ axiosInstance.interceptors.response.use(
 );
 
 export default axiosInstance;
+

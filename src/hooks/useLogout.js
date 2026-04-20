@@ -13,26 +13,25 @@ export const useLogout = () => {
     setLoading(true);
     setError(null);
     try {
-      // Make the GET request to the explicit API endpoint you provided
-      const response = await axiosInstance.get('/user/logout-user');
-      
-      // Clear the user from the global context
-      contextLogout();
-      
-      // Optional: navigate home or to sign in
-      navigate("/signin");
-      
-      return response.data;
+      // Mark as intentional logout to prevent the 401 from showing "Login Again"
+      sessionStorage.setItem('intentionalLogout', 'true');
+
+      // Hit server-side logout (clears httpOnly cookies)
+      await axiosInstance.get('/user/logout-user').catch(() => {});
+
     } catch (err) {
-      console.error("Logout failed:", err);
-      // Even if the server fails, clear local context so they aren't stuck logged in
-      contextLogout();
-      navigate("/signin");
-      setError(err.response?.data?.message || "An error occurred during logout");
+      console.error('Logout API failed:', err);
     } finally {
+      // Always clear local state regardless of server response
+      contextLogout();
+      navigate('/signin');
       setLoading(false);
+      // Clean up the flag
+      setTimeout(() => sessionStorage.removeItem('intentionalLogout'), 1000);
     }
   };
+
+
 
   return { logout, loading, error };
 };

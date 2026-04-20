@@ -259,7 +259,7 @@ export default function UserDashboard() {
           <div className="absolute inset-0 bg-gradient-to-t from-[#fbfcfb]/10 via-transparent to-transparent z-10"></div> {/* Bottom soft fade */}
         </div>
 
-        <div className="relative z-20 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex-1 flex flex-col justify-start pt-16 md:pt-20 pb-24">
+        <div className="relative z-20 max-w-7xl mr-auto px-4 sm:px-6 lg:px-8 flex-1 flex flex-col justify-start items-start pt-16 md:pt-20 pb-24 text-left">
           {/* Badge — fixed height */}
           <div className="h-9 flex items-center mb-6">
             <div
@@ -272,7 +272,7 @@ export default function UserDashboard() {
 
           {/* Welcome Typing Text — fixed height */}
           <div className="min-h-[60px] md:min-h-[50px] flex items-center mb-4">
-            <h2 className="text-2xl md:text-3xl font-black bg-gradient-to-r from-orange-400 via-[#8cc63f] to-[#bade90] bg-clip-text text-transparent leading-tight tracking-tight">
+            <h2 className="text-2xl md:text-3xl font-black bg-gradient-to-r from-orange-400 via-[#8cc63f] to-[#bade90] bg-clip-text text-transparent leading-tight tracking-tight text-left">
               {typedText}
               <span className="animate-pulse text-[#8cc63f]">|</span>
             </h2>
@@ -280,7 +280,7 @@ export default function UserDashboard() {
 
           {/* Title — fixed height */}
           <div className="min-h-[120px] md:min-h-[175px] mb-6">
-            <h1 className="text-white text-5xl md:text-[64px] font-black leading-[1.1] tracking-tight transition-all duration-300 flex flex-col gap-2">
+            <h1 className="text-white text-5xl md:text-[64px] font-black leading-[1.1] tracking-tight transition-all duration-300 flex flex-col items-start gap-2 text-left">
               <span className="block">{slides[currentSlide].titleLine1}</span>
               <span className="text-[#8cc63f] block">{slides[currentSlide].titleLine2}</span>
             </h1>
@@ -288,7 +288,7 @@ export default function UserDashboard() {
 
           {/* Description — fixed height */}
           <div className="min-h-[80px] mb-10">
-            <p className="text-[#a4dfbe] font-medium text-lg md:text-xl max-w-2xl leading-relaxed drop-shadow-sm transition-all duration-300">
+            <p className="text-[#a4dfbe] font-medium text-lg md:text-xl max-w-2xl leading-relaxed drop-shadow-sm transition-all duration-300 text-left">
               {slides[currentSlide].description}
             </p>
           </div>
@@ -302,13 +302,13 @@ export default function UserDashboard() {
             </button>
           </div>
 
-          {/* Slider Indicators (Green Light Effect) */}
-          <div className="absolute bottom-12 left-0 right-0 flex justify-center gap-4 px-6 z-30">
+          {/* Slider Indicators (Green Light Effect) - Left Aligned */}
+          <div className="absolute bottom-12 left-0 right-0 flex justify-start gap-4 px-4 sm:px-6 lg:px-8 z-30">
             {slides.map((_, idx) => (
               <div
                 key={idx}
                 onClick={() => setCurrentSlide(idx)}
-                className="group cursor-pointer py-4 flex flex-col items-center"
+                className="group cursor-pointer py-4 flex flex-col items-start"
               >
                 <div
                   className={`h-1.5 rounded-full transition-all duration-500 ease-out ${currentSlide === idx
