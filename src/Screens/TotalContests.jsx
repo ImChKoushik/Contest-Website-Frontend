@@ -81,6 +81,14 @@ export default function TotalContests() {
   const handleStatusChange = (id, label) => {
     setPendingStatus(prev => ({ ...prev, [id]: label }));
   };
+  
+  const handleTypeChange = (id, type, currentSize) => {
+    setPendingType(prev => ({ ...prev, [id]: type }));
+    // If switching TO a team type and current size is invalid (< 2), initialize it to 2
+    if (type !== 'Individual' && (!currentSize || currentSize < 2)) {
+      setPendingSize(prev => ({ ...prev, [id]: 2 }));
+    }
+  };
 
   const handleSaveContest = async (id) => {
     setSavingId(id);
@@ -248,7 +256,7 @@ export default function TotalContests() {
                       <div className="flex flex-col gap-2 items-center">
                         <select
                           value={pendingType[contest._id] || contest.projectType}
-                          onChange={(e) => setPendingType(prev => ({ ...prev, [contest._id]: e.target.value }))}
+                          onChange={(e) => handleTypeChange(contest._id, e.target.value, contest.teamSize)}
                           className={`text-[11px] font-black uppercase px-2.5 py-1.5 rounded-lg border focus:outline-none transition-all cursor-pointer ${(pendingType[contest._id] || contest.projectType) === 'Team' ? 'text-blue-600 border-blue-200 bg-blue-50' :
                               (pendingType[contest._id] || contest.projectType) === 'Both' ? 'text-green-600 border-green-200 bg-green-50' :
                                 'text-purple-600 border-purple-200 bg-purple-50'

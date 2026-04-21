@@ -100,7 +100,7 @@ const useContests = () => {
 
   const updateContestStatus = async (contestId, status) => {
     try {
-      const res = await axiosInstance.patch(`/contest/update-status/${contestId}`, { status });
+      const res = await axiosInstance.patch(`/contest/update-contest/${contestId}`, { status });
       if (res.data && res.data.success) {
         return { success: true, message: res.data.message };
       } else {
@@ -114,7 +114,6 @@ const useContests = () => {
 
   const updateContest = async (contestId, contestData) => {
     try {
-      // Assuming backend supports PATCH /api/v1/contest/update-contest/:id or similar
       const res = await axiosInstance.patch(`/contest/update-contest/${contestId}`, contestData);
       if (res.data && res.data.success) {
         return { success: true, message: res.data.message };
