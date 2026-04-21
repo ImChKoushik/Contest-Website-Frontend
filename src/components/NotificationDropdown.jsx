@@ -139,8 +139,11 @@ export default function NotificationDropdown({ isOpen, onClose }) {
             }
 
             // 3. Join Requests (If leader)
-            if (String(t.leader?._id || t.leader) === String(user?._id) && (t.joinRequests?.length > 0)) {
-               t.joinRequests.forEach((req, idx) => {
+            const isLeader = String(t.leader?._id || t.leader) === String(user?._id);
+            const requests = t.joinRequests || t.requests || t.pendingMembers;
+            
+            if (isLeader && requests?.length > 0) {
+               requests.forEach((req, idx) => {
                  list.push({
                    id: `req-${t._id}-${idx}`,
                    type: 'user',

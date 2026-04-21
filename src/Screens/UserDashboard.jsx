@@ -47,6 +47,7 @@ export default function UserDashboard() {
   } = useTeam();
   const {
     getMyInvites, respondToInvite, respondToJoinRequest,
+    loading: invLoading
   } = useInvite();
   const { fetchMyResults, myResults, loading: resultsLoading } = useResults();
   const { showToast } = useToast();
@@ -575,77 +576,95 @@ export default function UserDashboard() {
                     </div>
                   </div>
 
-                  {/* Pending Join Requests (Leader Only) */}
-                  {(String(team.leader?._id || team.leader) === String(currentUser?._id || currentUser?.id)) &&
-                    (team.joinRequests || team.requests || team.pendingMembers) &&
-                    (team.joinRequests?.length > 0 || team.requests?.length > 0 || team.pendingMembers?.length > 0) && (
-                      <div className="mt-8 pt-8 border-t-2 border-gray-100/50">
-                        <div className="flex items-center justify-between mb-5">
-                          <div className="flex flex-col">
-                            <p className="text-[10px] font-black uppercase text-[#fcb900] tracking-widest flex items-center gap-2 mb-1">
-                              <span className="w-1.5 h-1.5 rounded-full bg-[#fcb900] animate-ping"></span>
-                              Join Requests
-                            </p>
-                            <p className="text-[9px] font-bold text-gray-400">Review prospective teammates</p>
-                          </div>
-                          <span className="text-[10px] font-black text-[#fcb900] bg-[#fcb900]/10 px-3 py-1 rounded-full border border-[#fcb900]/20">
-                            {(team.joinRequests || team.requests || team.pendingMembers).length} Pending
-                          </span>
+                  {/* Team Leader Section: Pending Join Requests */}
+                  {(String(team.leader?._id || team.leader) === String(currentUser?._id || currentUser?.id)) && (
+                    <div className="mt-8 pt-8 border-t border-[var(--border-primary)]/50">
+                      <div className="flex items-center justify-between mb-6">
+                        <div>
+                          <h4 className="text-[11px] font-black text-[var(--text-primary)] uppercase tracking-[0.2em] flex items-center gap-2">
+                             Join Applications
+                             <span className="w-1.5 h-1.5 rounded-full bg-[#8cc63f] animate-pulse"></span>
+                          </h4>
+                          <p className="text-[9px] text-[var(--text-secondary)] font-bold uppercase tracking-widest mt-1">Review prospective recruits</p>
                         </div>
-                        <div className="space-y-3">
+                        <span className="px-3 py-1 bg-[#8cc63f]/10 text-[#8cc63f] text-[10px] font-black rounded-full uppercase tracking-widest border border-[#8cc63f]/20">
+                          {(team.joinRequests?.length || team.requests?.length || team.pendingMembers?.length || 0)} Pending
+                        </span>
+                      </div>
+
+                      {(team.joinRequests || team.requests || team.pendingMembers)?.length > 0 ? (
+                        <div className="space-y-4">
                           {(team.joinRequests || team.requests || team.pendingMembers).map((request, reqIdx) => {
-                            // Backend uses { user: ObjectId } which might be populated
-                            const userObj = request.user || request;
+                            const userObj = request.user || (request.sender && typeof request.sender === 'object' ? request.sender : request);
                             const requestEmail = typeof userObj === 'string' ? userObj : (userObj.email || userObj.requestUserEmail);
                             const requestName = typeof userObj === 'string' ? 'New Applicant' : (userObj.userName || userObj.name || 'Anonymous Scout');
-
-                            if (!requestEmail) return null;
+                            const requestId = request._id || request.id || (request.sender?._id || request.sender);
 
                             return (
-                              <div key={reqIdx} className="flex items-center justify-between bg-yellow-50/40 p-4 rounded-3xl border border-yellow-100/30 group/req hover:bg-yellow-50 hover:border-yellow-200 transition-all">
-                                <div className="flex items-center gap-3">
-                                  <div className="w-10 h-10 rounded-2xl bg-white border border-yellow-100 flex items-center justify-center text-xs font-black text-yellow-600 shadow-sm">
-                                    {requestName.substring(0, 2).toUpperCase()}
-                                  </div>
-                                  <div className="flex flex-col">
-                                    <span className="text-[13px] font-black text-gray-800">{requestName}</span>
-                                    <span className="text-[10px] font-bold text-gray-400">{requestEmail}</span>
+                              <div key={requestId || reqIdx} className="group p-6 bg-[var(--bg-primary)]/40 rounded-[2rem] border border-[var(--border-primary)]/50 hover:border-[#8cc63f]/30 transition-all shadow-sm">
+                                <div className="flex items-start justify-between mb-5">
+                                  <div className="flex items-center gap-4">
+                                    <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-[#8cc63f] to-[#7ab535] flex items-center justify-center text-white font-black text-2xl shadow-lg shadow-[#8cc63f]/20 group-hover:rotate-3 transition-transform">
+                                      {requestName.charAt(0).toUpperCase()}
+                                    </div>
+                                    <div>
+                                      <div className="font-black text-[var(--text-primary)] text-base group-hover:text-[#8cc63f] transition-colors">{requestName}</div>
+                                      <div className="text-[11px] text-[var(--text-secondary)] font-bold uppercase tracking-widest flex items-center gap-2 mt-1">
+                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-3.5 h-3.5 opacity-50">
+                                          <path strokeLinecap="round" strokeLinejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 0 1-2.25 2.25h-15a2.25 2.25 0 0 1-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25m19.5 0v.243a2.25 2.25 0 0 1-1.07 1.916l-7.5 4.615a2.25 2.25 0 0 1-2.36 0L3.32 8.91a2.25 2.25 0 0 1-1.07-1.916V6.75" />
+                                        </svg>
+                                        {requestEmail}
+                                      </div>
+                                    </div>
                                   </div>
                                 </div>
-                                <div className="flex gap-2.5">
+                                
+                                <div className="flex gap-3 mt-4 border-t border-[var(--border-primary)]/30 pt-4">
                                   <button
                                     onClick={async (e) => {
                                       e.stopPropagation();
-                                      const { success } = await respondToJoinRequest(request._id || request.id, "Accepted");
+                                      const { success } = await respondToJoinRequest(requestId, 'Accepted');
                                       if (success) fetchUserTeams();
                                     }}
-                                    className="w-10 h-10 rounded-[18px] bg-[#8cc63f] text-white flex items-center justify-center hover:bg-black transition-all shadow-lg shadow-[#8cc63f]/20 active:scale-90"
-                                    title="Approve Member"
+                                    disabled={invLoading}
+                                    className="flex-1 py-3 px-4 rounded-xl bg-[#8cc63f] text-white font-black text-[11px] uppercase tracking-widest hover:bg-black transition-all flex items-center justify-center gap-2 shadow-lg shadow-[#8cc63f]/20 disabled:opacity-50"
                                   >
-                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={3} stroke="currentColor" className="w-4.5 h-4.5">
-                                      <path strokeLinecap="round" strokeLinejoin="round" d="m4.5 12.75 6 6 9-13.5" />
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
+                                      <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
                                     </svg>
+                                    Accept Request
                                   </button>
                                   <button
                                     onClick={async (e) => {
                                       e.stopPropagation();
-                                      const { success } = await respondToJoinRequest(request._id || request.id, "Rejected");
+                                      const { success } = await respondToJoinRequest(requestId, 'Rejected');
                                       if (success) fetchUserTeams();
                                     }}
-                                    className="w-10 h-10 rounded-[18px] bg-white border-2 border-red-50 text-red-300 flex items-center justify-center hover:bg-red-50 hover:border-red-100 hover:text-red-500 transition-all active:scale-90"
-                                    title="Decline Request"
+                                    disabled={invLoading}
+                                    className="flex-1 py-3 px-4 rounded-xl bg-red-50 text-red-500 font-black text-[11px] uppercase tracking-widest hover:bg-red-500 hover:text-white transition-all border border-red-100 flex items-center justify-center gap-2 disabled:opacity-50"
                                   >
-                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={3} stroke="currentColor" className="w-4.5 h-4.5">
-                                      <path strokeLinecap="round" strokeLinejoin="round" d="M6 18 18 6M6 6l12 12" />
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
+                                      <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
                                     </svg>
+                                    Decline
                                   </button>
                                 </div>
                               </div>
                             );
                           })}
                         </div>
-                      </div>
-                    )}
+                      ) : (
+                        <div className="p-10 text-center bg-[var(--bg-primary)]/10 rounded-[2.5rem] border border-dashed border-[var(--border-primary)]/40">
+                          <div className="w-14 h-14 bg-[var(--bg-primary)]/30 rounded-full flex items-center justify-center mx-auto mb-4 border border-[var(--border-primary)]/50">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1} stroke="currentColor" className="w-7 h-7 text-[var(--text-secondary)] opacity-30">
+                              <path strokeLinecap="round" strokeLinejoin="round" d="M15 19.128a9.38 9.38 0 0 0 2.625.372 9.337 9.337 0 0 0 4.121-.952 4.125 4.125 0 0 0-2.123-7.674 4.125 4.125 0 0 0-4.664-5.076 9.35 9.35 0 0 0-3.959-1.8 9.35 9.35 0 0 0-3.959 1.8 4.125 4.125 0 0 0-4.664 5.076 4.125 4.125 0 0 0-2.123 7.674 9.337 9.337 0 0 0 4.121.952 9.38 9.38 0 0 0 2.625-.372" />
+                            </svg>
+                          </div>
+                          <p className="text-[10px] text-[var(--text-secondary)] font-black uppercase tracking-[0.25em] italic">No join requests yet</p>
+                        </div>
+                      )}
+                    </div>
+                  )}
                 </div>
 
                 <div className="mt-10 relative z-10 pt-6 border-t border-gray-50">
