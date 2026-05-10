@@ -104,6 +104,16 @@ export default function SignInForm() {
 
         {/* Left Side: Green Banner with Context */}
         <div className="md:w-1/2 bg-[#8cc63f] p-10 lg:p-14 text-white flex flex-col justify-center relative overflow-hidden">
+          
+          <div className="absolute top-6 left-6 z-20">
+            <Link to="/" className="flex items-center gap-2 text-white/90 hover:text-white font-medium transition-colors bg-black/10 hover:bg-black/20 px-4 py-2 rounded-full backdrop-blur-sm text-sm">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-4 h-4">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18" />
+              </svg>
+              Back to Home
+            </Link>
+          </div>
+
           <div className="relative z-10">
             <h2 className="text-[36px] lg:text-[44px] font-extrabold leading-[1.15] mb-6 tracking-tight">
               Elevate Your Skills<br />to Elite Status.

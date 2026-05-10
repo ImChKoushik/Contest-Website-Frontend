@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { useAuthContext } from '../context/AuthContext';
 import Input from '../components/Input';
 import Select from '../components/Select';
@@ -165,7 +165,17 @@ export default function SignUpForm() {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
 
         {/* Left Side: Content & Features */}
-        <div className="order-2 lg:order-1 space-y-12">
+        <div className="order-2 lg:order-1 space-y-12 relative">
+          
+          <div className="-mt-4 md:-mt-8 mb-4">
+            <Link to="/" className="inline-flex items-center gap-2 text-[var(--text-secondary)] hover:text-[var(--text-primary)] font-medium transition-colors bg-[var(--bg-secondary)] hover:bg-[var(--border-primary)] px-4 py-2 rounded-full shadow-sm border border-[var(--border-primary)] text-sm w-fit">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-4 h-4">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18" />
+              </svg>
+              Back to Home
+            </Link>
+          </div>
+
           {/* Main heading */}
           <div>
             <h1 className="text-5xl md:text-[56px] font-extrabold text-[var(--text-primary)] leading-[1.15] mb-6 tracking-tight transition-colors">
