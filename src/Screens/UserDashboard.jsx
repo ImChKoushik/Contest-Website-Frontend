@@ -32,11 +32,7 @@ import doodle2 from '../assets/images/1000146438.webp';
 
 export default function UserDashboard() {
   const { user: currentUser } = useAuthContext();
-  const [currentSlide, setCurrentSlide] = useState(0);
   const [impactIdx, setImpactIdx] = useState(0);
-  const [typedText, setTypedText] = useState('');
-  const fullWelcomeText = "Welcome to Desun's Learn and earn contest";
-  const typingSpeed = 100;
   const impactImages = [contestChallengeImg, contestImg2, contestBlogImg];
   const navigate = useNavigate();
 
@@ -99,128 +95,12 @@ export default function UserDashboard() {
     fetchMyResults();
   }, [currentUser, data?.contests]);
 
-  const slides = [
-    {
-      badge: "MERN CONTEST",
-      titleLine1: "Master Your Craft.",
-      titleLine2: "Lead the Future.",
-      description: "Build a scalable real-time collaboration tool using MongoDB, Express, React, and Node.js. Focus on performance and architecture.",
-      image: bannerSliderImg
-    },
-    {
-      badge: "UI/UX CONTEST",
-      titleLine1: "Design with Empathy.",
-      titleLine2: "Shape Experiences.",
-      description: "Redesign the educational experience for neurodivergent learners. Focus on accessibility, empathy, and intuitive interaction.",
-      image: mernHomeImg
-    },
-    {
-      badge: "WEBSITE DESIGNING CONTEST",
-      titleLine1: "Build Stunning Web.",
-      titleLine2: "Push the Boundaries.",
-      description: "Create stunning, responsive, and performant web interfaces. Prove your frontend mastery with modern design architectures.",
-      image: learningImg
-    }
-  ];
-
-  useEffect(() => {
-    const timer = setInterval(() => {
-      setCurrentSlide((prev) => (prev + 1) % slides.length);
-    }, 5000);
-    return () => clearInterval(timer);
-  }, []);
-
   useEffect(() => {
     const timer = setInterval(() => {
       setImpactIdx((prev) => (prev + 1) % impactImages.length);
     }, 5000);
     return () => clearInterval(timer);
   }, [impactImages.length]);
-
-  useEffect(() => {
-    let i = 0;
-    let timeoutId;
-    let intervalId;
-
-    const runAnimation = () => {
-      i = 0;
-      intervalId = setInterval(() => {
-        setTypedText(fullWelcomeText.slice(0, i));
-        i++;
-        if (i > fullWelcomeText.length) {
-          clearInterval(intervalId);
-          timeoutId = setTimeout(runAnimation, 2000);
-        }
-      }, typingSpeed);
-    };
-
-    runAnimation();
-    return () => {
-      clearInterval(intervalId);
-      clearTimeout(timeoutId);
-    };
-  }, []);
-
-  const [touchStart, setTouchStart] = useState(null);
-  const [touchEnd, setTouchEnd] = useState(null);
-  const minSwipeDistance = 50;
-
-  const onTouchStart = (e) => {
-    setTouchEnd(null);
-    setTouchStart(e.targetTouches[0].clientX);
-  };
-
-  const onTouchMove = (e) => setTouchEnd(e.targetTouches[0].clientX);
-
-  const onTouchEnd = () => {
-    if (!touchStart || !touchEnd) return;
-    const distance = touchStart - touchEnd;
-    if (distance > minSwipeDistance) {
-      setCurrentSlide((prev) => (prev + 1) % slides.length);
-    } else if (distance < -minSwipeDistance) {
-      setCurrentSlide((prev) => (prev === 0 ? slides.length - 1 : prev - 1));
-    }
-  };
-
-  const wheelTimeout = useRef(null);
-
-  const handleWheel = (e) => {
-    if (Math.abs(e.deltaX) > 20 && Math.abs(e.deltaX) > Math.abs(e.deltaY)) {
-      if (!wheelTimeout.current) {
-        if (e.deltaX > 0) {
-          setCurrentSlide((prev) => (prev + 1) % slides.length);
-        } else {
-          setCurrentSlide((prev) => (prev === 0 ? slides.length - 1 : prev - 1));
-        }
-        wheelTimeout.current = setTimeout(() => {
-          wheelTimeout.current = null;
-        }, 800);
-      }
-    }
-  };
-
-
-
-  // Helper to format deadline
-  const getDaysLeft = (deadline) => {
-    const d = new Date(deadline);
-    const now = new Date();
-    const diff = d - now;
-    if (diff <= 0) return "Closed";
-    const days = Math.ceil(diff / (1000 * 60 * 60 * 24));
-    return `${days} Days Left`;
-  };
-
-  // Handle category click from hero badge
-  const handleHeroBadgeClick = (categoryName) => {
-    let slug = 'mern';
-    const lowerName = categoryName.toLowerCase();
-    if (lowerName.includes('ui/ux')) slug = 'ui-ux';
-    else if (lowerName.includes('digital')) slug = 'digital-marketing';
-    else if (lowerName.includes('website') || lowerName.includes('web')) slug = 'website-designing';
-
-    navigate(`/contests/category/${slug}`);
-  };
 
 
   return (
@@ -236,99 +116,54 @@ export default function UserDashboard() {
         <img src={doodle2} alt="" className="w-full h-full object-contain rounded-full grayscale" />
       </div>
 
-      {/* 1. Hero Section */}
-      <section
-        className="relative w-full min-h-[calc(100vh-64px)] flex flex-col overflow-hidden"
-        onTouchStart={onTouchStart}
-        onTouchMove={onTouchMove}
-        onTouchEnd={onTouchEnd}
-        onWheel={handleWheel}
-      >
-        {/* Deep Green Gradient background & Image Overlay */}
-        <div className="absolute inset-0 bg-[#063327]">
-          {/* Slider Image Overlay */}
-          {slides.map((slide, idx) => (
-            <img
-              key={idx}
-              src={slide.image}
-              alt={`Slide ${idx + 1}`}
-              className={`absolute inset-0 w-full h-full object-cover object-center transition-opacity duration-1000 ease-in-out ${currentSlide === idx ? "opacity-30 z-10" : "opacity-0 z-0"
-                }`}
-            />
-          ))}
-          <div className="absolute inset-0 bg-gradient-to-r from-[#173a20]/95 via-[#0c402b]/80 to-[#107044]/60 mix-blend-multiply z-10"></div>
-          <div className="absolute inset-0 bg-gradient-to-t from-[#fbfcfb]/10 via-transparent to-transparent z-10"></div> {/* Bottom soft fade */}
-        </div>
-
-        <div className="relative z-20 max-w-7xl mr-auto px-4 sm:px-6 lg:px-8 flex-1 flex flex-col justify-start items-start pt-16 md:pt-20 pb-24 text-left">
-          {/* Badge — fixed height */}
-          <div className="h-9 flex items-center mb-6">
-            <div
-              onClick={() => handleHeroBadgeClick(slides[currentSlide].badge)}
-              className="bg-[#fcb900] text-gray-900 w-max px-4 py-1.5 rounded-full text-[11px] font-black uppercase tracking-widest shadow-sm ring-4 ring-[#fcb900]/20 transition-all duration-300 cursor-pointer hover:scale-105 active:scale-95"
-            >
-              {slides[currentSlide].badge}
+      {/* Welcome Section */}
+      <section className="relative w-full pt-16 pb-8 px-4 sm:px-6 lg:px-8 mt-6">
+        <div className="max-w-7xl mx-auto">
+          <div 
+            className="rounded-3xl p-8 md:p-12 shadow-xl border border-[var(--border-primary)] relative overflow-hidden flex flex-col md:flex-row items-center justify-between gap-8 group transition-colors duration-300"
+            style={{ background: 'var(--welcome-bg)' }}
+          >
+            <div className="absolute top-0 right-0 w-64 h-64 bg-white/20 dark:bg-[#8cc63f]/10 rounded-full blur-[80px] group-hover:bg-white/30 dark:group-hover:bg-[#8cc63f]/20 transition-all duration-700"></div>
+            <div className="relative z-10 flex-1">
+              <h1 className="text-4xl md:text-5xl font-black text-[var(--welcome-text)] mb-3 flex flex-wrap items-center gap-3 transition-colors duration-300">
+                Welcome, {currentUser?.name || currentUser?.userName || 'User'} <span className="inline-block origin-[70%_70%] hover:rotate-12 transition-transform duration-300 text-5xl cursor-default">👋</span>
+              </h1>
+              <p className="text-[var(--welcome-subtext)] text-lg md:text-xl font-medium transition-colors duration-300">
+                Ready to check your latest achievements and contest results?
+              </p>
             </div>
-          </div>
-
-          {/* Welcome Typing Text — fixed height */}
-          <div className="min-h-[60px] md:min-h-[50px] flex items-center mb-4">
-            <h2 className="text-2xl md:text-3xl font-black bg-gradient-to-r from-orange-400 via-[#8cc63f] to-[#bade90] bg-clip-text text-transparent leading-tight tracking-tight text-left">
-              {typedText}
-              <span className="animate-pulse text-[#8cc63f]">|</span>
-            </h2>
-          </div>
-
-          {/* Title — fixed height */}
-          <div className="min-h-[120px] md:min-h-[175px] mb-6">
-            <h1 className="text-white text-5xl md:text-[64px] font-black leading-[1.1] tracking-tight transition-all duration-300 flex flex-col items-start gap-2 text-left">
-              <span className="block">{slides[currentSlide].titleLine1}</span>
-              <span className="text-[#8cc63f] block">{slides[currentSlide].titleLine2}</span>
-            </h1>
-          </div>
-
-          {/* Description — fixed height */}
-          <div className="min-h-[80px] mb-10">
-            <p className="text-[#a4dfbe] font-medium text-lg md:text-xl max-w-2xl leading-relaxed drop-shadow-sm transition-all duration-300 text-left">
-              {slides[currentSlide].description}
-            </p>
-          </div>
-
-          <div className="flex flex-col sm:flex-row gap-4">
-            <button onClick={() => navigate('/contests')} className="bg-[#8cc63f] hover:bg-[#7eb830] transition-colors text-white font-bold py-3.5 px-8 rounded-full shadow-[0_4px_14px_rgba(140,198,63,0.39)] flex items-center justify-center gap-2 group tracking-wide cursor-pointer relative z-50">
-              Explore Contests
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-4 h-4 group-hover:translate-x-1 transition-transform">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />
-              </svg>
-            </button>
-          </div>
-
-          {/* Slider Indicators (Green Light Effect) - Left Aligned */}
-          <div className="absolute bottom-12 left-0 right-0 flex justify-start gap-4 px-4 sm:px-6 lg:px-8 z-30">
-            {slides.map((_, idx) => (
-              <div
-                key={idx}
-                onClick={() => setCurrentSlide(idx)}
-                className="group cursor-pointer py-4 flex flex-col items-start"
-              >
+            <div className="relative z-10 flex-shrink-0">
+              {Array.isArray(myResults) && myResults.length > 0 ? (
+                <button
+                  onClick={() => {
+                    document.getElementById('results-section')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                  }}
+                  className="bg-[var(--welcome-btn-bg)] hover:bg-[var(--welcome-btn-hover)] text-[var(--welcome-btn-text)] px-8 py-4 rounded-xl font-black text-lg uppercase tracking-wider flex items-center gap-3 transition-all shadow-[0_10px_20px_-5px_rgba(140,198,63,0.4)] hover:-translate-y-1 active:scale-95 whitespace-nowrap"
+                >
+                  View Result
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
+                  </svg>
+                </button>
+              ) : (
                 <div
-                  className={`h-1.5 rounded-full transition-all duration-500 ease-out ${currentSlide === idx
-                    ? "w-12 bg-[#8cc63f] shadow-[0_0_15px_rgba(140,198,63,0.8),0_0_5px_rgba(140,198,63,1)] scale-110"
-                    : "w-6 bg-white/20 group-hover:bg-white/40"
-                    }`}
-                ></div>
-                {currentSlide === idx && (
-                  <div className="absolute -bottom-1 w-6 h-1 bg-[#8cc63f]/50 blur-sm rounded-full animate-pulse"></div>
-                )}
-              </div>
-            ))}
+                  title="Results will appear here once released by the admin."
+                  className="bg-[var(--welcome-no-result-bg)] text-[var(--welcome-text)] px-8 py-4 rounded-xl font-black text-lg uppercase tracking-wider flex items-center gap-3 border border-[var(--welcome-no-result-border)] shadow-inner cursor-not-allowed whitespace-nowrap opacity-90 transition-colors duration-300"
+                >
+                  No Results Yet
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 opacity-80" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                </div>
+              )}
+            </div>
           </div>
         </div>
       </section>
 
       {/* 1.2 Performance & Leaderboard Section */}
       {Array.isArray(myResults) && myResults.length > 0 && (
-        <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-16 relative z-20">
+        <section id="results-section" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-16 relative z-20 scroll-mt-24">
           <div className="flex flex-col lg:flex-row gap-12 items-stretch">
             {/* Leaderboard Left Side */}
             <div className="lg:w-2/3 flex flex-col">

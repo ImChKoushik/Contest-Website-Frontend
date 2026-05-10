@@ -28,7 +28,7 @@ export default function Navbar() {
 
   useEffect(() => {
     if (!user || tokenExpired) return;
-    
+
     const updateTimer = () => {
       const loginTime = parseInt(localStorage.getItem('loginTime') || '0', 10);
       if (!loginTime) {
@@ -207,7 +207,6 @@ export default function Navbar() {
                 </Link>
               );
             })}
-            <ThemeToggle />
           </nav>
 
           {!user && (
@@ -325,6 +324,7 @@ export default function Navbar() {
                   <button onClick={() => navigate('/signup')} className="px-6 py-2.5 text-[13px] font-black bg-[#8cc63f] hover:bg-[#7ab033] text-white rounded-full transition-all duration-300 shadow-[0_4px_14px_rgba(140,198,63,0.3)] hover:shadow-lg hover:-translate-y-0.5 uppercase tracking-wider">Sign Up</button>
                 </div>
               )}
+              <ThemeToggle />
             </div>
 
             {/* Mobile Actions Section */}
@@ -403,7 +403,7 @@ export default function Navbar() {
                 </div>
               </div>
             )}
-            
+
             {tokenExpired ? (
               <div className="space-y-4 animate-in fade-in slide-in-from-bottom-4 duration-500">
                 <div className="p-5 bg-amber-500/5 border-2 border-amber-500/20 rounded-3xl text-center">

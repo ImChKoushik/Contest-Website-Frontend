@@ -14,6 +14,14 @@
   --input-bg: #f7f7f7;
   --input-focus-bg: #ffffff;
   --dark-accent: #0f172a;
+  --welcome-bg: linear-gradient(to right, #8cc63f, #7ab033);
+  --welcome-text: #ffffff;
+  --welcome-subtext: rgba(255, 255, 255, 0.9);
+  --welcome-btn-bg: #ffffff;
+  --welcome-btn-text: #8cc63f;
+  --welcome-btn-hover: #f3f4f6;
+  --welcome-no-result-bg: rgba(255, 255, 255, 0.2);
+  --welcome-no-result-border: rgba(255, 255, 255, 0.3);
 }
 
 .dark {
@@ -30,6 +38,14 @@
   --input-bg: #111a16;
   --input-focus-bg: #16241f;
   --dark-accent: #060c0a;
+  --welcome-bg: var(--card-bg);
+  --welcome-text: var(--text-primary);
+  --welcome-subtext: var(--text-secondary);
+  --welcome-btn-bg: #8cc63f;
+  --welcome-btn-text: #ffffff;
+  --welcome-btn-hover: #7ab033;
+  --welcome-no-result-bg: var(--bg-primary);
+  --welcome-no-result-border: var(--border-primary);
 }
 
 body {
