@@ -55,6 +55,24 @@ export default function UserDashboard() {
   const [isInviteModalOpen, setIsInviteModalOpen] = useState(false);
   const [teamToInvite, setTeamToInvite] = useState(null);
 
+  // Search & Filter State
+  const [searchQuery, setSearchQuery] = useState("");
+  const [showAutocomplete, setShowAutocomplete] = useState(false);
+  const [selectedMonth, setSelectedMonth] = useState("all");
+  const [selectedCategory, setSelectedCategory] = useState("all");
+  const [isFilterOpen, setIsFilterOpen] = useState(false);
+  const searchContainerRef = useRef(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (searchContainerRef.current && !searchContainerRef.current.contains(event.target)) {
+        setShowAutocomplete(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
   const { data, loading, error } = useContests();
 
   const fetchUserTeams = async () => {
@@ -102,6 +120,52 @@ export default function UserDashboard() {
     return () => clearInterval(timer);
   }, [impactImages.length]);
 
+  const monthsList = [
+    { value: "01", label: "January" }, { value: "02", label: "February" }, { value: "03", label: "March" },
+    { value: "04", label: "April" }, { value: "05", label: "May" }, { value: "06", label: "June" },
+    { value: "07", label: "July" }, { value: "08", label: "August" }, { value: "09", label: "September" },
+    { value: "10", label: "October" }, { value: "11", label: "November" }, { value: "12", label: "December" }
+  ];
+
+  const categoriesList = [
+    { value: "MERN Full Stack", label: "MERN Full Stack" },
+    { value: "UI/UX DESIGN", label: "UI/UX DESIGN" },
+    { value: "DIGITAL MARKETING", label: "DIGITAL MARKETING" },
+    { value: "WEBSITE DESIGNING", label: "WEBSITE DESIGNING" }
+  ];
+
+  const filteredSearchContests = useMemo(() => {
+    if (!data?.contests) return [];
+    return data.contests.filter(c => {
+      if (!['Upcoming', 'On-Going', 'Completed', 'Complete', 'Closed'].includes(c.status)) return false;
+
+      if (selectedCategory !== 'all') {
+        const cleanDB = (c.category || '').toLowerCase().replace(/[^a-z0-9]/g, '');
+        const cleanSel = selectedCategory.toLowerCase().replace(/[^a-z0-9]/g, '');
+        if (cleanDB !== cleanSel) return false;
+      }
+
+      if (selectedMonth !== 'all' && c.contestDeadLine) {
+        const d = new Date(c.contestDeadLine);
+        const monthStr = String(d.getMonth() + 1).padStart(2, '0');
+        if (monthStr !== selectedMonth) return false;
+      }
+
+      if (searchQuery.length >= 2) {
+        return c.contestTitle.toLowerCase().includes(searchQuery.toLowerCase());
+      }
+
+      return true;
+    });
+  }, [data, searchQuery, selectedCategory, selectedMonth]);
+
+  const autocompleteResults = useMemo(() => {
+    if (searchQuery.length < 2) return [];
+    return filteredSearchContests.slice(0, 5);
+  }, [searchQuery, filteredSearchContests]);
+
+  const isSearchActive = searchQuery.length >= 2 || selectedMonth !== 'all' || selectedCategory !== 'all';
+
 
   return (
     <div className="bg-[var(--bg-primary)] min-h-screen font-sans w-full pb-20 transition-colors duration-300 relative overflow-x-hidden">
@@ -119,7 +183,7 @@ export default function UserDashboard() {
       {/* Welcome Section */}
       <section className="relative w-full pt-16 pb-8 px-4 sm:px-6 lg:px-8 mt-6">
         <div className="max-w-7xl mx-auto">
-          <div 
+          <div
             className="rounded-3xl p-8 md:p-12 shadow-xl border border-[var(--border-primary)] relative overflow-hidden flex flex-col md:flex-row items-center justify-between gap-8 group transition-colors duration-300"
             style={{ background: 'var(--welcome-bg)' }}
           >
@@ -417,8 +481,8 @@ export default function UserDashboard() {
                       <div className="flex items-center justify-between mb-6">
                         <div>
                           <h4 className="text-[11px] font-black text-[var(--text-primary)] uppercase tracking-[0.2em] flex items-center gap-2">
-                             Join Applications
-                             <span className="w-1.5 h-1.5 rounded-full bg-[#8cc63f] animate-pulse"></span>
+                            Join Applications
+                            <span className="w-1.5 h-1.5 rounded-full bg-[#8cc63f] animate-pulse"></span>
                           </h4>
                           <p className="text-[9px] text-[var(--text-secondary)] font-bold uppercase tracking-widest mt-1">Review prospective recruits</p>
                         </div>
@@ -453,7 +517,7 @@ export default function UserDashboard() {
                                     </div>
                                   </div>
                                 </div>
-                                
+
                                 <div className="flex gap-3 mt-4 border-t border-[var(--border-primary)]/30 pt-4">
                                   <button
                                     onClick={async (e) => {
@@ -576,69 +640,249 @@ export default function UserDashboard() {
         )}
       </section>
 
-
-      {/* 1.8 Explore Categories Section */}
-      <section id="explore-categories" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-24 relative z-20">
-        <div className="flex flex-col md:flex-row md:items-end justify-between mb-10 gap-4">
-          <div>
-            <div className="flex items-center gap-3 mb-2">
-              <div className="w-8 h-8 rounded-lg bg-orange-50 flex items-center justify-center text-orange-600 border border-orange-100/50">
-                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M9.568 3H5.25A2.25 2.25 0 0 0 3 5.25v4.318c0 .597.237 1.17.659 1.591l9.581 9.581c.699.699 1.78.872 2.607.33a18.095 18.095 0 0 0 5.223-5.223c.542-.827.369-1.908-.33-2.607L11.16 3.659A2.25 2.25 0 0 0 9.568 3Z" />
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M6 6h.008v.008H6V6Z" />
-                </svg>
-              </div>
-              <h2 className="text-3xl font-black text-gray-900 tracking-tight uppercase">Specializations</h2>
-            </div>
-            <p className="text-[#6b7280] font-medium">Jump into a specific domain and find your next challenge.</p>
-          </div>
+      {/* 1.7 Global Search & Filter */}
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-24 relative z-40">
+        <div className="flex flex-col items-center mb-8">
+          <h2 className="text-3xl font-black text-gray-900 tracking-tight uppercase mb-2">Find Contests</h2>
+          <p className="text-[#6b7280] font-medium text-center">Search or filter by category and month to find your next challenge.</p>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-          {[
-            { name: 'MERN', slug: 'mern', image: mernImg, color: 'from-blue-500 to-indigo-600' },
-            { name: 'UI/UX DESIGN', slug: 'ui-ux', image: uiuxImg, color: 'from-purple-500 to-fuchsia-600' },
-            { name: 'DIGITAL MARKETING', slug: 'digital-marketing', image: dmImg, color: 'from-orange-400 to-red-500' },
-            { name: 'WEBSITE DESIGNING', slug: 'website-designing', image: webImg, color: 'from-green-400 to-emerald-600' }
-          ].map((cat) => (
-            <div
-              key={cat.slug}
-              onClick={() => navigate(`/contests/category/${cat.slug}`)}
-              className="group cursor-pointer select-none outline-none focus:outline-none"
-              style={{ WebkitTapHighlightColor: 'transparent' }}
-            >
-              <div className="bg-[var(--card-bg)] rounded-[40px] overflow-hidden border-2 border-[var(--border-primary)] shadow-[var(--card-shadow)] transition-[transform,box-shadow,border-color] duration-500 hover:border-[var(--accent-green)] hover:shadow-2xl hover:shadow-green-900/5 hover:-translate-y-2 relative flex flex-col h-full outline-none focus:outline-none">
-                {/* Card Image Header */}
-                <div className="h-48 w-full relative overflow-hidden isolate outline-none">
-                  <img
-                    src={cat.image}
-                    alt={cat.name}
-                    loading="lazy"
-                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 ease-in-out transform-gpu pointer-events-none"
-                  />
-                  <div className={`absolute inset-0 bg-gradient-to-br ${cat.color} opacity-20 mix-blend-multiply pointer-events-none`}></div>
-                  <div className="absolute inset-0 bg-gradient-to-t from-[var(--card-bg)] via-transparent to-transparent pointer-events-none"></div>
+        <div className="bg-white p-4 md:p-6 rounded-[2rem] shadow-[0_10px_40px_rgba(0,0,0,0.05)] border border-gray-100 flex flex-col gap-4 relative z-40" ref={searchContainerRef}>
+          <div className="flex flex-col md:flex-row gap-4 relative z-40">
+            {/* Search Input */}
+            <div className="flex-grow relative">
+              <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                </svg>
+              </div>
+              <input
+                type="text"
+                placeholder="Search contests by name..."
+                className="w-full pl-12 pr-4 py-4 rounded-xl bg-gray-50 border border-gray-200 outline-none focus:border-[#8cc63f] focus:ring-2 focus:ring-[#8cc63f]/20 transition-all font-medium text-gray-800"
+                value={searchQuery}
+                onChange={(e) => {
+                  setSearchQuery(e.target.value);
+                  setShowAutocomplete(true);
+                }}
+                onFocus={() => setShowAutocomplete(true)}
+              />
+
+              {/* Autocomplete Dropdown */}
+              {showAutocomplete && searchQuery.length >= 2 && (
+                <div className="absolute top-full left-0 right-0 mt-2 bg-white rounded-2xl shadow-2xl border border-gray-100 overflow-hidden z-50">
+                  {autocompleteResults.length > 0 ? (
+                    <ul className="max-h-64 overflow-y-auto divide-y divide-gray-50">
+                      {autocompleteResults.map((contest) => (
+                        <li
+                          key={contest._id}
+                          className="px-6 py-4 hover:bg-gray-50 cursor-pointer transition-colors flex flex-col"
+                          onClick={() => {
+                            setShowAutocomplete(false);
+                            if (!currentUser) {
+                              navigate('/signin');
+                              return;
+                            }
+                            setSelectedContestForTeam(contest);
+                            setIsTeamModalOpen(true);
+                          }}
+                        >
+                          <span className="font-bold text-gray-900">{contest.contestTitle}</span>
+                          <span className="text-[10px] font-black uppercase tracking-widest text-[#8cc63f] mt-1">{contest.category}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  ) : (
+                    <div className="p-6 text-center text-gray-500 font-medium text-sm">
+                      No contests found matching "{searchQuery}"
+                    </div>
+                  )}
                 </div>
+              )}
+            </div>
 
-                <div className="p-8 pt-4 flex flex-col items-center text-center">
-                  <h3 className="text-xl font-black text-[var(--text-primary)] mb-2 tracking-tight group-hover:text-[var(--accent-green)] transition-colors uppercase">{cat.name}</h3>
-                  <p className="text-[var(--text-secondary)] text-sm font-medium mb-8">Click to view all {cat.name} contests.</p>
+            {/* Filter Toggle Button */}
+            <button
+              onClick={() => setIsFilterOpen(!isFilterOpen)}
+              className={`flex-shrink-0 px-6 py-4 rounded-xl font-bold text-sm tracking-wider flex items-center justify-center gap-2 border transition-all ${isFilterOpen || selectedMonth !== 'all' || selectedCategory !== 'all'
+                  ? 'bg-[#8cc63f]/10 text-[#7ab033] border-[#8cc63f]/30'
+                  : 'bg-white text-gray-600 border-gray-200 hover:bg-gray-50'
+                }`}
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
+              </svg>
+              Filter
+            </button>
+          </div>
 
-                  <div className="flex items-center gap-2 text-[var(--accent-green)] font-black uppercase tracking-widest text-[10px] transform group-hover:translate-x-1 transition-all duration-500">
-                    Explore Now
-                    <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M14 5l7 7m0 0l-7 7m7-7H3" />
+          {/* Expanded Filter Panel */}
+          {isFilterOpen && (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-2 pt-4 border-t border-gray-100 animate-in fade-in slide-in-from-top-2">
+              <div className="flex flex-col gap-2">
+                <label className="text-xs font-black uppercase tracking-widest text-gray-400 pl-1">Category</label>
+                <div className="relative">
+                  <select
+                    className="w-full appearance-none px-4 py-3.5 rounded-xl bg-gray-50 border border-gray-200 outline-none text-gray-700 font-medium focus:border-[#8cc63f] transition-colors"
+                    value={selectedCategory}
+                    onChange={(e) => setSelectedCategory(e.target.value)}
+                  >
+                    <option value="all">All Categories</option>
+                    {categoriesList.map(cat => (
+                      <option key={cat.value} value={cat.value}>{cat.label}</option>
+                    ))}
+                  </select>
+                  <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-gray-400">
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                     </svg>
                   </div>
                 </div>
-
-                {/* Abstract decoration */}
-                <div className="absolute -bottom-10 -right-10 w-32 h-32 bg-[var(--accent-green)]/5 rounded-full z-0 group-hover:scale-125 transition-transform duration-700 opacity-50"></div>
+              </div>
+              <div className="flex flex-col gap-2">
+                <label className="text-xs font-black uppercase tracking-widest text-gray-400 pl-1">Month (Deadline)</label>
+                <div className="relative">
+                  <select
+                    className="w-full appearance-none px-4 py-3.5 rounded-xl bg-gray-50 border border-gray-200 outline-none text-gray-700 font-medium focus:border-[#8cc63f] transition-colors"
+                    value={selectedMonth}
+                    onChange={(e) => setSelectedMonth(e.target.value)}
+                  >
+                    <option value="all">Any Month</option>
+                    {monthsList.map(m => (
+                      <option key={m.value} value={m.value}>{m.label}</option>
+                    ))}
+                  </select>
+                  <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-gray-400">
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                    </svg>
+                  </div>
+                </div>
               </div>
             </div>
-          ))}
+          )}
         </div>
       </section>
+
+      {/* Dynamic Display: Filtered Grid vs Default Categories */}
+      {isSearchActive ? (
+        <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-12 mb-24 relative z-20">
+          <div className="flex items-center justify-between mb-8">
+            <h3 className="text-2xl font-black text-gray-900">Search Results</h3>
+            <span className="text-sm font-bold bg-[#8cc63f]/10 text-[#7ab033] px-4 py-1.5 rounded-full">
+              {filteredSearchContests.length} Found
+            </span>
+          </div>
+
+          {filteredSearchContests.length > 0 ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+              {filteredSearchContests.map((contest) => (
+                <ContestCard
+                  key={contest._id}
+                  id={contest._id}
+                  title={contest.contestTitle}
+                  category={contest.category}
+                  description={contest.contestDescription}
+                  status={contest.status}
+                  projectType={contest.projectType}
+                  teamSize={contest.teamSize}
+                  deadline={contest.contestDeadLine}
+                  entries={`${contest.entryLimit || 100} Slots`}
+                  onApply={() => {
+                    if (!currentUser) {
+                      navigate('/signin');
+                      return;
+                    }
+                    setSelectedContestForTeam(contest);
+                    setIsTeamModalOpen(true);
+                  }}
+                  image={contest.contestImage}
+                />
+              ))}
+            </div>
+          ) : (
+            <div className="bg-white border border-gray-100 rounded-[40px] p-20 text-center shadow-sm">
+              <div className="w-20 h-20 bg-gray-50 rounded-full flex items-center justify-center mx-auto mb-6">
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-10 w-10 text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                </svg>
+              </div>
+              <h4 className="text-xl font-black text-gray-900 mb-2">No Matches Found</h4>
+              <p className="text-gray-500 font-medium">Try adjusting your filters or search query.</p>
+              <button
+                onClick={() => {
+                  setSearchQuery("");
+                  setSelectedMonth("all");
+                  setSelectedCategory("all");
+                }}
+                className="mt-6 text-[#8cc63f] font-bold text-sm uppercase tracking-widest hover:underline"
+              >
+                Clear Filters
+              </button>
+            </div>
+          )}
+        </section>
+      ) : (
+        <section id="explore-categories" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-16 relative z-20">
+          <div className="flex flex-col md:flex-row md:items-end justify-between mb-10 gap-4">
+            <div>
+              <div className="flex items-center gap-3 mb-2">
+                <div className="w-8 h-8 rounded-lg bg-orange-50 flex items-center justify-center text-orange-600 border border-orange-100/50">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M9.568 3H5.25A2.25 2.25 0 0 0 3 5.25v4.318c0 .597.237 1.17.659 1.591l9.581 9.581c.699.699 1.78.872 2.607.33a18.095 18.095 0 0 0 5.223-5.223c.542-.827.369-1.908-.33-2.607L11.16 3.659A2.25 2.25 0 0 0 9.568 3Z" />
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M6 6h.008v.008H6V6Z" />
+                  </svg>
+                </div>
+                <h2 className="text-3xl font-black text-gray-900 tracking-tight uppercase">Specializations</h2>
+              </div>
+              <p className="text-[#6b7280] font-medium">Jump into a specific domain and find your next challenge.</p>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            {[
+              { name: 'MERN', slug: 'mern', image: mernHomeImg, color: 'from-blue-500 to-indigo-600' },
+              { name: 'UI/UX DESIGN', slug: 'ui-ux', image: uiuxImg, color: 'from-purple-500 to-fuchsia-600' },
+              { name: 'DIGITAL MARKETING', slug: 'digital-marketing', image: dmImg, color: 'from-orange-400 to-red-500' },
+              { name: 'WEBSITE DESIGNING', slug: 'website-designing', image: webImg, color: 'from-green-400 to-emerald-600' }
+            ].map((cat) => (
+              <div
+                key={cat.slug}
+                onClick={() => navigate(`/contests/category/${cat.slug}`)}
+                className="group cursor-pointer select-none outline-none focus:outline-none"
+                style={{ WebkitTapHighlightColor: 'transparent' }}
+              >
+                <div className="bg-[var(--card-bg)] rounded-[40px] overflow-hidden border-2 border-[var(--border-primary)] shadow-[var(--card-shadow)] transition-[transform,box-shadow,border-color] duration-500 hover:border-[var(--accent-green)] hover:shadow-2xl hover:shadow-green-900/5 hover:-translate-y-2 relative flex flex-col h-full outline-none focus:outline-none">
+                  <div className="h-48 w-full relative overflow-hidden isolate outline-none">
+                    <img
+                      src={cat.image}
+                      alt={cat.name}
+                      loading="lazy"
+                      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 ease-in-out transform-gpu pointer-events-none"
+                    />
+                    <div className={`absolute inset-0 bg-gradient-to-br ${cat.color} opacity-20 mix-blend-multiply pointer-events-none`}></div>
+                    <div className="absolute inset-0 bg-gradient-to-t from-[var(--card-bg)] via-transparent to-transparent pointer-events-none"></div>
+                  </div>
+
+                  <div className="p-8 pt-4 flex flex-col items-center text-center">
+                    <h3 className="text-xl font-black text-[var(--text-primary)] mb-2 tracking-tight group-hover:text-[var(--accent-green)] transition-colors uppercase">{cat.name}</h3>
+                    <p className="text-[var(--text-secondary)] text-sm font-medium mb-8">Click to view all {cat.name} contests.</p>
+
+                    <div className="flex items-center gap-2 text-[var(--accent-green)] font-black uppercase tracking-widest text-[10px] transform group-hover:translate-x-1 transition-all duration-500">
+                      Explore Now
+                      <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M14 5l7 7m0 0l-7-7m7-7H3" />
+                      </svg>
+                    </div>
+                  </div>
+
+                  <div className="absolute -bottom-10 -right-10 w-32 h-32 bg-[var(--accent-green)]/5 rounded-full z-0 group-hover:scale-125 transition-transform duration-700 opacity-50"></div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
 
       {/* Modals */}
       <TeamSelectionModal

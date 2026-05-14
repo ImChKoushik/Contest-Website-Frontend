@@ -196,8 +196,8 @@ export default function AdminDashboard() {
               <div className="h-px w-8 bg-white/20"></div>
               <span className="text-white/40 text-[10px] font-bold uppercase tracking-widest leading-none">Status: Active</span>
             </div>
-            <h1 className="text-4xl md:text-5xl font-black tracking-tight mb-3 font-display transition-colors">
-              You're an <span className="text-[var(--accent-green)]">Admin</span>.
+            <h1 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-black tracking-tight mb-3 font-display transition-colors whitespace-nowrap">
+              Hey {displayName.split(' ')[0]} 👋 Welcome to <span className="text-[var(--accent-green)]">Admin</span> panel.
             </h1>
             <p className="text-white/70 text-lg max-w-xl font-medium leading-relaxed transition-colors">
               Welcome back, {displayName}. You have full control over contests, participants, and platform results.

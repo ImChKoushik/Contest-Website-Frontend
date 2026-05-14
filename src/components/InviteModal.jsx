@@ -32,7 +32,7 @@ export default function InviteModal({ team, isOpen, onClose }) {
 
   const handleInvite = async (e) => {
     e.preventDefault();
-    
+
     // Add the current input if it's a valid email and not already added
     let currentEmails = [...emails];
     const trimmedInput = email.trim();
@@ -87,9 +87,9 @@ export default function InviteModal({ team, isOpen, onClose }) {
                 </div>
               ))}
               {emails.map((_, i) => (
-                 <div key={i} className="w-8 h-8 rounded-full border-2 border-white bg-[#8cc63f]/20 flex items-center justify-center text-[10px] font-black text-[#8cc63f]">
-                   +
-                 </div>
+                <div key={i} className="w-8 h-8 rounded-full border-2 border-white bg-[#8cc63f]/20 flex items-center justify-center text-[10px] font-black text-[#8cc63f]">
+                  +
+                </div>
               ))}
             </div>
             <span className="text-xs font-bold text-gray-400">
@@ -97,19 +97,19 @@ export default function InviteModal({ team, isOpen, onClose }) {
             </span>
           </div>
         </div>
-        
+
         <form onSubmit={handleInvite} className="space-y-4">
           <div className="space-y-2">
-            <Input 
-              label="Email Address" 
-              type="email" 
-              value={email} 
-              onChange={(e) => setEmail(e.target.value)} 
+            <Input
+              label="Email Address"
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
               onKeyDown={addEmail}
               placeholder="Type email and press Enter..."
               autoFocus
             />
-            
+
             {emails.length > 0 && (
               <div className="flex flex-wrap gap-2 pt-1">
                 {emails.map((e, idx) => (

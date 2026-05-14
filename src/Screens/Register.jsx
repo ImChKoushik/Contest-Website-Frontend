@@ -10,7 +10,8 @@ const Register = () => {
   const [form, setForm] = useState({
     userName: "",
     email: "",
-    password: ""
+    password: "",
+    areaOfInterest: ""
   });
 
   useEffect(() => {
@@ -130,6 +131,30 @@ const Register = () => {
                 required
                 icon={<svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>}
               />
+
+              <div className="flex flex-col mb-4 w-full">
+                <label className="text-sm font-semibold text-[var(--text-primary)] mb-2 transition-colors">Area of Interest</label>
+                <div className="relative flex items-center bg-[var(--input-bg)] rounded-xl border border-[var(--border-primary)] focus-within:border-[var(--accent-green)] focus-within:bg-[var(--input-focus-bg)] transition-all overflow-hidden group">
+                  <span className="pl-4 text-[var(--text-secondary)] transition-colors">
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
+                  </span>
+                  <select
+                    name="areaOfInterest"
+                    value={form.areaOfInterest}
+                    onChange={handleChange}
+                    required
+                    className="w-full bg-transparent px-4 py-3.5 outline-none text-[var(--text-primary)] text-sm transition-all appearance-none cursor-pointer"
+                  >
+                    <option value="" disabled>Select your interest...</option>
+                    <option value="MERN Full Stack" className="bg-[var(--bg-primary)] text-[var(--text-primary)]">MERN Full Stack</option>
+                    <option value="UI/UX" className="bg-[var(--bg-primary)] text-[var(--text-primary)]">UI/UX</option>
+                    <option value="Digital Marketing" className="bg-[var(--bg-primary)] text-[var(--text-primary)]">Digital Marketing</option>
+                  </select>
+                  <div className="absolute right-4 pointer-events-none text-[var(--text-secondary)]">
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path></svg>
+                  </div>
+                </div>
+              </div>
 
               <Input 
                 label="Password"
